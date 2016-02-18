@@ -6,6 +6,7 @@ std::unique_ptr<notes::db::NotebookDatabase> notes::db::connect(notes::db::DbTyp
     case DbType::sqlite3:
         break;
     case DbType::libpq:
+        return std::make_unique<
         break;
     case DbType::qtsql:
         break;

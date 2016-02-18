@@ -13,12 +13,16 @@ set(SRC_LIST ${SRC_LIST}
     include/tag.h
     include/note.h
     include/notebook.h
-	include/db_facade.h
-    include/cli.h
+    include/db_facade.h
+    include/client.h
+    include/pg/pq.h
+    include/sqlite3/sqlite3.h
+    include/ui/cli.h
     src/ui/cli.cpp
-	include/qt.h
+    include/ui/qt.h
 	src/ui/qt.cpp
 	src/db_facade.cpp
+    src/main.cpp
 )
 
 add_executable(notebook_pg src/pg_main.cpp ${SRC_LIST})

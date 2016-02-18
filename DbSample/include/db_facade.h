@@ -19,11 +19,11 @@ namespace db {
 using namespace notes::model;
 
 // exceptions...
-class DatabaseException : public std::exception {};
+class DatabaseException : public std::domain_error {
+    using std::domain_error::domain_error;
+};
 
-// DB-specific configuration
-using DbConfig = std::map<std::string, std::string>;
-
+// DB interface types for creation
 enum class DbType {
     sqlite3,
     libpq,
@@ -62,7 +62,7 @@ public:
 };
 
 // factory for DB connections, call with Db type
-std::unique_ptr<NotebookDatabase> connect(DbType type, DbConfig& config);
+std::unique_ptr<NotebookDatabase> connect(DbType type, const char *config);
 
 } // db
 } // notes
