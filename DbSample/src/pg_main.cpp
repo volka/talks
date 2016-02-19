@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <memory>
+#include <ctime>
 
 #include <libpq-fe.h>
 
@@ -107,10 +108,10 @@ int insert_note(PGconn* conn,
                 int notebook,
                 time_t reminder)
 {
-    auto title_str   = pg_escaped_ptr(
+    auto title_str   = std::make_shared<char>(
                             PQescapeLiteral(conn, title.c_str(), title.size()),
                             PQfreemem);
-    auto content_str = pg_escaped_ptr(
+    auto content_str = std::make_shared<char>(
                             PQescapeLiteral(conn, content.c_str(), content.size()),
                             PQfreemem);
 

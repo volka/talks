@@ -62,7 +62,7 @@ public:
 };
 
 // factory for DB connections, call with Db type
-std::unique_ptr<NotebookDatabase> connect(DbType type, const char *config);
+std::unique_ptr<NotebookDatabase> connect(const std::string& type, const std::string& config);
 
 } // db
 } // notes

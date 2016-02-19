@@ -5,11 +5,12 @@
 ** Overview of DB Bindings
 ** SQLite3 API
 ** PostgreSQL API
+*** Note on libpqtypes
 ** ( ODBC )
 
 * Simple Text Wrappers
 ** QtSQL (low level)
-** SQLAPI
+*** Note SQLAPI
 
 * C++ified Libs
 ** Soci

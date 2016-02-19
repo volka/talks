@@ -1,8 +1,8 @@
 project(DbSample)
 
-cmake_minimum_required(VERSION 3.2)
-add_definitions(-std=c++1y)
-find_package(PostgreSQL 9.5 REQUIRED)
+cmake_minimum_required(VERSION 3.0)
+add_definitions(-std=gnu++14)
+find_package(PostgreSQL 9.4 REQUIRED)
 find_package(SQLite3 REQUIRED)
 
 INCLUDE_DIRECTORIES(${PostgreSQL_INCLUDE_DIRS})
