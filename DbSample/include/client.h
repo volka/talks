@@ -8,15 +8,13 @@ namespace ui {
 // base class for user interface clients of the Notes App
 class Client {
 public:
-    Client(db::NotebookDatabase* db)
-        : m_db(db)
-    {}
+  Client(db::NotebookDatabase *db) : m_db(db) {}
 
-    virtual ~Client();
-    virtual void run() = 0;
+  virtual ~Client();
+  virtual void run() = 0;
 
 private:
-    db::NotebookDatabase* m_db;
+  db::NotebookDatabase *m_db;
 };
 
 } // ui

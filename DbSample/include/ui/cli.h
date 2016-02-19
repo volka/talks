@@ -2,6 +2,6 @@
 
 namespace notes {
 namespace ui {
-    class CliClient {};
+class CliClient {};
 } // ui
 } // notes

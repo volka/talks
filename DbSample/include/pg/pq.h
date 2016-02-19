@@ -5,9 +5,7 @@
 namespace notes {
 namespace db {
 
-class PgDatabase : public NotebookDatabase {
-
-};
+class PgDatabase : public NotebookDatabase {};
 
 } // db
 } // notes

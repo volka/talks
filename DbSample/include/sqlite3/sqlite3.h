@@ -5,9 +5,7 @@
 namespace notes {
 namespace db {
 
-class Sqlite3Database : public NotebookDatabase {
-
-};
+class Sqlite3Database : public NotebookDatabase {};
 
 } // db
 } // notes

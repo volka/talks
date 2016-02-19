@@ -3,7 +3,7 @@
 namespace notes {
 namespace ui {
 
-    class QtClient {};
+class QtClient {};
 
 } // ui
 } // notes
