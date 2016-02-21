@@ -9,19 +9,28 @@
 
 int main(int argc, char** argv)
 {
-   if (argc != 4) {
-       std::cout << "Usage: notes <INTERFACE> <DB_TYPE> \"<CONNECTION STRING>\"" << std::endl;
-       std::cout << " - INTERFACE: cli , qt" << std::endl;
-       std::cout << " - DB_TYPE  : sqlite, pg ..." << std::endl;
-       std::cout << " - CONN STR : db specific, e.g. mydb.sqlite for SQLite3" << endl;
-   } else {
-       auto db = notes::db::connect(argv[2], argv[3]);
-       std::unique_ptr<Client> ui;
-       if (strcmp(argv[1], "cli") == 0) {
-           ui = std::make_unique<notes::ui::CliClient>(db.get());
-       } else if (strcmp(argv[1], "qt") == 0) {
-           ui = std::make_unique<notes::ui::QtClient>(db.get());
-       }
-       ui->run();
-   }
+    using namespace std;
+    using namespace notes;
+
+    if (argc < 4) {
+        cout << "Usage: notes <INTERFACE> <DB_TYPE> \"<CONNECTION STRING>\" demo" << endl;
+        cout << " - INTERFACE: cli , qt" << endl;
+        cout << " - DB_TYPE  : sqlite, pg ..." << endl;
+        cout << " - CONN STR : db specific, e.g. mydb.sqlite for SQLite3" << endl;
+        cout << " - demo : use for Demo mode to create and fill DB" << endl;
+    } else {
+        try {
+            std::shared_ptr<db::NotebookDatabase> db = db::NotebookDatabase::create(argv[2], argv[3]);
+            if (argc > 4 && std::string("demo") == argv[4]) {
+                db->setupDb();
+                db->fillDb();
+            }
+            auto ui = ui::Client::create(argv[1], db);
+            ui->run();
+        } catch(std::exception& ex) {
+            std::cout << "Fatal error: " << ex.what() << endl;
+            exit(-1);
+        }
+    }
+    exit(0);
 }

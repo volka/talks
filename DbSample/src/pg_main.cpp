@@ -108,10 +108,10 @@ int insert_note(PGconn* conn,
                 int notebook,
                 time_t reminder)
 {
-    auto title_str   = std::make_shared<char>(
+    auto title_str   = std::shared_ptr<char>(
                             PQescapeLiteral(conn, title.c_str(), title.size()),
                             PQfreemem);
-    auto content_str = std::make_shared<char>(
+    auto content_str = std::shared_ptr<char>(
                             PQescapeLiteral(conn, content.c_str(), content.size()),
                             PQfreemem);
 

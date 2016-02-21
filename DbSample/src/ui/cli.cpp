@@ -3,9 +3,12 @@
 #include <iostream>
 
 
+notes::ui::CliClient::CliClient(std::shared_ptr<notes::db::NotebookDatabase> &db)
+    : db_(db)
+{}
+
 notes::ui::CliClient::~CliClient()
 {
-
 }
 
 void notes::ui::CliClient::run()
@@ -29,6 +32,7 @@ void notes::ui::CliClient::printMenu()
     cout << ">> ";
 }
 
+// if true, quit the cli loop
 bool notes::ui::CliClient::processInput()
 {
     char input;
@@ -50,6 +54,27 @@ bool notes::ui::CliClient::processInput()
         return true;
         break;
     default:
-        std::cout << "Invalid input, please try again ..." << endl;
+        std::cout << "Invalid input, please try again ..." << std::endl;
     }
+    return false;
+}
+
+void notes::ui::CliClient::addNote()
+{
+
+}
+
+void notes::ui::CliClient::deleteNote()
+{
+
+}
+
+void notes::ui::CliClient::listNotes()
+{
+
+}
+
+void notes::ui::CliClient::searchNotes()
+{
+
 }

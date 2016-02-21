@@ -17,7 +17,7 @@ private:
 
 public:
 
-    inline int id()
+    inline int id() const
     {
         return m_id;
     }
@@ -27,7 +27,7 @@ public:
         m_id = id;
     }
 
-    inline const std::string& title()
+    inline const std::string& title() const
     {
         return m_title;
     }
@@ -37,7 +37,7 @@ public:
         m_title = title;
     }
 
-    inline const std::string& content()
+    inline const std::string& content() const
     {
         return m_content;
     }
