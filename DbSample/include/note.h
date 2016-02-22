@@ -16,7 +16,6 @@ class Note {
     time_t m_reminder;
 
   public:
-    inline void id(const int id) { m_id = id; }
     inline int id() const { return m_id; }
 
     inline void id(const int id) { m_id = id; }

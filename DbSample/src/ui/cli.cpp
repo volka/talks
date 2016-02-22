@@ -8,8 +8,6 @@ notes::ui::CliClient::CliClient(
     std::shared_ptr<notes::db::NotebookDatabase> &db)
     : db_(db) {}
 
-notes::ui::CliClient::~CliClient() {}
-
 void notes::ui::CliClient::run() {
     bool abort = false;
     while (!abort) {
