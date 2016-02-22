@@ -8,13 +8,13 @@ namespace ui {
 
 class CliClient : public Client {
 
-public:
-    CliClient(std::shared_ptr<db::NotebookDatabase>& db);
+  public:
+    CliClient(std::shared_ptr<db::NotebookDatabase> &db);
     virtual ~CliClient();
 
     virtual void run();
 
-private:
+  private:
     void printMenu();
     bool processInput();
 

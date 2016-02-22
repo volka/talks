@@ -4,25 +4,21 @@
 
 notes::ui::CliClient::~CliClient() {}
 
-notes::ui::CliClient::CliClient(std::shared_ptr<notes::db::NotebookDatabase> &db)
-    : db_(db)
-{}
+notes::ui::CliClient::CliClient(
+    std::shared_ptr<notes::db::NotebookDatabase> &db)
+    : db_(db) {}
 
-notes::ui::CliClient::~CliClient()
-{
+notes::ui::CliClient::~CliClient() {}
+
+void notes::ui::CliClient::run() {
+    bool abort = false;
+    while (!abort) {
+        printMenu();
+        abort = processInput();
+    }
 }
 
-void notes::ui::CliClient::run()
-{
-   bool abort = false;
-   while (!abort) {
-      printMenu();
-      abort = processInput();
-   }
-}
-
-void notes::ui::CliClient::printMenu()
-{
+void notes::ui::CliClient::printMenu() {
     using namespace std;
     cout << endl;
     cout << "-----------------------" << endl;
@@ -37,8 +33,7 @@ void notes::ui::CliClient::printMenu()
 }
 
 // if true, quit the cli loop
-bool notes::ui::CliClient::processInput()
-{
+bool notes::ui::CliClient::processInput() {
     char input;
     std::cin >> input;
     switch (input) {
@@ -63,22 +58,10 @@ bool notes::ui::CliClient::processInput()
     return false;
 }
 
-void notes::ui::CliClient::addNote()
-{
+void notes::ui::CliClient::addNote() {}
 
-}
+void notes::ui::CliClient::deleteNote() {}
 
-void notes::ui::CliClient::deleteNote()
-{
+void notes::ui::CliClient::listNotes() {}
 
-}
-
-void notes::ui::CliClient::listNotes()
-{
-
-}
-
-void notes::ui::CliClient::searchNotes()
-{
-
-}
+void notes::ui::CliClient::searchNotes() {}
