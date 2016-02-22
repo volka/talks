@@ -38,7 +38,7 @@ int get_id(PGresult* res)
 PgDatabase::PgDatabase(const std::string& connection_info)
         : connection_info_(connection_info)
 {
-    connection_.reset(PQconnectdb(connection_info_.c_str()));
+    connection_ = pg_conn_ptr{PQconnectdb(connection_info_.c_str()), PQfinish};
 
     if (PQstatus(connection_.get()) != CONNECTION_OK) {
         throw notes::db::DatabaseException("Could not connect to PostgreSQL DB: "
