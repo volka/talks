@@ -1,36 +1,31 @@
 #include "db_facade.h"
 
-#include "pg/pq.h"
+#include "sqlite3/sqlite_db.h"
+#include "pg/pg_db.h"
+
+#include <memory>
 
 std::unique_ptr<notes::db::NotebookDatabase>
-notes::db::connect(const std::string &dbtype, const std::string &config) {
-  if (dbtype == "sqlite3") {
-  }
-  if (dbtype == "postgres") {
-  }
-  if (dbtype == "qtsql-pg") {
-  }
-  if (dbtype == "qtsql-sqlite") {
-  }
-  if (dbtype == "wtdb-pg") {
-  }
-  if (dbtype == "wtdb-sqlite") {
-  }
-  if (dbtype == "sqlpp-pg") {
-  }
-  if (dbtype == "sqlpp-sqlite")
-
-    switch (type) {
-    case DbType::sqlite3:
-      break;
-    case DbType::libpq:
-      return std::make_unique<>();
-      break;
-    case DbType::qtsql:
-      break;
-    case DbType::wt_db:
-      break;
-    case DbType::sqlpp11:
-      break;
+notes::db::NotebookDatabase::create(const std::string& dbtype, const std::string& config)
+{
+    if (dbtype == Types::sqlite) {
+        return std::make_unique<notes::db::Sqlite3Database>(config);
     }
+    if (dbtype == Types::postgres) {
+        return std::make_unique<notes::db::PgDatabase>(config);
+    }
+    if (dbtype == Types::qtsql) {
+
+    }
+    if (dbtype == Types::wt_db) {
+
+    }
+    if (dbtype == Types::sqlpp) {
+
+    }
+
+    throw DatabaseException("I don't know how to use a '" + dbtype + "' database...");
+    return nullptr;
 }
+
+notes::db::NotebookDatabase::~NotebookDatabase() {}

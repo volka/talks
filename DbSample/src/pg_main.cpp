@@ -96,34 +96,41 @@ void setup(PGconn *conn) {
     throw std::runtime_error("creating table tags_nm failed");
 }
 
-void free_char(char *test) { PQfreemem((void *)test); }
+void free_char(char* test) {
+    PQfreemem((void*) test);
+}
 
-int insert_note(PGconn *conn, const std::string &title,
-                const std::string content, int notebook, time_t reminder) {
-  auto title_str = std::make_shared<char>(
-      PQescapeLiteral(conn, title.c_str(), title.size()), PQfreemem);
-  auto content_str = std::make_shared<char>(
-      PQescapeLiteral(conn, content.c_str(), content.size()), PQfreemem);
+int insert_note(PGconn* conn,
+                const std::string& title,
+                const std::string content,
+                int notebook,
+                time_t reminder)
+{
+    auto title_str   = std::shared_ptr<char>(
+                            PQescapeLiteral(conn, title.c_str(), title.size()),
+                            PQfreemem);
+    auto content_str = std::shared_ptr<char>(
+                            PQescapeLiteral(conn, content.c_str(), content.size()),
+                            PQfreemem);
 
-  // formatting the reminder correctly, ignoring timezones
-  std::string reminder_str = DEFAULT_TIME;
-  std::tm tmp;
-  localtime_r(&reminder, &tmp);
+    // formatting the reminder correctly, ignoring timezones
+    std::string reminder_str = DEFAULT_TIME;
+    std::tm tmp;
+    localtime_r(&reminder, &tmp);
 
-  if (strftime(const_cast<char *>(reminder_str.data()), sizeof(reminder_str),
-               "%F %T", &tmp) == 0) {
-    reminder_str = DEFAULT_TIME;
-  }
+    if (strftime(const_cast<char*>(reminder_str.data()), sizeof(reminder_str), "%F %T", &tmp) == 0) {
+        reminder_str = DEFAULT_TIME;
+    }
 
-  std::stringstream stmt;
-  stmt << "INSERT INTO notes(title, content, notebook, reminder) VALUES("
-       << title_str.get() << ", " << content_str.get() << ", " << notebook
-       << ", '" << reminder_str << "') RETURNING id";
-  auto result = pg_result_ptr(PQexec(conn, stmt.str().c_str()), PQclear);
-  if (!checkResult(conn, result.get(), PGRES_TUPLES_OK))
-    throw std::runtime_error("inserting note " + title + " failed");
+    std::stringstream stmt;
+    stmt << "INSERT INTO notes(title, content, notebook, reminder) VALUES(" << title_str.get()
+         << ", " << content_str.get() << ", " << notebook
+         << ", '" << reminder_str << "') RETURNING id";
+    auto result = pg_result_ptr( PQexec(conn, stmt.str().c_str()), PQclear);
+    if (!checkResult(conn, result.get(), PGRES_TUPLES_OK))
+        throw std::runtime_error("inserting note " + title + " failed");
 
-  return get_id(result.get());
+    return get_id(result.get());
 }
 
 /*

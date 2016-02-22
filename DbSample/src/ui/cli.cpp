@@ -4,12 +4,21 @@
 
 notes::ui::CliClient::~CliClient() {}
 
-void notes::ui::CliClient::run() {
-  bool abort = false;
-  while (!abort) {
-    printMenu();
-    abort = processInput();
-  }
+notes::ui::CliClient::CliClient(std::shared_ptr<notes::db::NotebookDatabase> &db)
+    : db_(db)
+{}
+
+notes::ui::CliClient::~CliClient()
+{
+}
+
+void notes::ui::CliClient::run()
+{
+   bool abort = false;
+   while (!abort) {
+      printMenu();
+      abort = processInput();
+   }
 }
 
 void notes::ui::CliClient::printMenu() {
@@ -23,26 +32,49 @@ void notes::ui::CliClient::printMenu() {
   cout << ">> ";
 }
 
-bool notes::ui::CliClient::processInput() {
-  char input;
-  std::cin >> input;
-  switch (input) {
-  case 'a':
-    addNote();
-    break;
-  case 'l':
-    listNotes();
-    break;
-  case 's':
-    searchNotes();
-    break;
-  case 'd':
-    deleteNote();
-    break;
-  case 'q':
-    return true;
-    break;
-  default:
-    std::cout << "Invalid input, please try again ..." << endl;
-  }
+// if true, quit the cli loop
+bool notes::ui::CliClient::processInput()
+{
+    char input;
+    std::cin >> input;
+    switch (input) {
+    case 'a':
+        addNote();
+        break;
+    case 'l':
+        listNotes();
+        break;
+    case 's':
+        searchNotes();
+        break;
+    case 'd':
+        deleteNote();
+        break;
+    case 'q':
+        return true;
+        break;
+    default:
+        std::cout << "Invalid input, please try again ..." << std::endl;
+    }
+    return false;
+}
+
+void notes::ui::CliClient::addNote()
+{
+
+}
+
+void notes::ui::CliClient::deleteNote()
+{
+
+}
+
+void notes::ui::CliClient::listNotes()
+{
+
+}
+
+void notes::ui::CliClient::searchNotes()
+{
+
 }

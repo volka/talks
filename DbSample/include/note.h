@@ -16,17 +16,37 @@ private:
   time_t m_reminder;
 
 public:
-  inline int id() { return m_id; }
-
   inline void id(const int id) { m_id = id; }
+    inline int id() const
+    {
+        return m_id;
+    }
 
-  inline const std::string &title() { return m_title; }
+	inline void id(const int id)
+	{
+		m_id = id;
+	}
 
-  inline void title(const std::string &title) { m_title = title; }
+    inline const std::string& title() const
+    {
+        return m_title;
+    }
 
-  inline const std::string &content() { return m_content; }
+    inline void title(const std::string& title)
+    {
+        m_title = title;
+    }
 
-  inline void content(const std::string &content) { m_content = content; }
+    inline const std::string& content() const
+    {
+        return m_content;
+    }
+
+    inline void content(const std::string& content)
+    {
+        m_content = content;
+    }
+
 };
 
 } // model
