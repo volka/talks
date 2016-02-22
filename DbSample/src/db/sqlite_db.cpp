@@ -10,7 +10,7 @@ Sqlite3Database::Sqlite3Database(const std::string& connection_info)
     sqlite3* conn;
     int result = sqlite3_open(connection_info.c_str(), &conn);
     if (result == SQLITE_OK) {
-        connection_.reset(conn);
+        connection_ = sqlite_conn_ptr{conn, sqlite3_close};
     } else {
         throw DatabaseException("Error opening SQLite database " + connection_info
                                 + " (error: " + std::to_string(result) + ")");
@@ -22,13 +22,27 @@ Sqlite3Database::~Sqlite3Database()
 
 void Sqlite3Database::setupDb()
 {
-    auto result = prepareStatement("DROP TABLE IF EXISTS tags_nm, notes, tags, notebooks;");
+    auto result = prepareStatement("DROP TABLE IF EXISTS tags_nm;");
+    if (!executeStatement(result))
+        throw std::runtime_error("dropping table notebooks failed");
+
+    result = prepareStatement("DROP TABLE IF EXISTS notes;");
+    if (!executeStatement(result))
+        throw std::runtime_error("dropping table notebooks failed");
+
+    result = prepareStatement("DROP TABLE IF EXISTS tags;");
+    if (!executeStatement(result))
+        throw std::runtime_error("dropping table tags failed");
+
+    result = prepareStatement("DROP TABLE IF EXISTS notebooks;");
+    if (!executeStatement(result))
+        throw std::runtime_error("dropping table tags failed");
 
     if (!executeStatement(result))
         throw std::runtime_error("dropping pre-existing tables failed");
 
     result = prepareStatement("CREATE TABLE notebooks ("
-                              "id		serial primary key,"
+                              "id		integer primary key,"
                               "title	varchar(255)"
                               ")");
 
@@ -36,7 +50,7 @@ void Sqlite3Database::setupDb()
         throw std::runtime_error("creating table notebooks failed");
 
     result = prepareStatement("CREATE TABLE tags ("
-                              "id	 	serial primary key,"
+                              "id	 	integer primary key,"
                               "title	varchar(255)"
                               ")");
 
@@ -44,7 +58,7 @@ void Sqlite3Database::setupDb()
         throw std::runtime_error("creating table tags failed");
 
     result = prepareStatement("CREATE TABLE notes ("
-                              "id      	serial primary key,"
+                              "id      	integer primary key,"
                               "title   	varchar(255),"
                               "content		text,"
                               "notebook 	int references notebooks(id),"
@@ -56,8 +70,8 @@ void Sqlite3Database::setupDb()
         throw std::runtime_error("creating table notes failed");
 
     result = prepareStatement("CREATE TABLE tags_nm ("
-                              "tag_id		serial references tags(id),"
-                              "note_id	serial references notes(id)"
+                              "tag_id		integer references tags(id),"
+                              "note_id	integer references notes(id)"
                               ")");
 
     if (!executeStatement(result))
@@ -75,8 +89,8 @@ sqlite_stmt_ptr Sqlite3Database::prepareStatement(const std::string &stmt)
     // connection, statement string, length, OUT stmt pointer, ignored "unused part of stmt"
     int res = sqlite3_prepare_v2(connection_.get(), stmt.c_str(), static_cast<int>(stmt.size()),
                                  &stmt_ptr, nullptr);
-    checkResult(res, SQLITE_OK, "Error preparing statement", true);
-    return sqlite_stmt_ptr{stmt_ptr};
+    checkResult(res, SQLITE_OK, "Error preparing statement " + stmt, true);
+    return sqlite_stmt_ptr{stmt_ptr, sqlite3_finalize};
 }
 
 bool Sqlite3Database::executeStatement(sqlite_stmt_ptr& stmt)
@@ -113,13 +127,13 @@ void Sqlite3Database::fillDb()
 
 }
 
-int Sqlite3Database::newNotebook(const std::__cxx11::string &title)
+int Sqlite3Database::newNotebook(const std::string &title)
 {
     std::cout << "new notebook " << title << std::endl;
     return 0;
 }
 
-void Sqlite3Database::renameNotebook(const int notebook_id, const std::__cxx11::string &new_title)
+void Sqlite3Database::renameNotebook(const int notebook_id, const std::string &new_title)
 {
 
     std::cout << "rename notebook " << notebook_id << " to " << new_title << std::endl;

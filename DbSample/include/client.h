@@ -17,8 +17,8 @@ public:
     virtual void run() = 0;
 
     struct Types {
-        static constexpr auto cli{"cli"};
-        static constexpr auto qt {"qt"};
+        static constexpr auto cli = "cli";
+        static constexpr auto qt = "qt";
     };
 
     // factory method for clients
