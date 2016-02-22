@@ -27,17 +27,17 @@ public:
 
     // constants for database types
     struct Types {
-        static constexpr auto sqlite{"sqlite"};
-        static constexpr auto postgres{"postgres"};
-        static constexpr auto qtsql{"qtsql"};
-        static constexpr auto wt_db{"wtdb"};
-        static constexpr auto sqlpp{"sqlpp"};
+        static constexpr auto sqlite = "sqlite";
+        static constexpr auto postgres = "postgres";
+        static constexpr auto qtsql = "qtsql";
+        static constexpr auto wt_db = "wtdb";
+        static constexpr auto sqlpp = "sqlpp";
     };
 
     // factory for DB connections, call with Db type
     static std::unique_ptr<NotebookDatabase> create(const std::string& type, const std::string& config);
 
-    virtual ~NotebookDatabase() = 0;
+    virtual ~NotebookDatabase();
 
     // helper functions to initialize DB and seed with some sample data
     virtual void setupDb() = 0;

@@ -21,15 +21,19 @@ void notes::ui::CliClient::run()
    }
 }
 
-void notes::ui::CliClient::printMenu() {
-  using namespace std;
-  cout << "--- Notes Main Menu ---" << endl << endl;
-  cout << "a: Add Note" << endl;
-  cout << "l: List Notes" << endl;
-  cout << "s: Search Notes" << endl;
-  cout << "d: Delete Note" << endl;
-  cout << "q: Quit" << endl;
-  cout << ">> ";
+void notes::ui::CliClient::printMenu()
+{
+    using namespace std;
+    cout << endl;
+    cout << "-----------------------" << endl;
+    cout << "=== Notes Main Menu ===" << endl;
+    cout << "-----------------------" << endl << endl;
+    cout << "a: Add Note" << endl;
+    cout << "l: List Notes" << endl;
+    cout << "s: Search Notes" << endl;
+    cout << "d: Delete Note" << endl;
+    cout << "q: Quit" << endl << endl;
+    cout << ">> ";
 }
 
 // if true, quit the cli loop
