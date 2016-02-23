@@ -18,6 +18,7 @@ Client::create(const std::string &type,
         return std::make_unique<CliClient>(db, argc, args);
     }
     if (type == Client::Types::qt) {
+        return std::make_unique<QtClient>(db, argc, args);
     }
     throw UiException("Invalid UI type, i don't know how to " + type);
     return nullptr;
