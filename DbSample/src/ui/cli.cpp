@@ -5,6 +5,8 @@
 namespace notes {
 namespace ui {
 
+using namespace std;
+
 CliClient::~CliClient() {}
 
 CliClient::CliClient(std::shared_ptr<notes::db::NotebookDatabase> &db, int argc,
@@ -12,10 +14,10 @@ CliClient::CliClient(std::shared_ptr<notes::db::NotebookDatabase> &db, int argc,
     : db_(db), argc_(argc), args_(args) {}
 
 int CliClient::run() {
-    bool abort = false;
-    while (!abort) {
+    int current_notebook = 0;
+    while (current_notebook >= 0) {
         printMenu();
-        abort = processInput();
+        current_notebook = processInput();
     }
     return 0;
 }
@@ -39,10 +41,12 @@ void CliClient::printMenu() {
 }
 
 // if true, quit the cli loop
-bool CliClient::processInput() {
+int CliClient::processInput() {
     char input;
     std::cin >> input;
     switch (input) {
+    case 'o':
+        openNotebook();
     case 'a':
         addNote();
         break;
@@ -64,7 +68,24 @@ bool CliClient::processInput() {
     return false;
 }
 
-void CliClient::listNotebooks() { auto notebooks = db_->listNotebooks(); }
+int CliClient::openNotebook() {
+    listNotebooks();
+    cout << "Select notebook id: " << endl;
+    cout << ">> ";
+    int notebook_id;
+    cin >> notebook_id;
+    return notebook_id;
+}
+
+void CliClient::listNotebooks() {
+    auto notebooks = db_->listNotebooks();
+    cout << "Found " << notebooks.size() << " noteoboks:" << endl;
+    cout << "-----------------------" << endl << endl;
+    for (const auto &notebook : notebooks) {
+        cout << notebook.id() << ": " << notebook.title() << endl;
+    }
+    cout << "-----------------------" << endl << endl;
+}
 
 void CliClient::addNote() {}
 
@@ -72,9 +93,25 @@ void CliClient::deleteNote() {}
 
 void CliClient::listNotes() {
     auto notes = db_->loadNotesFromNotebook(current_notebook_);
+    cout << "Found " << notes.size() << " notes: " << endl;
+    cout << "-----------------------" << endl << endl;
+    for (const auto &note : notes) {
+        printNote(note);
+    }
+    cout << "-----------------------" << endl << endl;
 }
 
 void CliClient::searchNotes() {}
+
+void CliClient::printNote(const notes::model::Note &note) {
+    cout << "ID      : " << note.id() << endl;
+    cout << "Title   : " << note.title() << endl;
+    cout << "Changed : " << note.lastChanged() << endl;
+    cout << "Reminder: " << note.reminder() << endl;
+    cout << "......................." << endl;
+    cout << note.content() << endl;
+    cout << "-----------------------" << endl << endl;
+}
 
 } // ns ui
 } // ns notes

@@ -16,13 +16,16 @@ class CliClient : public Client {
 
   private:
     void printMenu();
-    bool processInput();
+    // notebook ID of current notebook, or -1 for exit
+    int processInput();
 
+    int openNotebook();
     void listNotebooks();
     void addNote();
     void deleteNote();
     void listNotes();
     void searchNotes();
+    void printNote(const notes::model::Note &);
 
     constexpr static int kDefaultNotebook = 0;
 

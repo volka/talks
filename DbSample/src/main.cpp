@@ -15,7 +15,8 @@ int main(int argc, char **argv) {
 
     if (argc < 4) {
         cout << "Usage: notes <INTERFACE> <DB_TYPE> \"<CONNECTION STRING>\" "
-                "--demo" << endl;
+                "--demo"
+             << endl;
         cout << " - INTERFACE: cli , qt" << endl;
         cout << " - DB_TYPE  : sqlite, pg ..." << endl;
         cout << " - CONN STR : db specific, e.g. mydb.sqlite for SQLite3"
