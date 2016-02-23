@@ -14,7 +14,7 @@ class UiException : public std::domain_error {
 class Client {
   public:
     virtual ~Client() = 0;
-    virtual void run() = 0;
+    virtual int run() = 0;
 
     struct Types {
         static constexpr auto cli = "cli";
@@ -23,7 +23,8 @@ class Client {
 
     // factory method for clients
     static std::unique_ptr<Client>
-    create(const std::string &type, std::shared_ptr<db::NotebookDatabase> &db);
+    create(const std::string &type, std::shared_ptr<db::NotebookDatabase> &db,
+           int argc, char **args);
 };
 
 } // ui

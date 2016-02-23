@@ -44,11 +44,12 @@ class NotebookDatabase {
     virtual void fillDb() = 0;
 
     // create a notebook, return the generated ID
+    virtual std::vector<Notebook> listNotebooks() = 0;
     virtual int newNotebook(const std::string &title) = 0;
     virtual void renameNotebook(const int notebook_id,
                                 const std::string &new_title) = 0;
     virtual void deleteNotebook(const int id) = 0;
-    virtual std::unique_ptr<Notebook> loadNotebook(const int notebook_id) = 0;
+    virtual Notebook loadNotebook(const int notebook_id) = 0;
 
     // create a new note
     virtual void newNote(Note &) = 0;
@@ -56,7 +57,7 @@ class NotebookDatabase {
     virtual void addTag(const int note_id, const int tag_id) = 0;
     virtual void removeTag(const int note_id, const int tag_id) = 0;
     virtual void deleteNote(int id) = 0;
-    virtual std::unique_ptr<Note> loadNote(int note_id) = 0;
+    virtual Note loadNote(int note_id) = 0;
 
     virtual int newTag(const std::string &title) = 0;
     virtual int findTag(const std::string &title) = 0;

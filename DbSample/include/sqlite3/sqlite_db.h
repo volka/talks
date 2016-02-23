@@ -36,11 +36,12 @@ class Sqlite3Database : public NotebookDatabase {
     virtual void fillDb();
 
     // create a notebook, return the generated ID
+    virtual std::vector<Notebook> listNotebooks();
     virtual int newNotebook(const std::string &title);
     virtual void renameNotebook(const int notebook_id,
                                 const std::string &new_title);
     virtual void deleteNotebook(const int id);
-    virtual std::unique_ptr<Notebook> loadNotebook(const int notebook_id);
+    virtual Notebook loadNotebook(const int notebook_id);
 
     // create a new note
     virtual void newNote(Note &);
@@ -48,7 +49,7 @@ class Sqlite3Database : public NotebookDatabase {
     virtual void addTag(const int note_id, const int tag_id);
     virtual void removeTag(const int note_id, const int tag_id);
     virtual void deleteNote(int id);
-    virtual std::unique_ptr<Note> loadNote(int note_id);
+    virtual Note loadNote(int note_id);
 
     virtual int newTag(const std::string &title);
     virtual int findTag(const std::string &title);

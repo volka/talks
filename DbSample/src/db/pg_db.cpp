@@ -52,6 +52,10 @@ void PgDatabase::setupDb() {}
 
 void PgDatabase::fillDb() {}
 
+std::vector<Notebook> PgDatabase::listNotebooks() {
+    return std::vector<Notebook>{};
+}
+
 int PgDatabase::newNotebook(const std::string &title) {
     std::cout << "new notebook " << title << std::endl;
     return 0;
@@ -68,9 +72,9 @@ void PgDatabase::deleteNotebook(const int id) {
     std::cout << "deleting notebook " << id << std::endl;
 }
 
-std::unique_ptr<Notebook> PgDatabase::loadNotebook(const int notebook_id) {
+Notebook PgDatabase::loadNotebook(const int notebook_id) {
     std::cout << "loading notebook " << notebook_id << std::endl;
-    return std::make_unique<Notebook>();
+    return Notebook{};
 }
 
 void PgDatabase::newNote(Note &) {
@@ -94,9 +98,9 @@ void PgDatabase::deleteNote(int id) {
     std::cout << "deleting note " << id << std::endl;
 }
 
-std::unique_ptr<Note> PgDatabase::loadNote(int note_id) {
+Note PgDatabase::loadNote(int note_id) {
     std::cout << "loading note " << note_id << std::endl;
-    return std::make_unique<Note>();
+    return Note{};
 }
 
 int PgDatabase::newTag(const std::string &title) {

@@ -1,11 +1,24 @@
 project(DbSample)
 
 cmake_minimum_required(VERSION 3.0)
-add_definitions(-std=gnu++14)
+
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Instruct CMake to run moc automatically when needed.
+set(CMAKE_AUTOMOC ON)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic -Wconversion")
+
+add_definitions(-std=gnu++14)
 find_package(PostgreSQL 9.4 REQUIRED)
 find_package(SQLite3 REQUIRED)
 
+# Find the QtWidgets library
+#find_package(Qt5Core)
+#find_package(Qt5Quick2)
+#find_package(Qt5Widgets)
+
+find_package(Qt5 COMPONENTS Quick Core Network)
 INCLUDE_DIRECTORIES(${PostgreSQL_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(include)
@@ -31,19 +44,20 @@ set(SRC_LIST ${SRC_LIST}
     # UI code
     include/client.h
     src/ui/client.cpp
-
-    # CLI
-    include/ui/cli.h
-    src/ui/cli.cpp
-
-    # QT
-    include/ui/qt.h
-    src/ui/qt.cpp
 )
 
-add_executable(notebook src/main.cpp ${SRC_LIST})
+set(CLI_CLIENT include/ui/cli.h src/ui/cli.cpp)
+set(QT_CLIENT include/ui/qt.h src/ui/qt.cpp)
+
+add_executable(notebook src/main.cpp ${SRC_LIST} ${QT_CLIENT} ${CLI_CLIENT} ${RESOURCES})
+
+qt5_add_resources(RESOURCES resources/notes.qrc)
+qt5_use_modules(notebook Quick Core)
+
 target_link_libraries(notebook ${PostgreSQL_LIBRARIES})
 target_link_libraries(notebook ${SQLITE3_LIBRARIES})
+target_link_libraries(notebook Qt5::Core)
+target_link_libraries(notebook Qt5::Quick)
 
 #add_executable(notebook_pg src/pg_main.cpp ${SRC_LIST})
 #target_link_libraries(notebook_pg ${PostgreSQL_LIBRARIES})
