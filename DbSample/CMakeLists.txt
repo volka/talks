@@ -9,6 +9,8 @@ set(CMAKE_AUTOMOC ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic -Wconversion")
 
+set(CMAKE_AUTORCC ON)
+
 add_definitions(-std=gnu++14)
 find_package(PostgreSQL 9.4 REQUIRED)
 find_package(SQLite3 REQUIRED)
@@ -23,7 +25,7 @@ INCLUDE_DIRECTORIES(${PostgreSQL_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(include)
 
-set(SRC_LIST ${SRC_LIST}
+set(SRC_LIST
     # model
     include/tag.h
     include/note.h
@@ -48,10 +50,14 @@ set(SRC_LIST ${SRC_LIST}
 
 set(CLI_CLIENT include/ui/cli.h src/ui/cli.cpp)
 set(QT_CLIENT include/ui/qt.h src/ui/qt.cpp)
-
-add_executable(notebook src/main.cpp ${SRC_LIST} ${QT_CLIENT} ${CLI_CLIENT} ${RESOURCES})
+set(QML_FILES resources/qtclient.qml)
 
 qt5_add_resources(RESOURCES resources/notes.qrc)
+set_source_files_properties(${RESOURCES} PROPERTIES GENERATED ON)
+
+add_executable(notebook src/main.cpp ${SRC_LIST} ${QT_CLIENT} ${CLI_CLIENT}
+                                     ${RESOURCES} ${QML_FILES})
+
 qt5_use_modules(notebook Quick Core)
 
 target_link_libraries(notebook ${PostgreSQL_LIBRARIES})

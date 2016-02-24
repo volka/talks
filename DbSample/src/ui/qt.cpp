@@ -17,7 +17,7 @@ QtClient::QtClient(std::shared_ptr<notes::db::NotebookDatabase> &db, int argc,
 int QtClient::run() {
     QQuickView view;
     view.setResizeMode(QQuickView::SizeRootObjectToView);
-    view.setSource(QUrl("qrc:///scenegraph/openglunderqml/main.qml"));
+    view.setSource(QUrl("qrc:///qml/qtclient.qml"));
     view.show();
 
     return app_->exec();

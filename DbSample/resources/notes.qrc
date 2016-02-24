@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>qtclient.qml</file>
+    </qresource>
+    <qresource prefix="/icons"/>
+</RCC>
