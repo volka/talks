@@ -6,9 +6,9 @@
 #include <memory>
 #include <vector>
 
-#include "note.h"
-#include "notebook.h"
-#include "tag.h"
+#include "model/note.h"
+#include "model/notebook.h"
+#include "model/tag.h"
 
 namespace notes {
 

@@ -13,16 +13,20 @@ namespace db {
 const char *DEFAULT_TIME = "0000-00-00 00:00:00";
 
 // helper for result validation
-bool checkResult(PGconn *conn, PGresult *res, int expected = PGRES_COMMAND_OK,
-                 const std::string &msg = "Command failed") {
+bool
+PgDatabase::checkResult(PGresult *res, int expected, const std::string &msg)
+{
     if (res == nullptr || PQresultStatus(res) != expected) {
-        std::cout << msg << ": " << PQerrorMessage(conn);
+        if (connection_) {
+            std::cout << msg << ": " << PQerrorMessage(connection_.get());
+        }
         return false;
     }
     return true;
 }
 
-int get_id(PGresult *res) {
+int
+PgDatabase::get_id(PGresult *res) {
     int fields = PQnfields(res);
     if (fields != 1)
         throw std::runtime_error(
@@ -48,9 +52,62 @@ PgDatabase::PgDatabase(const std::string &connection_info)
 
 PgDatabase::~PgDatabase() {}
 
-void PgDatabase::setupDb() {}
+void PgDatabase::setupDb() {
 
-void PgDatabase::fillDb() {}
+    PGconn* conn = connection_.get();
+
+    auto result = pg_result_ptr(
+        PQexec(conn, "DROP TABLE IF EXISTS tags_nm, notes, tags, notebooks;"),
+        PQclear);
+
+    if (!checkResult(result.get()))
+        throw std::runtime_error("dropping pre-existing tables failed");
+
+    result = pg_result_ptr(PQexec(conn, "CREATE TABLE notebooks ("
+                                        "id		serial primary key,"
+                                        "title	varchar(255)"
+                                        ")"),
+                           PQclear);
+    if (!checkResult(result.get()))
+        throw std::runtime_error("creating table notebooks failed");
+
+    result = pg_result_ptr(PQexec(conn, "CREATE TABLE tags ("
+                                        "id	 	serial primary key,"
+                                        "title	varchar(255)"
+                                        ")"),
+                           PQclear);
+
+    if (!checkResult(result.get()))
+        throw std::runtime_error("creating table tags failed");
+
+    result = pg_result_ptr(
+        PQexec(conn, "CREATE TABLE notes ("
+                     "id      	serial primary key,"
+                     "title   	varchar(255),"
+                     "content		text,"
+                     "notebook 	int references notebooks(id),"
+                     "last_change timestamp DEFAULT CURRENT_TIMESTAMP,"
+                     "reminder	timestamp"
+                     ")"),
+        PQclear);
+
+    if (!checkResult(result.get()))
+        throw std::runtime_error("creating table notes failed");
+
+    result = pg_result_ptr(
+        PQexec(conn, "CREATE TABLE tags_nm ("
+                     "tag_id		serial references tags(id),"
+                     "note_id	serial references notes(id)"
+                     ")"),
+        PQclear);
+
+    if (!checkResult(result.get()))
+        throw std::runtime_error("creating table tags_nm failed");
+}
+
+void PgDatabase::fillDb() {
+
+}
 
 std::vector<Notebook> PgDatabase::listNotebooks() {
     return std::vector<Notebook>{};

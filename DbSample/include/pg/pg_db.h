@@ -27,31 +27,35 @@ class PgDatabase : public NotebookDatabase {
     virtual ~PgDatabase();
 
     // helper functions to initialize DB and seed with some sample data
-    virtual void setupDb();
-    virtual void fillDb();
+    virtual void setupDb() override;
+    virtual void fillDb() override;
 
     // create a notebook, return the generated ID
-    virtual std::vector<Notebook> listNotebooks();
-    virtual int newNotebook(const std::string &title);
+    virtual std::vector<Notebook> listNotebooks() override;
+    virtual int newNotebook(const std::string &title) override;
     virtual void renameNotebook(const int notebook_id,
-                                const std::string &new_title);
-    virtual void deleteNotebook(const int id);
-    virtual Notebook loadNotebook(const int notebook_id);
+                                const std::string &new_title) override;
+    virtual void deleteNotebook(const int id) override;
+    virtual Notebook loadNotebook(const int notebook_id) override;
 
     // create a new note
-    virtual void newNote(Note &);
-    virtual void updateNote(const Note &);
-    virtual void addTag(const int note_id, const int tag_id);
-    virtual void removeTag(const int note_id, const int tag_id);
-    virtual void deleteNote(int id);
-    virtual Note loadNote(int note_id);
+    virtual void newNote(Note &) override;
+    virtual void updateNote(const Note &) override;
+    virtual void addTag(const int note_id, const int tag_id) override;
+    virtual void removeTag(const int note_id, const int tag_id) override;
+    virtual void deleteNote(int id) override;
+    virtual Note loadNote(int note_id) override;
 
-    virtual int newTag(const std::string &title);
-    virtual int findTag(const std::string &title);
-    virtual void deleteTag(const int tag_id);
+    virtual int newTag(const std::string &title) override;
+    virtual int findTag(const std::string &title) override;
+    virtual void deleteTag(const int tag_id) override;
 
-    virtual std::vector<Note> loadNotesFromNotebook(int notebook_id);
-    virtual std::vector<Note> loadNotesForTag(int tag_id);
+    virtual std::vector<Note> loadNotesFromNotebook(int notebook_id) override;
+    virtual std::vector<Note> loadNotesForTag(int tag_id) override;
+private:
+    bool checkResult(PGresult *res, const int expect = PGRES_COMMAND_OK,
+                     const std::string& msg = "Command failed");
+    int get_id(PGresult *res);
 };
 
 } // db

@@ -27,9 +27,9 @@ INCLUDE_DIRECTORIES(include)
 
 set(SRC_LIST
     # model
-    include/tag.h
-    include/note.h
-    include/notebook.h
+    include/model/tag.h
+    include/model/note.h
+    include/model/notebook.h
 
     # DB interface code
     include/db_facade.h
@@ -42,6 +42,10 @@ set(SRC_LIST
     # SQLite3 interface
     include/sqlite3/sqlite_db.h
     src/db/sqlite_db.cpp
+
+    # QtSQL interface
+    include/qtsql/qt_db.h
+    src/db/qt_db.cpp
 
     # UI code
     include/client.h

@@ -2,5 +2,8 @@
     <qresource prefix="/qml">
         <file>qtclient.qml</file>
     </qresource>
-    <qresource prefix="/icons"/>
+    <qresource prefix="/icons">
+        <file>icons/list-add-symbolic.symbolic.png</file>
+        <file>icons/list-remove-symbolic.symbolic.png</file>
+    </qresource>
 </RCC>

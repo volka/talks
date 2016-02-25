@@ -1,36 +1,116 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.3
+import QtQuick.Layouts 1.2
 
-Item {
-    id: item1
-    TextArea {
-        id: noteContent
-        x: 200
-        y: 165
-    }
+ApplicationWindow {
+    id: mainWindow
+    visible: true
 
-    TextField {
-        id: noteTitle
-        x: 269
-        y: 137
-        placeholderText: qsTr("Text Field")
-    }
+    GridLayout {
+        id: mainLayout
+        rows: 2
+        columns: 2
+        anchors.fill: parent
 
-    GroupBox {
-        id: noteList
-        x: 80
-        y: 90
-        width: 107
-        height: 300
-        title: qsTr("Group Box")
-    }
+        RowLayout {
+            id: notebookLayout
+            width: 100
+            height: 100
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            Layout.columnSpan: 2
 
-    ComboBox {
-        id: notebookList
-        x: 258
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.topMargin: 62
+            ComboBox {
+                id: notebookList
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+            }
+
+            ToolButton {
+                id: addNotebook
+                text: "Add Notebook"
+                iconSource: "/icons/list-add-symbolic.symbolic.png"
+            }
+
+            ToolButton {
+                id: delNotebook
+                text: "Delete Notebook"
+                iconSource: "/icons/list-remove-symbolic.symbolic.png"
+            }
+        }
+
+        Component {
+            id: notesListHeader
+            Text {
+                font.bold: true
+                text: qsTr("Notes")
+            }
+        }
+
+        ListModel {
+            id: noteListModel
+
+            ListElement {
+                name: qsTr("Einkaufsliste")
+            }
+            ListElement {
+                name: qsTr("Vortrag SQL")
+            }
+        }
+
+        ListView {
+            id: noteList
+            model: noteListModel
+            header: notesListHeader
+            delegate: Component {
+                Text { text: name }
+            }
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            width: 100
+            footer: Component {
+            ColumnLayout {
+                    id: noteListLayout
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                    Layout.fillHeight: true
+                    Button {
+                        id: addNote
+                        text: "Add Note"
+                        iconSource: "../icons/list-add-symbolic.symbolic.png"
+                        Layout.fillWidth: true
+                    }
+
+                    Button {
+                        id: delNote
+                        text: "Delete Note"
+                        iconSource: "../icons/list-remove-symbolic.symbolic.png"
+                        Layout.fillWidth: true
+                    }
+                }
+            }
+        }
+
+        ColumnLayout {
+            id: noteLayout
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+
+            TextField {
+                id: noteTitle
+                Layout.fillWidth: true
+                placeholderText: qsTr("Text Field")
+            }
+
+            TextArea {
+                id: noteContent
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+            }
+        }
+
+
+
+
+
     }
 
 }
