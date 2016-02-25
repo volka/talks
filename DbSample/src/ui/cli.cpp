@@ -1,6 +1,7 @@
 #include "ui/cli.h"
 
 #include <iostream>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace notes {
 namespace ui {
@@ -14,34 +15,33 @@ CliClient::CliClient(std::shared_ptr<notes::db::NotebookDatabase> &db, int argc,
     : db_(db), argc_(argc), args_(args) {}
 
 int CliClient::run() {
-    int current_notebook = 0;
-    while (current_notebook >= 0) {
-        printMenu();
-        current_notebook = processInput();
-    }
+    do {
+        printMainMenu();
+    } while (!processMainMenuInput());
     return 0;
 }
 
-void CliClient::printMenu() {
+void CliClient::printMainMenu() {
     using namespace std;
     cout << endl;
     cout << "-----------------------" << endl;
     cout << "=== Notes Main Menu ===" << endl;
     cout << "-----------------------" << endl << endl;
-    cout << "Available Notebooks: " << endl;
-    listNotebooks();
+
+    listNotes();
+
     cout << "-----------------------" << endl << endl;
     cout << "o: Open Notebook" << endl;
     cout << "a: Add Note" << endl;
-    cout << "l: List Notes" << endl;
-    cout << "s: Search Notes" << endl;
+    cout << "e: Edit Note" << endl;
     cout << "d: Delete Note" << endl;
+    cout << "l: List by tag" << endl;
     cout << "q: Quit" << endl << endl;
     cout << ">> ";
 }
 
 // if true, quit the cli loop
-int CliClient::processInput() {
+int CliClient::processMainMenuInput() {
     char input;
     std::cin >> input;
     switch (input) {
@@ -52,9 +52,6 @@ int CliClient::processInput() {
         break;
     case 'l':
         listNotes();
-        break;
-    case 's':
-        searchNotes();
         break;
     case 'd':
         deleteNote();
@@ -79,36 +76,54 @@ int CliClient::openNotebook() {
 
 void CliClient::listNotebooks() {
     auto notebooks = db_->listNotebooks();
-    cout << "Found " << notebooks.size() << " noteoboks:" << endl;
-    cout << "-----------------------" << endl << endl;
+    cout << "Found " << notebooks.size() << " notebooks:" << endl;
     for (const auto &notebook : notebooks) {
         cout << notebook.id() << ": " << notebook.title() << endl;
     }
-    cout << "-----------------------" << endl << endl;
 }
 
-void CliClient::addNote() {}
+void CliClient::addNote() {
+    model::Note new_note;
+    std::string tmp;
+    cout << "Enter title:" << endl << ">> ";
+    cin >> tmp;
+    new_note.title(tmp);
+    cout << "Enter content: (finish with a line just containing '.')" << endl;
+    while (tmp != ".") {
+        cout << "-- >>";
+        cin >> tmp;
+        new_note.content( new_note.content() + tmp + "\n");
+    }
+
+    namespace pt = boost::posix_time;
+    pt::ptime time_tmp;
+    cout << "Enter reminder date: (yyyy-mm-dd hh:mm:ss)" << endl << ">> ";
+    cin >> tmp;
+    //time_tmp = pt::time_from_string(tmp);
+    new_note.reminder(time_tmp);
+
+    new_note.lastChanged(pt::second_clock::local_time());
+    cout << "Inserting Note into DB: " << endl;
+    printNote(new_note);
+    db_->newNote(new_note);
+}
 
 void CliClient::deleteNote() {}
 
 void CliClient::listNotes() {
     auto notes = db_->loadNotesFromNotebook(current_notebook_);
     cout << "Found " << notes.size() << " notes: " << endl;
-    cout << "-----------------------" << endl << endl;
     for (const auto &note : notes) {
         printNote(note);
     }
     cout << "-----------------------" << endl << endl;
 }
 
-void CliClient::searchNotes() {}
-
 void CliClient::printNote(const notes::model::Note &note) {
     cout << "ID      : " << note.id() << endl;
     cout << "Title   : " << note.title() << endl;
     cout << "Changed : " << note.lastChanged() << endl;
     cout << "Reminder: " << note.reminder() << endl;
-    cout << "......................." << endl;
     cout << note.content() << endl;
     cout << "-----------------------" << endl << endl;
 }

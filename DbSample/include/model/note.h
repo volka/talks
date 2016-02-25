@@ -1,9 +1,12 @@
 #pragma once
 
 #include <string>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 
 namespace notes {
 namespace model {
+
+namespace pt = boost::posix_time;
 
 // a note
 class Note {
@@ -12,8 +15,8 @@ class Note {
     std::string m_title;
     std::string m_content;
     int m_notebook_id;
-    time_t m_last_change;
-    time_t m_reminder;
+    pt::ptime m_last_change;
+    pt::ptime m_reminder;
 
   public:
     inline int id() const { return m_id; }
@@ -25,11 +28,11 @@ class Note {
     inline const std::string &content() const { return m_content; }
     inline void content(const std::string &content) { m_content = content; }
 
-    inline time_t lastChanged() const { return m_last_change; }
-    inline void lastChanged(const time_t time) { m_last_change = time; }
+    inline pt::ptime lastChanged() const { return m_last_change; }
+    inline void lastChanged(const pt::ptime time) { m_last_change = time; }
 
-    inline time_t reminder() const { return m_reminder; }
-    inline void reminder(const time_t time) { m_reminder = time; }
+    inline pt::ptime reminder() const { return m_reminder; }
+    inline void reminder(const pt::ptime time) { m_reminder = time; }
 
     inline int notebook() const { return m_notebook_id; }
     inline void notebook(const int notebook_id) { m_notebook_id = notebook_id; }

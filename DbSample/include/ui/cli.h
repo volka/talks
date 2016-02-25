@@ -15,9 +15,9 @@ class CliClient : public Client {
     virtual int run();
 
   private:
-    void printMenu();
+    void printMainMenu();
     // notebook ID of current notebook, or -1 for exit
-    int processInput();
+    int processMainMenuInput();
 
     int openNotebook();
     void listNotebooks();
