@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 
 ApplicationWindow {
@@ -27,13 +27,13 @@ ApplicationWindow {
             ToolButton {
                 id: addNotebook
                 text: "Add Notebook"
-                iconSource: "/icons/list-add-symbolic.symbolic.png"
+                iconSource: "icons/list-add-16.png"
             }
 
             ToolButton {
                 id: delNotebook
                 text: "Delete Notebook"
-                iconSource: "/icons/list-remove-symbolic.symbolic.png"
+                iconSource: "icons/list-remove-16.png"
             }
         }
 
@@ -56,35 +56,32 @@ ApplicationWindow {
             }
         }
 
-        ListView {
+        TreeView {
             id: noteList
             model: noteListModel
-            header: notesListHeader
-            delegate: Component {
-                Text { text: name }
-            }
+            //header: notesListHeader
+            // delegate: Component {
+            //    Text { text: name }
+            //}
             Layout.fillHeight: true
             Layout.fillWidth: true
-            width: 100
-            footer: Component {
-            ColumnLayout {
-                    id: noteListLayout
-                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                    Layout.fillHeight: true
-                    Button {
-                        id: addNote
-                        text: "Add Note"
-                        iconSource: "../icons/list-add-symbolic.symbolic.png"
-                        Layout.fillWidth: true
-                    }
+            width: 30
+        }
 
-                    Button {
-                        id: delNote
-                        text: "Delete Note"
-                        iconSource: "../icons/list-remove-symbolic.symbolic.png"
-                        Layout.fillWidth: true
-                    }
-                }
+        ColumnLayout {
+            id: noteListLayout
+            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+            Layout.fillHeight: true
+            Button {
+                id: addNote
+                text: "Add Note"
+                iconSource: "icons/list-add-16.png"
+            }
+
+            Button {
+                id: delNote
+                text: "Delete Note"
+                iconSource: "icons/list-remove-16.png"
             }
         }
 
@@ -106,11 +103,5 @@ ApplicationWindow {
                 Layout.fillWidth: true
             }
         }
-
-
-
-
-
     }
-
 }
