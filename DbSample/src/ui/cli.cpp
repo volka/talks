@@ -85,23 +85,44 @@ void CliClient::listNotebooks() {
 void CliClient::addNote() {
     model::Note new_note;
     std::string tmp;
+
+    // read title
     cout << "Enter title:" << endl << ">> ";
     cin >> tmp;
     new_note.title(tmp);
-    cout << "Enter content: (finish with a line just containing '.')" << endl;
-    while (tmp != ".") {
-        cout << "-- >>";
-        cin >> tmp;
-        new_note.content( new_note.content() + tmp + "\n");
-    }
 
+    // read content (clear cin first)
+    cin.ignore();
+    cout << "Enter content: (finish with an empty line)" << endl;
+    do {
+        cout << "->>";
+        getline(cin, tmp);
+        if (!tmp.empty())
+            new_note.content( new_note.content() + tmp + "\n");
+    } while (!tmp.empty());
+
+    // read timestamp
     namespace pt = boost::posix_time;
     pt::ptime time_tmp;
-    cout << "Enter reminder date: (yyyy-mm-dd hh:mm:ss)" << endl << ">> ";
-    cin >> tmp;
-    //time_tmp = pt::time_from_string(tmp);
+    bool parse_ok = false;
+    while (!parse_ok) {
+        cout << "Enter reminder date: (yyyy-mm-dd hh:mm:ss) or 0 to skip" << endl << ">> ";
+        cin >> tmp;
+         try {
+            if (tmp.size() > 0 && tmp[0] == '0')
+                time_tmp = pt::ptime();
+            else
+                time_tmp = pt::time_from_string(tmp);
+            parse_ok = true;
+
+        } catch (std::exception& ex) {
+            cout << "!!! error: date format is invalid, try again (or enter 0 to skip)"
+                 << endl;
+        }
+    }
     new_note.reminder(time_tmp);
 
+    // last change is always now
     new_note.lastChanged(pt::second_clock::local_time());
     cout << "Inserting Note into DB: " << endl;
     printNote(new_note);
