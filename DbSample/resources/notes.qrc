@@ -1,9 +1,9 @@
 <RCC>
     <qresource prefix="/qml">
         <file>qtclient.qml</file>
-    </qresource>
-    <qresource prefix="/icons">
         <file>icons/list-add-symbolic.symbolic.png</file>
         <file>icons/list-remove-symbolic.symbolic.png</file>
+        <file>icons/list-add-16.png</file>
+        <file>icons/list-remove-16.png</file>
     </qresource>
 </RCC>
