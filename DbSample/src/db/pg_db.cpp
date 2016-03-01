@@ -13,9 +13,8 @@ namespace db {
 const char *DEFAULT_TIME = "0000-00-00 00:00:00";
 
 // helper for result validation
-bool
-PgDatabase::checkResult(PGresult *res, int expected, const std::string &msg)
-{
+bool PgDatabase::checkResult(PGresult *res, int expected,
+                             const std::string &msg) {
     if (res == nullptr || PQresultStatus(res) != expected) {
         if (connection_) {
             std::cout << msg << ": " << PQerrorMessage(connection_.get());
@@ -25,8 +24,7 @@ PgDatabase::checkResult(PGresult *res, int expected, const std::string &msg)
     return true;
 }
 
-int
-PgDatabase::get_id(PGresult *res) {
+int PgDatabase::get_id(PGresult *res) {
     int fields = PQnfields(res);
     if (fields != 1)
         throw std::runtime_error(
@@ -54,7 +52,7 @@ PgDatabase::~PgDatabase() {}
 
 void PgDatabase::setupDb() {
 
-    PGconn* conn = connection_.get();
+    PGconn *conn = connection_.get();
 
     auto result = pg_result_ptr(
         PQexec(conn, "DROP TABLE IF EXISTS tags_nm, notes, tags, notebooks;"),
@@ -105,32 +103,71 @@ void PgDatabase::setupDb() {
         throw std::runtime_error("creating table tags_nm failed");
 }
 
-void PgDatabase::fillDb() {
-
-}
+void PgDatabase::fillDb() {}
 
 std::vector<Notebook> PgDatabase::listNotebooks() {
     return std::vector<Notebook>{};
 }
 
 int PgDatabase::newNotebook(const std::string &title) {
+
     std::cout << "new notebook " << title << std::endl;
-    return 0;
+    auto title_str = pg_escaped_ptr(
+        PQescapeLiteral(connection_.get(), title.c_str(), title.size()),
+        PQfreemem);
+
+    stmt_cache_.str(string());
+    stmt_cache_ << "INSERT INTO notebooks(title) VALUES(" << title_str.get()
+                << ") RETURNING id";
+
+    auto result =
+        pg_result_ptr(PQexec(conn, stmt_cache_.str().c_str()), PQclear);
+
+    if (!checkResult(conn, result.get(), PGRES_TUPLES_OK))
+        throw DatabaseException("inserting notebook " + title + " failed");
+
+    return get_id(result.get());
 }
 
 void PgDatabase::renameNotebook(const int notebook_id,
                                 const std::string &new_title) {
     std::cout << "rename notebook " << notebook_id << " to " << new_title
               << std::endl;
+
+    auto title_str = escape(title_str);
+    clearStatement();
+
+    stmt_cache_ << "UPDATE notebooks SET (title=" << title.c_str.get()
+                << ") WHERE id=" << notebook_id;
+    auto result = executeStatement();
+
+    if (!checkResult(conn, result.get(), PGRES_TUPLES_OK))
+        throw DatabaseException("updating notebook title for notebook " +
+                                std::to_string(notebook_id) + " failed");
 }
 
-void PgDatabase::deleteNotebook(const int id) {
-
+void PgDatabase::deleteNotebook(const int notebook_id) {
     std::cout << "deleting notebook " << id << std::endl;
+
+    clearStatement();
+    stmt_cache_ << "DELETE FROM notebooks WHERE id=" << to_string(notebook_id);
+    auto result =
+        pg_result_ptr(PQexec(conn, stmt_cache_.str().c_str()), PQclear);
+
+    if (!checkResult(conn, result.get(), PGRES_TUPLES_OK))
+        throw DatabaseException("deleting notebook failed: " +
+                                to_string(notebook_id));
 }
 
 Notebook PgDatabase::loadNotebook(const int notebook_id) {
     std::cout << "loading notebook " << notebook_id << std::endl;
+
+    clearStatement();
+    stmt_cache_ << "SELECT * FROM notebooks WHERE id="
+                << to_string(notebook_id);
+    auto result = executeStatement();
+
+    /// TODO continue here: process result
     return Notebook{};
 }
 
@@ -182,6 +219,22 @@ std::vector<Note> PgDatabase::loadNotesFromNotebook(int notebook_id) {
 std::vector<Note> PgDatabase::loadNotesForTag(int tag_id) {
     std::cout << "load notes for tag " << tag_id << std::endl;
     return std::vector<Note>{};
+}
+
+/// private helper functions
+
+// RAII wrapper for escaped string
+pg_escaped_ptr PgDatabase::escape(const std::string &str) {
+    return pg_escaped_ptr(
+        PQescapeLiteral(connection_.get(), str.c_str(), str.size()), PQfreemem);
+}
+
+// clear our statement cache
+void PgDatabase::clearStatement() { stmt_cache_.str(string()); }
+
+// execute a statement using PQexec, wrapping the result in a unique_ptr
+pg_result_ptr PgDatabase::executeStatement() {
+    return pg_result_ptr(PQexec(conn, stmt_cache_.str().c_str()), PQclear);
 }
 
 } // ns db

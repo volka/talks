@@ -65,3 +65,6 @@ target_link_libraries(notebook  ${PostgreSQL_LIBRARIES}
                                 Qt5::Core
                                 Qt5::Quick
                                 ${Boost_LIBRARIES})
+
+add_executable(pg_main src/pg_main.cpp)
+add_executable(sqlite_main src/sqlite_main.cpp)

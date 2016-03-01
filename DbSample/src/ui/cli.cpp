@@ -98,7 +98,7 @@ void CliClient::addNote() {
         cout << "->>";
         getline(cin, tmp);
         if (!tmp.empty())
-            new_note.content( new_note.content() + tmp + "\n");
+            new_note.content(new_note.content() + tmp + "\n");
     } while (!tmp.empty());
 
     // read timestamp
@@ -106,17 +106,20 @@ void CliClient::addNote() {
     pt::ptime time_tmp;
     bool parse_ok = false;
     while (!parse_ok) {
-        cout << "Enter reminder date: (yyyy-mm-dd hh:mm:ss) or 0 to skip" << endl << ">> ";
+        cout << "Enter reminder date: (yyyy-mm-dd hh:mm:ss) or 0 to skip"
+             << endl
+             << ">> ";
         cin >> tmp;
-         try {
+        try {
             if (tmp.size() > 0 && tmp[0] == '0')
                 time_tmp = pt::ptime();
             else
                 time_tmp = pt::time_from_string(tmp);
             parse_ok = true;
 
-        } catch (std::exception& ex) {
-            cout << "!!! error: date format is invalid, try again (or enter 0 to skip)"
+        } catch (std::exception &ex) {
+            cout << "!!! error: date format is invalid, try again (or enter 0 "
+                    "to skip)"
                  << endl;
         }
     }

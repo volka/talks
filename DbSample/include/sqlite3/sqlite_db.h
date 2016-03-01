@@ -8,14 +8,44 @@ namespace notes {
 namespace db {
 
 // sqlite_conn_ptr is finalized by sqlite3_close()
-using sqlite_conn_ptr =
-    std::unique_ptr<sqlite3, std::function<void(sqlite3 *)>>;
+class sqlite_conn {
+    sqlite3 *const conn_;
+
+  public:
+    sqlite_conn(sqlite3 *const conn) : conn_(conn) {}
+
+    ~sqlite_conn() {
+        int result = sqlite3_close_v2(conn_);
+        if (result != SQLITE_OK) {
+            throw DatabaseException("Error closing Sqlite connection, ec=" +
+                                    std::to_string(result));
+        }
+    }
+
+    inline sqlite3 *const ptr() const { return conn_; }
+};
 
 // an sqlite Statement obtained sqlite3_prepare, needs to be freed using
 // sqlite3_finalize
-using sqlite_stmt_ptr =
-    std::unique_ptr<sqlite3_stmt, std::function<int(sqlite3_stmt *)>>;
+class sqlite_stmt {
+    sqlite3_stmt *const stmt_;
 
+  public:
+    sqlite_stmt(sqlite3_stmt *const stmt) : stmt_(stmt) {}
+
+    ~sqlite_stmt() {
+        int result = sqlite3_finalize(stmt_);
+        if (result != SQLITE_OK) {
+            throw DatabaseException(
+                "Error finalizing Sqlite Statement pointer, ec=" +
+                std::to_string(result));
+        }
+    }
+
+    inline sqlite3_stmt *const ptr() const { return stmt_; }
+};
+
+// Implementation of the Notebook DB interface for SQLite3
 class Sqlite3Database : public NotebookDatabase {
 
   private:

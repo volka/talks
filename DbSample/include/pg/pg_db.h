@@ -20,6 +20,7 @@ class PgDatabase : public NotebookDatabase {
   private:
     std::string connection_info_;
     pg_conn_ptr connection_;
+    std::stringstream stmt_cache_;
 
   public:
     PgDatabase(const PgDatabase &) = delete;
@@ -35,7 +36,7 @@ class PgDatabase : public NotebookDatabase {
     virtual int newNotebook(const std::string &title) override;
     virtual void renameNotebook(const int notebook_id,
                                 const std::string &new_title) override;
-    virtual void deleteNotebook(const int id) override;
+    virtual void deleteNotebook(const int notebook_id) override;
     virtual Notebook loadNotebook(const int notebook_id) override;
 
     // create a new note
@@ -52,9 +53,16 @@ class PgDatabase : public NotebookDatabase {
 
     virtual std::vector<Note> loadNotesFromNotebook(int notebook_id) override;
     virtual std::vector<Note> loadNotesForTag(int tag_id) override;
-private:
+
+  private:
+    pg_escaped_ptr escape(const std::string &str);
+    // clear stmt_cache_
+    void clearStatement();
+    // execute statement saved in stmt_cache_
+    pg_result_ptr executeStatement();
+
     bool checkResult(PGresult *res, const int expect = PGRES_COMMAND_OK,
-                     const std::string& msg = "Command failed");
+                     const std::string &msg = "Command failed");
     int get_id(PGresult *res);
 };
 
