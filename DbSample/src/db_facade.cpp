@@ -1,8 +1,8 @@
 #include "db_facade.h"
 
-#include "sqlite3/sqlite_db.h"
-#include "pg/pg_db.h"
-#include "qtsql/qt_db.h"
+#include "db/sqlite_db.h"
+#include "db/pg_db.h"
+#include "db/qt_db.h"
 
 #include <memory>
 

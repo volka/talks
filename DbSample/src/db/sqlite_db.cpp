@@ -1,4 +1,4 @@
-#include "sqlite3/sqlite_db.h"
+#include "db/sqlite_db.h"
 #include <iostream>
 
 namespace notes {

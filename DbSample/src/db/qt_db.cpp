@@ -1,4 +1,4 @@
-#include "qtsql/qt_db.h"
+#include "db/qt_db.h"
 
 #include <QtSql/QSql>
 #include <QtSql/QSqlDatabase>

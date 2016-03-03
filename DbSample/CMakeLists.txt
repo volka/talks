@@ -46,7 +46,7 @@ set(SRC_LIST
 
     # Wt::Dbo
     include/db/wt_db.h
-    src/db/wt.cpp
+    src/db/wt_db.cpp
 
     # UI code
     include/client.h
