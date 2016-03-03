@@ -5,11 +5,11 @@ namespace notes {
 namespace db {
 
 Sqlite3Database::Sqlite3Database(const std::string &connection_info)
-    : connection_info_(connection_info) {
+    : connection_info_(connection_info), connection_{nullptr} {
     sqlite3 *conn;
     int result = sqlite3_open(connection_info.c_str(), &conn);
     if (result == SQLITE_OK) {
-        connection_ = sqlite_conn_ptr{conn, sqlite3_close};
+        connection_ = sqlite_conn(conn);
     } else {
         throw DatabaseException("Error opening SQLite database " +
                                 connection_info + " (error: " +
@@ -77,22 +77,22 @@ void Sqlite3Database::setupDb() {
 }
 
 uint64_t Sqlite3Database::getLastInsertId() {
-    return sqlite3_last_insert_rowid(connection_.get());
+    return sqlite3_last_insert_rowid(connection_.ptr());
 }
 
-sqlite_stmt_ptr Sqlite3Database::prepareStatement(const std::string &stmt) {
+sqlite_stmt Sqlite3Database::prepareStatement(const std::string &stmt) {
     sqlite3_stmt *stmt_ptr;
     // connection, statement string, length, OUT stmt pointer, ignored "unused
     // part of stmt"
     int res =
-        sqlite3_prepare_v2(connection_.get(), stmt.c_str(),
+        sqlite3_prepare_v2(connection_.ptr(), stmt.c_str(),
                            static_cast<int>(stmt.size()), &stmt_ptr, nullptr);
     checkResult(res, SQLITE_OK, "Error preparing statement " + stmt, true);
-    return sqlite_stmt_ptr{stmt_ptr, sqlite3_finalize};
+    return sqlite_stmt(stmt_ptr);
 }
 
-bool Sqlite3Database::executeStatement(sqlite_stmt_ptr &stmt) {
-    int res = sqlite3_step(stmt.get());
+bool Sqlite3Database::executeStatement(sqlite_stmt &stmt) {
+    int res = sqlite3_step(stmt.ptr());
     switch (res) {
     case SQLITE_OK:
     case SQLITE_ROW:
@@ -108,7 +108,7 @@ bool Sqlite3Database::checkResult(int result, int expected = SQLITE_OK,
                                   const std::string &msg, bool do_throw) {
     if (result != expected) {
         auto errmsg = msg + ": " + std::to_string(result) + " " +
-                      std::string(sqlite3_errmsg(connection_.get()));
+                      std::string(sqlite3_errmsg(connection_.ptr()));
         if (do_throw) {
             throw DatabaseException(errmsg);
         } else {

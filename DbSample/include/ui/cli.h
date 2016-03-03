@@ -8,6 +8,8 @@ namespace ui {
 
 class CliClient : public Client {
 
+    enum class CliState { MAIN, NOTEBOOKS, NOTES, TAGS };
+
   public:
     CliClient(std::shared_ptr<db::NotebookDatabase> &db, int argc, char **args);
     virtual ~CliClient();
@@ -15,9 +17,14 @@ class CliClient : public Client {
     virtual int run();
 
   private:
-    void printMainMenu();
+    void printMenu();
     // notebook ID of current notebook, or -1 for exit
-    int processMainMenuInput();
+    int processInput();
+
+    void showMainView();
+    void showNotes();
+    void showTags();
+    void showNotebooks();
 
     int openNotebook();
     void listNotebooks();
@@ -31,6 +38,7 @@ class CliClient : public Client {
 
     int current_notebook_ = kDefaultNotebook;
     std::shared_ptr<db::NotebookDatabase> db_;
+    CliState state_;
     int argc_;
     char **args_;
 };

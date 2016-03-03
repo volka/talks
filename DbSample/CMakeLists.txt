@@ -16,7 +16,7 @@ find_package(PostgreSQL 9.4 REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Boost COMPONENTS date_time program_options REQUIRED)
 
-find_package(Qt5 COMPONENTS Quick Core Network)
+find_package(Qt5 COMPONENTS Quick Sql Core Network)
 INCLUDE_DIRECTORIES(${PostgreSQL_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(include)
@@ -64,6 +64,7 @@ target_link_libraries(notebook  ${PostgreSQL_LIBRARIES}
                                 ${SQLITE3_LIBRARIES}
                                 Qt5::Core
                                 Qt5::Quick
+                                Qt5::Sql
                                 ${Boost_LIBRARIES})
 
 add_executable(pg_main src/pg_main.cpp)

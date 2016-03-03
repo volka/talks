@@ -12,26 +12,54 @@ CliClient::~CliClient() {}
 
 CliClient::CliClient(std::shared_ptr<notes::db::NotebookDatabase> &db, int argc,
                      char **args)
-    : db_(db), argc_(argc), args_(args) {}
+    : db_(db), state_(CliState::MAIN), argc_(argc), args_(args) {}
 
 int CliClient::run() {
     do {
-        printMainMenu();
-    } while (!processMainMenuInput());
+        printMenu();
+    } while (!processInput());
     return 0;
 }
 
-void CliClient::printMainMenu() {
+void CliClient::showMainView() {}
+
+void CliClient::showNotes() {}
+
+void CliClient::showTags() {}
+
+void CliClient::showNotebooks() {}
+
+void CliClient::printMenu() {
     using namespace std;
+
+    switch (state_) {
+    case CliState::MAIN:
+        showMainView();
+        break;
+    case CliState::NOTEBOOKS:
+        showNotebooks();
+    case CliState::NOTES:
+        showNotes();
+    case CliState::TAGS:
+        showTags();
+    }
+    processInput();
+
     cout << endl;
     cout << "-----------------------" << endl;
     cout << "=== Notes Main Menu ===" << endl;
     cout << "-----------------------" << endl << endl;
 
-    listNotes();
+    listNotebooks();
+    // listNotes();
 
     cout << "-----------------------" << endl << endl;
     cout << "o: Open Notebook" << endl;
+    cout << "n: New Notebook" << endl;
+    cout << "e: Edit current notebook" << endl;
+    cout << "q: Quit" << endl;
+
+    // TODO: move to note screen
     cout << "a: Add Note" << endl;
     cout << "e: Edit Note" << endl;
     cout << "d: Delete Note" << endl;
@@ -41,7 +69,8 @@ void CliClient::printMainMenu() {
 }
 
 // if true, quit the cli loop
-int CliClient::processMainMenuInput() {
+int CliClient::processInput() {
+    // TODO : handle state
     char input;
     std::cin >> input;
     switch (input) {
@@ -107,8 +136,7 @@ void CliClient::addNote() {
     bool parse_ok = false;
     while (!parse_ok) {
         cout << "Enter reminder date: (yyyy-mm-dd hh:mm:ss) or 0 to skip"
-             << endl
-             << ">> ";
+             << endl << ">> ";
         cin >> tmp;
         try {
             if (tmp.size() > 0 && tmp[0] == '0')
@@ -119,8 +147,7 @@ void CliClient::addNote() {
 
         } catch (std::exception &ex) {
             cout << "!!! error: date format is invalid, try again (or enter 0 "
-                    "to skip)"
-                 << endl;
+                    "to skip)" << endl;
         }
     }
     new_note.reminder(time_tmp);

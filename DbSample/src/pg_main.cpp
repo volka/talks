@@ -5,9 +5,9 @@
 
 #include <libpq-fe.h>
 
-#include "note.h"
-#include "tag.h"
-#include "notebook.h"
+#include "model/note.h"
+#include "model/tag.h"
+#include "model/notebook.h"
 
 using std::cout;
 using std::endl;

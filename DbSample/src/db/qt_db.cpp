@@ -21,35 +21,40 @@ using namespace std;
 void parsePgConfig(const std::string &conn_info,
                    QtDatabase::ConnectionConfig &config) {
     // parse dbname, host, username, password - separated by spaces
-    auto space_it = conn_info.begin(), end = conn_info.end();
+    size_t space_pos = 0;
     string option, value;
-    while (space_it != end) {
+    while (space_pos != string::npos) {
 
         option.clear();
         value.clear();
 
-        auto eq_it = find(space_it, end(conn_info), "=");
-        if (eq_it == end(conn_info))
+        auto eq_pos = conn_info.find("=", space_pos);
+        if (eq_pos == string::npos)
             return;
-        option.insert(space_it, eq_it);
+        option = conn_info.substr(space_pos, eq_pos - space_pos);
 
         // end of value, also next option ...
-        space_it = find(begin(conn_info), end(conn_info), " ");
-        value.insert(eq_it++, space_it);
+        space_pos = conn_info.find(" ", eq_pos);
+        if (space_pos == string::npos)
+            space_pos = conn_info.size();
+        ++eq_pos;
 
-        if (space_it != end(conn_info))
-            ++space_it;
+        value = conn_info.substr(eq_pos, space_pos - eq_pos);
 
+        if (space_pos != string::npos)
+            ++space_pos;
+
+        std::cout << "option: " << option << " val " << value;
         if (option == "dbname")
-            config.dbname = value;
+            config.dbname = QString::fromStdString(value);
         else if (option == "host")
-            config.host = value;
+            config.host = QString::fromStdString(value);
         else if (option == "port")
-            config.port = value;
+            config.port = QString::fromStdString(value);
         else if (option == "username")
-            config.username = value;
+            config.username = QString::fromStdString(value);
         else if (option == "password")
-            config.password = value;
+            config.password = QString::fromStdString(value);
         else
             throw DatabaseException("Invalid option in connection_info: " +
                                     option);
@@ -61,22 +66,25 @@ void parsePgConfig(const std::string &conn_info,
 QtDatabase::ConnectionConfig parseConnectionInfo(const std::string &conn_info) {
     QtDatabase::ConnectionConfig config;
 
-    size_t split = find(begin(connection_info), end(connection_info), ":");
+    cout << "parsing conn_info " << conn_info << endl;
+    size_t split = conn_info.find(":");
 
     if (split != string::npos) {
-        config.driver = connection_info.substr(0, split);
-
+        config.driver = QString::fromStdString(conn_info.substr(0, split));
+        cout << "found driver at 0:" << split << " = "
+             << config.driver.toStdString() << endl;
         if (config.driver == "QSQLITE") {
-            config.dbname = connection_info.substr(split, end(connection_info));
-            if (config.dbname.empty())
+            config.dbname = QString::fromStdString(
+                conn_info.substr(split, conn_info.size() - split));
+            if (config.dbname.isEmpty())
                 throw DatabaseException(
                     "Invalid DB name for QtSql Sqlite connection");
         } else if (config.driver == "QPSQL") {
-            parsePgConfig(connection_info.substr(split, end(connection_info)),
+            parsePgConfig(conn_info.substr(split, conn_info.size() - split),
                           config);
         } else {
             throw DatabaseException("Unsupported driver for QSQL: " +
-                                    config.driver);
+                                    config.driver.toStdString());
         }
     } else
         throw DatabaseException(
@@ -97,7 +105,7 @@ QtDatabase::QtDatabase(const std::string &connection_info) {
 
     db.setDatabaseName(config_.dbname);
     db.setHostName(config_.host);
-    db.setPort(config_.port);
+    db.setPort(config_.port.toShort());
     db.setUserName(config_.username);
     db.setPassword(config_.password);
 
@@ -105,56 +113,34 @@ QtDatabase::QtDatabase(const std::string &connection_info) {
         throw DatabaseException("Could not connect to database using QtSql");
 }
 
-QtDatabase::~QtDatabase() { QSqlDatabase::close(); }
+QtDatabase::~QtDatabase() { QSqlDatabase::database().close(); }
 
 void QtDatabase::setupDb() {
 
-    auto result = pg_result_ptr(
-        PQexec(conn, "DROP TABLE IF EXISTS tags_nm, notes, tags, notebooks;"),
-        PQclear);
+    // "DROP TABLE IF EXISTS tags_nm, notes, tags, notebooks;"),
 
-    if (!checkResult(result.get()))
-        throw std::runtime_error("dropping pre-existing tables failed");
+    // "CREATE TABLE notebooks ("
+    //                          "id		serial primary key,"
+    //                          "title	varchar(255)"
+    //                          ")"
+    // "CREATE TABLE tags ("
+    //                     "id	 	serial primary key,"
+    //                     "title	varchar(255)"
+    //                     ")"
 
-    result = pg_result_ptr(PQexec(conn, "CREATE TABLE notebooks ("
-                                        "id		serial primary key,"
-                                        "title	varchar(255)"
-                                        ")"),
-                           PQclear);
-    if (!checkResult(result.get()))
-        throw std::runtime_error("creating table notebooks failed");
-
-    result = pg_result_ptr(PQexec(conn, "CREATE TABLE tags ("
-                                        "id	 	serial primary key,"
-                                        "title	varchar(255)"
-                                        ")"),
-                           PQclear);
-
-    if (!checkResult(result.get()))
-        throw std::runtime_error("creating table tags failed");
-
-    result = pg_result_ptr(
-        PQexec(conn, "CREATE TABLE notes ("
-                     "id      	serial primary key,"
-                     "title   	varchar(255),"
-                     "content		text,"
-                     "notebook 	int references notebooks(id),"
-                     "last_change timestamp DEFAULT CURRENT_TIMESTAMP,"
-                     "reminder	timestamp"
-                     ")"),
-        PQclear);
-
-    if (!checkResult(result.get()))
-        throw std::runtime_error("creating table notes failed");
-
-    result = pg_result_ptr(
-        PQexec(conn, "CREATE TABLE tags_nm ("
-                     "tag_id		serial references tags(id),"
-                     "note_id	serial references notes(id)"
-                     ")"),
-        PQclear);
-
-    if (!checkResult(result.get()))
+    // "CREATE TABLE notes ("
+    //                      "id    	serial primary key,"
+    //                      "title   	varchar(255),"
+    //                      "content		text,"
+    //                      "notebook 	int references notebooks(id),"
+    //                      "last_change timestamp DEFAULT CURRENT_TIMESTAMP,"
+    //                      "reminder	timestamp"
+    //                      ")"
+    //
+    // "CREATE TABLE tags_nm ("
+    //                        "tag_id		serial references tags(id),"
+    //                        "note_id	serial references notes(id)"
+    //                      ")"
 }
 
 void QtDatabase::fillDb() {

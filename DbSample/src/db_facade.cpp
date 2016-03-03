@@ -2,6 +2,7 @@
 
 #include "sqlite3/sqlite_db.h"
 #include "pg/pg_db.h"
+#include "qtsql/qt_db.h"
 
 #include <memory>
 
@@ -15,6 +16,7 @@ notes::db::NotebookDatabase::create(const std::string &dbtype,
         return std::make_unique<notes::db::PgDatabase>(config);
     }
     if (dbtype == Types::qtsql) {
+        return std::make_unique<notes::db::QtDatabase>(config);
     }
     if (dbtype == Types::wt_db) {
     }

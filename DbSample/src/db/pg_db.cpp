@@ -116,14 +116,14 @@ int PgDatabase::newNotebook(const std::string &title) {
         PQescapeLiteral(connection_.get(), title.c_str(), title.size()),
         PQfreemem);
 
-    stmt_cache_.str(string());
+    clearStatement();
     stmt_cache_ << "INSERT INTO notebooks(title) VALUES(" << title_str.get()
                 << ") RETURNING id";
 
-    auto result =
-        pg_result_ptr(PQexec(conn, stmt_cache_.str().c_str()), PQclear);
+    auto result = pg_result_ptr(
+        PQexec(connection_.get(), stmt_cache_.str().c_str()), PQclear);
 
-    if (!checkResult(conn, result.get(), PGRES_TUPLES_OK))
+    if (!checkResult(result.get(), PGRES_TUPLES_OK))
         throw DatabaseException("inserting notebook " + title + " failed");
 
     return get_id(result.get());
@@ -134,29 +134,30 @@ void PgDatabase::renameNotebook(const int notebook_id,
     std::cout << "rename notebook " << notebook_id << " to " << new_title
               << std::endl;
 
-    auto title_str = escape(title_str);
+    auto title_str = escape(new_title);
     clearStatement();
 
-    stmt_cache_ << "UPDATE notebooks SET (title=" << title.c_str.get()
+    stmt_cache_ << "UPDATE notebooks SET (title=" << title_str.get()
                 << ") WHERE id=" << notebook_id;
     auto result = executeStatement();
 
-    if (!checkResult(conn, result.get(), PGRES_TUPLES_OK))
+    if (!checkResult(result.get(), PGRES_TUPLES_OK))
         throw DatabaseException("updating notebook title for notebook " +
                                 std::to_string(notebook_id) + " failed");
 }
 
 void PgDatabase::deleteNotebook(const int notebook_id) {
-    std::cout << "deleting notebook " << id << std::endl;
+    std::cout << "deleting notebook " << notebook_id << std::endl;
 
     clearStatement();
-    stmt_cache_ << "DELETE FROM notebooks WHERE id=" << to_string(notebook_id);
-    auto result =
-        pg_result_ptr(PQexec(conn, stmt_cache_.str().c_str()), PQclear);
+    stmt_cache_ << "DELETE FROM notebooks WHERE id="
+                << std::to_string(notebook_id);
+    auto result = pg_result_ptr(
+        PQexec(connection_.get(), stmt_cache_.str().c_str()), PQclear);
 
-    if (!checkResult(conn, result.get(), PGRES_TUPLES_OK))
+    if (!checkResult(result.get(), PGRES_TUPLES_OK))
         throw DatabaseException("deleting notebook failed: " +
-                                to_string(notebook_id));
+                                std::to_string(notebook_id));
 }
 
 Notebook PgDatabase::loadNotebook(const int notebook_id) {
@@ -164,7 +165,7 @@ Notebook PgDatabase::loadNotebook(const int notebook_id) {
 
     clearStatement();
     stmt_cache_ << "SELECT * FROM notebooks WHERE id="
-                << to_string(notebook_id);
+                << std::to_string(notebook_id);
     auto result = executeStatement();
 
     /// TODO continue here: process result
@@ -230,11 +231,12 @@ pg_escaped_ptr PgDatabase::escape(const std::string &str) {
 }
 
 // clear our statement cache
-void PgDatabase::clearStatement() { stmt_cache_.str(string()); }
+void PgDatabase::clearStatement() { stmt_cache_.str(std::string()); }
 
 // execute a statement using PQexec, wrapping the result in a unique_ptr
 pg_result_ptr PgDatabase::executeStatement() {
-    return pg_result_ptr(PQexec(conn, stmt_cache_.str().c_str()), PQclear);
+    return pg_result_ptr(PQexec(connection_.get(), stmt_cache_.str().c_str()),
+                         PQclear);
 }
 
 } // ns db
