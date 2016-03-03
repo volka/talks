@@ -15,6 +15,7 @@ add_definitions(-std=gnu++14)
 find_package(PostgreSQL 9.4 REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Boost COMPONENTS date_time program_options REQUIRED)
+find_library(wtdbo NAMES libwtdbo.so)
 
 find_package(Qt5 COMPONENTS Quick Sql Core Network)
 INCLUDE_DIRECTORIES(${PostgreSQL_INCLUDE_DIRS})
@@ -32,16 +33,20 @@ set(SRC_LIST
     src/db_facade.cpp
 
     # PostgreSQL interface
-    include/pg/pg_db.h
+    include/db/pg_db.h
     src/db/pg_db.cpp
 
     # SQLite3 interface
-    include/sqlite3/sqlite_db.h
+    include/db/sqlite_db.h
     src/db/sqlite_db.cpp
 
     # QtSQL interface
-    include/qtsql/qt_db.h
+    include/db/qt_db.h
     src/db/qt_db.cpp
+
+    # Wt::Dbo
+    include/db/wt_db.h
+    src/db/wt.cpp
 
     # UI code
     include/client.h
@@ -65,6 +70,7 @@ target_link_libraries(notebook  ${PostgreSQL_LIBRARIES}
                                 Qt5::Core
                                 Qt5::Quick
                                 Qt5::Sql
+                                wtdbo
                                 ${Boost_LIBRARIES})
 
 add_executable(pg_main src/pg_main.cpp)

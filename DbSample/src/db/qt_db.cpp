@@ -66,13 +66,11 @@ void parsePgConfig(const std::string &conn_info,
 QtDatabase::ConnectionConfig parseConnectionInfo(const std::string &conn_info) {
     QtDatabase::ConnectionConfig config;
 
-    cout << "parsing conn_info " << conn_info << endl;
     size_t split = conn_info.find(":");
 
     if (split != string::npos) {
         config.driver = QString::fromStdString(conn_info.substr(0, split));
-        cout << "found driver at 0:" << split << " = "
-             << config.driver.toStdString() << endl;
+        ++split;
         if (config.driver == "QSQLITE") {
             config.dbname = QString::fromStdString(
                 conn_info.substr(split, conn_info.size() - split));
