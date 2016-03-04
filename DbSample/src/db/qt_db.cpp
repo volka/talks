@@ -11,101 +11,20 @@ namespace db {
 
 using namespace model;
 
-namespace {
-
-using namespace std;
-
-// first parse the connection string to suite the QtSQL format
-
-// this parses the PSQL specific fields
-void parsePgConfig(const std::string &conn_info,
-                   QtDatabase::ConnectionConfig &config) {
-    // parse dbname, host, username, password - separated by spaces
-    size_t space_pos = 0;
-    string option, value;
-    while (space_pos != string::npos) {
-
-        option.clear();
-        value.clear();
-
-        auto eq_pos = conn_info.find("=", space_pos);
-        if (eq_pos == string::npos)
-            return;
-        option = conn_info.substr(space_pos, eq_pos - space_pos);
-
-        // end of value, also next option ...
-        space_pos = conn_info.find(" ", eq_pos);
-        if (space_pos == string::npos)
-            space_pos = conn_info.size();
-        ++eq_pos;
-
-        value = conn_info.substr(eq_pos, space_pos - eq_pos);
-
-        if (space_pos != string::npos)
-            ++space_pos;
-
-        std::cout << "option: " << option << " val " << value;
-        if (option == "dbname")
-            config.dbname = QString::fromStdString(value);
-        else if (option == "host")
-            config.host = QString::fromStdString(value);
-        else if (option == "port")
-            config.port = QString::fromStdString(value);
-        else if (option == "username")
-            config.username = QString::fromStdString(value);
-        else if (option == "password")
-            config.password = QString::fromStdString(value);
-        else
-            throw DatabaseException("Invalid option in connection_info: " +
-                                    option);
-    }
-    return;
-}
-
-// parse the connection_info for QSQL to separate the DRIVER and Parameters
-QtDatabase::ConnectionConfig parseConnectionInfo(const std::string &conn_info) {
-    QtDatabase::ConnectionConfig config;
-
-    size_t split = conn_info.find(":");
-
-    if (split != string::npos) {
-        config.driver = QString::fromStdString(conn_info.substr(0, split));
-        ++split;
-        if (config.driver == "QSQLITE") {
-            config.dbname = QString::fromStdString(
-                conn_info.substr(split, conn_info.size() - split));
-            if (config.dbname.isEmpty())
-                throw DatabaseException(
-                    "Invalid DB name for QtSql Sqlite connection");
-        } else if (config.driver == "QPSQL") {
-            parsePgConfig(conn_info.substr(split, conn_info.size() - split),
-                          config);
-        } else {
-            throw DatabaseException("Unsupported driver for QSQL: " +
-                                    config.driver.toStdString());
-        }
-    } else
-        throw DatabaseException(
-            "Invalid connection string, could not find ':'");
-
-    return config;
-}
-}
-
 QtDatabase::QtDatabase(const std::string &connection_info) {
     config_ = parseConnectionInfo(connection_info);
 
     // note: no connection name -> default connection
     // other connections could be retrieved using
     // QSqlDatabase::database(connectionName)
-    QSqlDatabase db =
-        QSqlDatabase::addDatabase(config_.driver /*, connectionName */);
+    QSqlDatabase db = QSqlDatabase::addDatabase(
+        QString::fromStdString(config_.driver) /*, connectionName */);
 
-    db.setDatabaseName(config_.dbname);
-    db.setHostName(config_.host);
-    db.setPort(config_.port.toShort());
-    db.setUserName(config_.username);
-    db.setPassword(config_.password);
+    db.setDatabaseName(QString::fromStdString(config_.dbname));
+    db.setHostName(QString::fromStdString(config_.host));
+    db.setPort(QString::fromStdString(config_.port).toShort());
+    db.setUserName(QString::fromStdString(config_.username));
+    db.setPassword(QString::fromStdString(config_.password));
 
     if (!db.open())
         throw DatabaseException("Could not connect to database using QtSql");

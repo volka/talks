@@ -29,8 +29,17 @@ class NotebookDatabase {
         static constexpr auto sqlite = "sqlite";
         static constexpr auto postgres = "postgres";
         static constexpr auto qtsql = "qtsql";
-        static constexpr auto wt_db = "wtdb";
+        static constexpr auto wt_db = "wtdbo";
         static constexpr auto sqlpp = "sqlpp";
+    };
+
+    struct ConnectionConfig {
+        std::string driver; // for QtSql QPSQL, QSQLITE, for Wt::Dbo SQLITE / PG
+        std::string dbname; // file for SQLITE, database name for PG
+        std::string host;
+        std::string port;
+        std::string username;
+        std::string password;
     };
 
     // factory for DB connections, call with Db type
@@ -66,6 +75,10 @@ class NotebookDatabase {
     virtual std::vector<Note> loadNotesFromNotebook(int notebook_id) = 0;
     virtual std::vector<Note> loadNotesForTag(int tag_id) = 0;
 };
+
+// for parsing the connection string wiht QtSql / Wt::Dbo
+NotebookDatabase::ConnectionConfig
+parseConnectionInfo(const std::string &conn_info);
 
 } // db
 } // notes

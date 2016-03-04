@@ -9,15 +9,6 @@ namespace db {
 class QtDatabase : public NotebookDatabase {
 
   public:
-    struct ConnectionConfig {
-        QString driver;
-        QString dbname;
-        QString host;
-        QString port;
-        QString username;
-        QString password;
-    };
-
     QtDatabase(const QtDatabase &) = delete;
 
     // connection_info contains two parts: the DB type (QSQLITE, QPSQL)

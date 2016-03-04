@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
         cout << "Usage: notes <INTERFACE> <DB_TYPE> \"<CONNECTION STRING>\" "
                 "--demo" << endl << endl;
         cout << "  INTERFACE: cli , qt" << endl;
-        cout << "  DB_TYPE  : sqlite, pg ..." << endl;
+        cout << "  DB_TYPE  : sqlite, postgres, qtsql, wtdbo, sqlpp" << endl;
         cout << "  CONN STR : db specific, e.g. mydb.sqlite for SQLite3"
              << endl;
         cout << "    --demo : use for Demo mode to create and fill DB" << endl
