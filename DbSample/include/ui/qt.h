@@ -5,10 +5,13 @@
 class QGuiApplication;
 class QQmlApplicationEngine;
 
-namespace notes {
-namespace ui {
+namespace notes
+{
+namespace ui
+{
 
-class QtClient : public Client {
+class QtClient : public Client
+{
 
   public:
     QtClient(std::shared_ptr<db::NotebookDatabase> &db, int argc, char **args);

@@ -3,8 +3,10 @@
 #include "db_facade.h"
 #include <libpq-fe.h>
 
-namespace notes {
-namespace db {
+namespace notes
+{
+namespace db
+{
 
 // wrap plain C pointers in RAII types...
 
@@ -16,7 +18,8 @@ using pg_result_ptr =
 // an esacped string as produced by PQescapeLiteral, free with PQfreemem
 using pg_escaped_ptr = std::unique_ptr<char, std::function<void(void *)>>;
 
-class PgDatabase : public NotebookDatabase {
+class PgDatabase : public NotebookDatabase
+{
   private:
     std::string connection_info_;
     pg_conn_ptr connection_;

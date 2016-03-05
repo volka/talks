@@ -4,17 +4,21 @@
 
 #include <sqlite3.h>
 
-namespace notes {
-namespace db {
+namespace notes
+{
+namespace db
+{
 
 // sqlite_conn_ptr is finalized by sqlite3_close()
-class sqlite_conn {
+class sqlite_conn
+{
     sqlite3 *conn_;
 
   public:
     sqlite_conn(sqlite3 *conn) : conn_(conn) {}
 
-    ~sqlite_conn() {
+    ~sqlite_conn()
+    {
         if (conn_) {
             int result = sqlite3_close_v2(conn_);
             if (result != SQLITE_OK) {
@@ -29,13 +33,15 @@ class sqlite_conn {
 
 // an sqlite Statement obtained sqlite3_prepare, needs to be freed using
 // sqlite3_finalize
-class sqlite_stmt {
+class sqlite_stmt
+{
     sqlite3_stmt *stmt_;
 
   public:
     sqlite_stmt(sqlite3_stmt *stmt) : stmt_(stmt) {}
 
-    ~sqlite_stmt() {
+    ~sqlite_stmt()
+    {
         int result = sqlite3_finalize(stmt_);
         if (result != SQLITE_OK) {
             throw DatabaseException(
@@ -48,7 +54,8 @@ class sqlite_stmt {
 };
 
 // Implementation of the Notebook DB interface for SQLite3
-class Sqlite3Database : public NotebookDatabase {
+class Sqlite3Database : public NotebookDatabase
+{
 
   private:
     // filename or ":memory:"

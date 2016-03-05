@@ -3,10 +3,13 @@
 
 #include <QString>
 
-namespace notes {
-namespace db {
+namespace notes
+{
+namespace db
+{
 
-class QtDatabase : public NotebookDatabase {
+class QtDatabase : public NotebookDatabase
+{
 
   public:
     QtDatabase(const QtDatabase &) = delete;

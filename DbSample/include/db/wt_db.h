@@ -2,16 +2,20 @@
 
 #include <Wt/Dbo/Dbo>
 
-namespace notes {
-namespace db {
+namespace notes
+{
+namespace db
+{
 
 // Wt::Dbo object namespace
-namespace wt {
+namespace wt
+{
 namespace dbo = Wt::Dbo;
 
 // TODO
 // table notes
-class Note {
+class Note
+{
   public:
     int id;
     std::string title;
@@ -20,7 +24,8 @@ class Note {
     pt::ptime last_change;
     pt::ptime reminder;
 
-    template <class Action> void persist(Action &a) {
+    template <class Action> void persist(Action &a)
+    {
         dbo::field(a, id, "id");
         dbo::field(a, title, "title");
         dbo::field(a, content, "content");
@@ -31,14 +36,16 @@ class Note {
 };
 
 // table tags , tags_nm
-class Tag {
+class Tag
+{
   public:
     int id;
     std::string title;
 };
 
 // table notebooks
-class Notebook {
+class Notebook
+{
   public:
     int id;
     std::string title;
@@ -46,7 +53,8 @@ class Notebook {
 
 } // ns wt
 
-class WtDatabase : public NotebookDatabase {
+class WtDatabase : public NotebookDatabase
+{
 
     // NotebookDatabase interface
   public:

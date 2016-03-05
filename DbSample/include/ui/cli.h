@@ -3,10 +3,13 @@
 #include "client.h"
 #include "db_facade.h"
 
-namespace notes {
-namespace ui {
+namespace notes
+{
+namespace ui
+{
 
-class CliClient : public Client {
+class CliClient : public Client
+{
 
     enum class CliState { MAIN, NOTEBOOKS, NOTES, TAGS };
 

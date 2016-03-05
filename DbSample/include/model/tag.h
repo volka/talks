@@ -2,22 +2,25 @@
 
 #include <string>
 
-namespace notes {
-namespace model {
+namespace notes
+{
+namespace model
+{
 
-class Tag {
+class Tag
+{
   private:
-    long long m_id;
-    std::string m_title;
+    long long id_;
+    std::string title_;
 
   public:
-    inline long long id() { return m_id; }
+    inline long long id() { return id_; }
 
-    inline void id(long long id) { m_id = id; }
+    inline void id(long long id) { id_ = id; }
 
-    inline const std::string &title() { return m_title; }
+    inline const std::string &title() { return title_; }
 
-    inline void title(const std::string &title) { m_title = title; }
+    inline void title(const std::string &title) { title_ = title; }
 };
 
 } // model

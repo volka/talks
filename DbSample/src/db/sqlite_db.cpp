@@ -1,11 +1,14 @@
 #include "db/sqlite_db.h"
 #include <iostream>
 
-namespace notes {
-namespace db {
+namespace notes
+{
+namespace db
+{
 
 Sqlite3Database::Sqlite3Database(const std::string &connection_info)
-    : connection_info_(connection_info), connection_{nullptr} {
+    : connection_info_(connection_info), connection_{nullptr}
+{
     sqlite3 *conn;
     int result = sqlite3_open(connection_info.c_str(), &conn);
     if (result == SQLITE_OK) {
@@ -19,7 +22,8 @@ Sqlite3Database::Sqlite3Database(const std::string &connection_info)
 
 Sqlite3Database::~Sqlite3Database() {}
 
-void Sqlite3Database::setupDb() {
+void Sqlite3Database::setupDb()
+{
     auto result = prepareStatement("DROP TABLE IF EXISTS tags_nm;");
     if (!executeStatement(result))
         throw std::runtime_error("dropping table notebooks failed");
@@ -76,11 +80,13 @@ void Sqlite3Database::setupDb() {
         throw std::runtime_error("creating table tags_nm failed");
 }
 
-uint64_t Sqlite3Database::getLastInsertId() {
+uint64_t Sqlite3Database::getLastInsertId()
+{
     return sqlite3_last_insert_rowid(connection_.ptr());
 }
 
-sqlite_stmt Sqlite3Database::prepareStatement(const std::string &stmt) {
+sqlite_stmt Sqlite3Database::prepareStatement(const std::string &stmt)
+{
     sqlite3_stmt *stmt_ptr;
     // connection, statement string, length, OUT stmt pointer, ignored "unused
     // part of stmt"
@@ -91,7 +97,8 @@ sqlite_stmt Sqlite3Database::prepareStatement(const std::string &stmt) {
     return sqlite_stmt(stmt_ptr);
 }
 
-bool Sqlite3Database::executeStatement(sqlite_stmt &stmt) {
+bool Sqlite3Database::executeStatement(sqlite_stmt &stmt)
+{
     int res = sqlite3_step(stmt.ptr());
     switch (res) {
     case SQLITE_OK:
@@ -105,7 +112,8 @@ bool Sqlite3Database::executeStatement(sqlite_stmt &stmt) {
 }
 
 bool Sqlite3Database::checkResult(int result, int expected = SQLITE_OK,
-                                  const std::string &msg, bool do_throw) {
+                                  const std::string &msg, bool do_throw)
+{
     if (result != expected) {
         auto errmsg = msg + ": " + std::to_string(result) + " " +
                       std::string(sqlite3_errmsg(connection_.ptr()));
@@ -121,83 +129,99 @@ bool Sqlite3Database::checkResult(int result, int expected = SQLITE_OK,
 
 void Sqlite3Database::fillDb() {}
 
-std::vector<Notebook> Sqlite3Database::listNotebooks() {
+std::vector<Notebook> Sqlite3Database::listNotebooks()
+{
     return std::vector<Notebook>{};
 }
 
-int Sqlite3Database::newNotebook(const std::string &title) {
+int Sqlite3Database::newNotebook(const std::string &title)
+{
     std::cout << "new notebook " << title << std::endl;
     return 0;
 }
 
 void Sqlite3Database::renameNotebook(const int notebook_id,
-                                     const std::string &new_title) {
+                                     const std::string &new_title)
+{
 
     std::cout << "rename notebook " << notebook_id << " to " << new_title
               << std::endl;
 }
 
-void Sqlite3Database::deleteNotebook(const int id) {
+void Sqlite3Database::deleteNotebook(const int id)
+{
 
     std::cout << "deleting notebook " << id << std::endl;
 }
 
-Notebook Sqlite3Database::loadNotebook(const int notebook_id) {
+Notebook Sqlite3Database::loadNotebook(const int notebook_id)
+{
     std::cout << "loading notebook " << notebook_id << std::endl;
     return Notebook{};
 }
 
-void Sqlite3Database::newNote(Note &) {
+void Sqlite3Database::newNote(Note &)
+{
 
     std::cout << "creating new note" << std::endl;
 }
 
-void Sqlite3Database::updateNote(const Note &note) {
+void Sqlite3Database::updateNote(const Note &note)
+{
 
     std::cout << "updateing note " << note.id() << std::endl;
 }
 
-void Sqlite3Database::addTag(const int note_id, const int tag_id) {
+void Sqlite3Database::addTag(const int note_id, const int tag_id)
+{
 
     std::cout << "adding tag " << tag_id << " to note " << note_id << std::endl;
 }
 
-void Sqlite3Database::removeTag(const int note_id, const int tag_id) {
+void Sqlite3Database::removeTag(const int note_id, const int tag_id)
+{
 
     std::cout << "remove tag " << tag_id << " from note " << note_id
               << std::endl;
 }
 
-void Sqlite3Database::deleteNote(int id) {
+void Sqlite3Database::deleteNote(int id)
+{
     std::cout << "delete note " << id << std::endl;
 }
 
-Note Sqlite3Database::loadNote(int note_id) {
+Note Sqlite3Database::loadNote(int note_id)
+{
     std::cout << "load note " << note_id << std::endl;
     return Note{};
 }
 
-int Sqlite3Database::newTag(const std::string &title) {
+int Sqlite3Database::newTag(const std::string &title)
+{
     std::cout << "new tag " << title << std::endl;
     return 0;
 }
 
-int Sqlite3Database::findTag(const std::string &title) {
+int Sqlite3Database::findTag(const std::string &title)
+{
     std::cout << "finding tag " << title << std::endl;
     return 0;
 }
 
-void Sqlite3Database::deleteTag(const int tag_id) {
+void Sqlite3Database::deleteTag(const int tag_id)
+{
     std::cout << "deleting tag " << tag_id << std::endl;
 }
 
-std::vector<Note> Sqlite3Database::loadNotesFromNotebook(int notebook_id) {
+std::vector<Note> Sqlite3Database::loadNotesFromNotebook(int notebook_id)
+{
 
     std::cout << "load notes for notebook " << notebook_id << std::endl;
     return std::vector<Note>{};
 }
 
-std::vector<Note> Sqlite3Database::loadNotesForTag(int tag_id) {
+std::vector<Note> Sqlite3Database::loadNotesForTag(int tag_id)
+{
     std::cout << "load notes for tag " << tag_id << std::endl;
     return std::vector<Note>{};
 }

@@ -8,14 +8,18 @@
 #include <string>
 #include <memory>
 
-namespace notes {
-namespace db {
+namespace notes
+{
+namespace db
+{
 
-namespace {
+namespace
+{
 
 // this parses the PSQL specific fields
 void parsePgConfig(const std::string &conn_info,
-                   NotebookDatabase::ConnectionConfig &config) {
+                   NotebookDatabase::ConnectionConfig &config)
+{
     using namespace std;
     // parse dbname, host, username, password - separated by spaces
     size_t space_pos = 0;
@@ -61,7 +65,8 @@ void parsePgConfig(const std::string &conn_info,
 
 // parse the connection_info for QSQL to separate the DRIVER and Parameters
 NotebookDatabase::ConnectionConfig
-parseConnectionInfo(const std::string &conn_info) {
+parseConnectionInfo(const std::string &conn_info)
+{
     NotebookDatabase::ConnectionConfig config;
 
     size_t split = conn_info.find(":");
@@ -89,7 +94,8 @@ parseConnectionInfo(const std::string &conn_info) {
 }
 
 std::unique_ptr<NotebookDatabase>
-NotebookDatabase::create(const std::string &dbtype, const std::string &config) {
+NotebookDatabase::create(const std::string &dbtype, const std::string &config)
+{
     if (dbtype == Types::sqlite) {
         return std::make_unique<Sqlite3Database>(config);
     }

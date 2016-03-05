@@ -3,8 +3,10 @@
 #include <iostream>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-namespace notes {
-namespace ui {
+namespace notes
+{
+namespace ui
+{
 
 using namespace std;
 
@@ -12,9 +14,12 @@ CliClient::~CliClient() {}
 
 CliClient::CliClient(std::shared_ptr<notes::db::NotebookDatabase> &db, int argc,
                      char **args)
-    : db_(db), state_(CliState::MAIN), argc_(argc), args_(args) {}
+    : db_(db), state_(CliState::MAIN), argc_(argc), args_(args)
+{
+}
 
-int CliClient::run() {
+int CliClient::run()
+{
     do {
         printMenu();
     } while (!processInput());
@@ -29,7 +34,8 @@ void CliClient::showTags() {}
 
 void CliClient::showNotebooks() {}
 
-void CliClient::printMenu() {
+void CliClient::printMenu()
+{
     using namespace std;
 
     switch (state_) {
@@ -69,7 +75,8 @@ void CliClient::printMenu() {
 }
 
 // if true, quit the cli loop
-int CliClient::processInput() {
+int CliClient::processInput()
+{
     // TODO : handle state
     char input;
     std::cin >> input;
@@ -94,7 +101,8 @@ int CliClient::processInput() {
     return false;
 }
 
-int CliClient::openNotebook() {
+int CliClient::openNotebook()
+{
     listNotebooks();
     cout << "Select notebook id: " << endl;
     cout << ">> ";
@@ -103,7 +111,8 @@ int CliClient::openNotebook() {
     return notebook_id;
 }
 
-void CliClient::listNotebooks() {
+void CliClient::listNotebooks()
+{
     auto notebooks = db_->listNotebooks();
     cout << "Found " << notebooks.size() << " notebooks:" << endl;
     for (const auto &notebook : notebooks) {
@@ -111,7 +120,8 @@ void CliClient::listNotebooks() {
     }
 }
 
-void CliClient::addNote() {
+void CliClient::addNote()
+{
     model::Note new_note;
     std::string tmp;
 
@@ -136,7 +146,8 @@ void CliClient::addNote() {
     bool parse_ok = false;
     while (!parse_ok) {
         cout << "Enter reminder date: (yyyy-mm-dd hh:mm:ss) or 0 to skip"
-             << endl << ">> ";
+             << endl
+             << ">> ";
         cin >> tmp;
         try {
             if (tmp.size() > 0 && tmp[0] == '0')
@@ -147,7 +158,8 @@ void CliClient::addNote() {
 
         } catch (std::exception &ex) {
             cout << "!!! error: date format is invalid, try again (or enter 0 "
-                    "to skip)" << endl;
+                    "to skip)"
+                 << endl;
         }
     }
     new_note.reminder(time_tmp);
@@ -161,7 +173,8 @@ void CliClient::addNote() {
 
 void CliClient::deleteNote() {}
 
-void CliClient::listNotes() {
+void CliClient::listNotes()
+{
     auto notes = db_->loadNotesFromNotebook(current_notebook_);
     cout << "Found " << notes.size() << " notes: " << endl;
     for (const auto &note : notes) {
@@ -170,7 +183,8 @@ void CliClient::listNotes() {
     cout << "-----------------------" << endl << endl;
 }
 
-void CliClient::printNote(const notes::model::Note &note) {
+void CliClient::printNote(const notes::model::Note &note)
+{
     cout << "ID      : " << note.id() << endl;
     cout << "Title   : " << note.title() << endl;
     cout << "Changed : " << note.lastChanged() << endl;

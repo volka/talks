@@ -23,7 +23,8 @@ using pg_escaped_ptr = std::unique_ptr<char, std::function<void(void *)>>;
 
 // helper for result validation
 bool checkResult(PGconn *conn, PGresult *res, int expected = PGRES_COMMAND_OK,
-                 const std::string &msg = "Command failed") {
+                 const std::string &msg = "Command failed")
+{
     if (res == nullptr || PQresultStatus(res) != expected) {
         cout << msg << ": " << PQerrorMessage(conn);
         return false;
@@ -31,7 +32,8 @@ bool checkResult(PGconn *conn, PGresult *res, int expected = PGRES_COMMAND_OK,
     return true;
 }
 
-int get_id(PGresult *res) {
+int get_id(PGresult *res)
+{
     int fields = PQnfields(res);
     if (fields != 1)
         throw std::runtime_error(
@@ -46,7 +48,8 @@ int get_id(PGresult *res) {
 }
 
 // create our tables and fill with sample values ...
-void setup(PGconn *conn) {
+void setup(PGconn *conn)
+{
     auto result = pg_result_ptr(
         PQexec(conn, "DROP TABLE IF EXISTS tags_nm, notes, tags, notebooks;"),
         PQclear);
@@ -99,7 +102,8 @@ void setup(PGconn *conn) {
 void free_char(char *test) { PQfreemem((void *)test); }
 
 int insert_note(PGconn *conn, const std::string &title,
-                const std::string content, int notebook, time_t reminder) {
+                const std::string content, int notebook, time_t reminder)
+{
     auto title_str = std::shared_ptr<char>(
         PQescapeLiteral(conn, title.c_str(), title.size()), PQfreemem);
     auto content_str = std::shared_ptr<char>(
@@ -133,13 +137,15 @@ int insert_node(Note& note)
 }
 */
 
-int insert_tag(PGconn *conn, const std::string &title) {
+int insert_tag(PGconn *conn, const std::string &title)
+{
     auto title_str = std::shared_ptr<char>(
         PQescapeLiteral(conn, title.c_str(), title.size()), PQfreemem);
     return 1;
 }
 
-int insert_notebook(PGconn *conn, const std::string &title) {
+int insert_notebook(PGconn *conn, const std::string &title)
+{
     auto title_str = pg_escaped_ptr(
         PQescapeLiteral(conn, title.c_str(), title.size()), PQfreemem);
 
@@ -154,7 +160,8 @@ int insert_notebook(PGconn *conn, const std::string &title) {
     return get_id(result.get());
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     const char *conninfo = "host=/tmp dbname=postgres";
     if (argc > 1) {
         conninfo = argv[1];

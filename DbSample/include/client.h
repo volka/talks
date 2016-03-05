@@ -2,16 +2,20 @@
 
 #include "db_facade.h"
 
-namespace notes {
-namespace ui {
+namespace notes
+{
+namespace ui
+{
 
 // Generic UI exception
-class UiException : public std::domain_error {
+class UiException : public std::domain_error
+{
     using std::domain_error::domain_error;
 };
 
 // base class for user interface clients of the Notes App
-class Client {
+class Client
+{
   public:
     virtual ~Client() = 0;
     virtual int run() = 0;

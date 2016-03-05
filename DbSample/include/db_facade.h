@@ -10,19 +10,24 @@
 #include "model/notebook.h"
 #include "model/tag.h"
 
-namespace notes {
+namespace notes
+{
 
-namespace db {
+namespace db
+{
 
 using namespace notes::model;
+namespace pt = boost::posix_time;
 
 // exceptions...
-class DatabaseException : public std::domain_error {
+class DatabaseException : public std::domain_error
+{
     using std::domain_error::domain_error;
 };
 
 // abstract base class for Notebook Database interfaces, used for the GUI
-class NotebookDatabase {
+class NotebookDatabase
+{
   public:
     // constants for database types
     struct Types {
