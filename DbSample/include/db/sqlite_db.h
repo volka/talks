@@ -16,14 +16,22 @@ class sqlite_conn
 
   public:
     sqlite_conn(sqlite3 *conn) : conn_(conn) {}
+    sqlite_conn(sqlite_conn &) = delete;
+    sqlite_conn(sqlite_conn &&other) { std::swap(conn_, other.conn_); }
+    sqlite_conn &operator=(sqlite_conn &) = delete;
+    sqlite_conn &operator=(sqlite_conn &&other)
+    {
+        std::swap(conn_, other.conn_);
+        return *this;
+    }
 
     ~sqlite_conn()
     {
         if (conn_) {
             int result = sqlite3_close_v2(conn_);
             if (result != SQLITE_OK) {
-                throw DatabaseException("Error closing Sqlite connection, ec=" +
-                                        std::to_string(result));
+                std::cout << "Error closing Sqlite connection, ec="
+                          << std::to_string(result) << std::endl;
             }
         }
     }
@@ -39,14 +47,21 @@ class sqlite_stmt
 
   public:
     sqlite_stmt(sqlite3_stmt *stmt) : stmt_(stmt) {}
+    sqlite_stmt(sqlite_stmt &) = delete;
+    sqlite_stmt(sqlite_stmt &&other) { std::swap(stmt_, other.stmt_); }
+    sqlite_stmt &operator=(sqlite_stmt &) = delete;
+    sqlite_stmt &operator=(sqlite_stmt &&other)
+    {
+        std::swap(stmt_, other.stmt_);
+        return *this;
+    }
 
     ~sqlite_stmt()
     {
         int result = sqlite3_finalize(stmt_);
         if (result != SQLITE_OK) {
-            throw DatabaseException(
-                "Error finalizing Sqlite Statement pointer, ec=" +
-                std::to_string(result));
+            std::cout << "Error finalizing Sqlite Statement pointer, ec="
+                      << std::to_string(result) << std::endl;
         }
     }
 
@@ -73,7 +88,6 @@ class Sqlite3Database : public NotebookDatabase
 
     // helper functions to initialize DB and seed with some sample data
     virtual void setupDb() override;
-    virtual void fillDb() override;
 
     // create a notebook, return the generated ID
     virtual std::vector<Notebook> listNotebooks() override;
@@ -92,10 +106,13 @@ class Sqlite3Database : public NotebookDatabase
     virtual Note loadNote(const int note_id) override;
 
     virtual int newTag(const std::string &title) override;
+    virtual std::vector<Tag> listTags() override;
     virtual void deleteTag(const int tag_id) override;
 
     virtual std::vector<Note> loadNotesFromNotebook(int notebook_id) override;
     virtual std::vector<Note> loadNotesForTag(int tag_id) override;
+
+    virtual std::vector<Note> searchNotes(const std::string &term) override;
 
   private:
     // retrieve the last inserted row-id (usually the autoincrement ID)

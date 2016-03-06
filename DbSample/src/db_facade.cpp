@@ -117,5 +117,31 @@ NotebookDatabase::create(const std::string &dbtype, const std::string &config)
 }
 
 NotebookDatabase::~NotebookDatabase() {}
+
+// create some dummy test data ...
+void NotebookDatabase::fillDb()
+{
+    int nb_id = newNotebook("Privat");
+    Notebook privat = loadNotebook(nb_id);
+
+    Note folien("Vortrag", "Folien fertigschreiben", privat.id(),
+                pt::ptime(pt::time_from_string("2016-03-10 18:59:59")));
+    Note code("Beispielcode", "Code schreiben und testen", privat.id(),
+              pt::ptime(pt::time_from_string("2016-03-10 18:59:59")));
+
+    newNote(folien);
+    newNote(code);
+
+    int cpp_tag_id = newTag("C++");
+    addTag(folien.id(), cpp_tag_id);
+    addTag(code.id(), cpp_tag_id);
+
+    int nb_work = newNotebook("Einkaufslisten");
+    Notebook work = loadNotebook(nb_work);
+    Note essen("Essen", "* Eier\n*Milch\n*Mehl\n* Nutella", work.id(),
+               pt::ptime(pt::time_from_string("2016-03-11 12:00:00")));
+    newNote(essen);
 }
-}
+
+} // ns db
+} // ns notes

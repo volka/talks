@@ -68,7 +68,14 @@ pt::ptime PgDatabase::getTimestamp(PGresult *res, const int row,
     if (PQgetisnull(res, row, field))
         return pt::ptime();
     char *time_str = PQgetvalue(res, row, field);
-    return pt::ptime(pt::time_from_string(time_str));
+    try {
+        return pt::ptime(pt::time_from_string(time_str));
+    } catch (boost::bad_lexical_cast &) {
+        return pt::ptime();
+    } catch (std::exception &ex) {
+        std::cout << "Caught ex " << ex.what() << std::endl;
+        return pt::ptime();
+    }
 }
 
 // get an ID from a query using "RETURNING id"
@@ -175,25 +182,6 @@ void PgDatabase::setupDb()
         throw std::runtime_error("creating table tags_nm failed");
 }
 
-/// Create some sample data for the DB
-
-void PgDatabase::fillDb()
-{
-    int nb_id = newNotebook("Privat");
-    Notebook privat = loadNotebook(nb_id);
-
-    Note folien("Vortrag", "Folien fertigschreiben", privat.id(),
-                pt::ptime(pt::time_from_string("2016-03-10 18:59:59")));
-    Note code("Beispielcode", "Code schreiben und testen", privat.id(),
-              pt::ptime(pt::time_from_string("2016-03-10 18:59:59")));
-
-    newNote(folien);
-    newNote(code);
-
-    int cpp_tag_id = newTag("C++");
-    addTag(folien.id(), cpp_tag_id);
-}
-
 //
 // here the NotebookDatabase interface impl. starts
 
@@ -286,17 +274,16 @@ Notebook PgDatabase::loadNotebook(const int notebook_id)
 // DEMO : here we use PQexecParams to skip escaping
 void PgDatabase::newNote(Note &note)
 {
-    auto title_str = escape(note.title());
-    auto content_str = escape(note.content());
     auto nb_id_str = std::to_string(note.notebook());
     auto date_str = pt::to_iso_string(note.reminder());
     constexpr int num_params = 4;
 
-    const char *paramValues[num_params] = {title_str.get(), content_str.get(),
+    const char *paramValues[num_params] = {note.title().c_str(),
+                                           note.content().c_str(),
                                            nb_id_str.c_str(), date_str.c_str()};
     const int paramLength[num_params] = {
-        static_cast<int>(strlen(title_str.get())),
-        static_cast<int>(strlen(content_str.get())),
+        static_cast<int>(note.title().size()),
+        static_cast<int>(note.content().size()),
         static_cast<int>(nb_id_str.size()), static_cast<int>(date_str.size())};
 
     clearStatement();
@@ -380,7 +367,7 @@ void PgDatabase::addTag(const int note_id, const int tag_id)
 
     auto result = executeStatement();
 
-    if (!checkResultCode(result.get(), PGRES_TUPLES_OK))
+    if (!checkResultCode(result.get(), PGRES_COMMAND_OK))
         throw DatabaseException("adding tag " + std::to_string(tag_id) +
                                 " to note " + std::to_string(note_id) +
                                 " failed");
@@ -428,7 +415,7 @@ Note PgDatabase::loadNote(const int note_id)
     auto result = executeStatement();
 
     if (!checkResultCode(result.get(), PGRES_TUPLES_OK) ||
-        !checkResultSize(result.get(), 1, 5)) {
+        !checkResultSize(result.get(), 1, 6)) {
         throw DatabaseException("loading note id " + std::to_string(note_id) +
                                 " failed, invalid result");
     }
@@ -456,6 +443,28 @@ int PgDatabase::newTag(const std::string &title)
     return getId(result.get());
 }
 
+std::vector<Tag> db::PgDatabase::listTags()
+{
+    clearStatement();
+    stmt_cache_ << "SELECT * FROM tags order by id asc";
+    auto result = executeStatement();
+
+    if (!checkResultCode(result.get(), PGRES_TUPLES_OK) ||
+        !checkResultSize(result.get(), -1, 2))
+        throw DatabaseException("listing tags failed, invalid result");
+
+    int results = PQntuples(result.get());
+
+    std::vector<Tag> result_vec;
+    result_vec.reserve(results);
+
+    for (int i = 0; i < results; ++i) {
+        result_vec.emplace_back(getInt(result.get(), i, 0),
+                                getString(result.get(), i, 1));
+    }
+    return result_vec;
+}
+
 void PgDatabase::deleteTag(const int tag_id)
 {
     clearStatement();
@@ -466,19 +475,20 @@ void PgDatabase::deleteTag(const int tag_id)
 
     if (!checkResultCode(result.get(), PGRES_COMMAND_OK))
         throw DatabaseException("deleting tag " + std::to_string(tag_id) +
-                                " failed");
+                                " failed (" + stmt_cache_.str() + ")");
 }
 
 std::vector<Note> PgDatabase::loadNotesFromNotebook(const int notebook_id)
 {
     clearStatement();
     stmt_cache_ << "SELECT * FROM notes where (notebook="
-                << std::to_string(notebook_id) << ")";
+                << std::to_string(notebook_id) << ") order by id asc";
     auto result = executeStatement();
 
     if (!checkResultCode(result.get(), PGRES_TUPLES_OK) ||
-        !checkResultSize(result.get(), -1, 5))
-        throw DatabaseException("listing notes failed, invalid result");
+        !checkResultSize(result.get(), -1, 6))
+        throw DatabaseException("listing notes failed, invalid result (" +
+                                stmt_cache_.str() + ")");
 
     int results = PQntuples(result.get());
 
@@ -498,14 +508,48 @@ std::vector<Note> PgDatabase::loadNotesForTag(const int tag_id)
 {
     clearStatement();
     stmt_cache_
-        << "SELECT notes.id, notes.title, notes.content, notes.last_change, "
-        << "notes.reminder FROM notes join tags_nm ON "
+        << "SELECT notes.id, notes.title, notes.content, notes.notebook, "
+           "notes.last_change, notes.reminder FROM notes join tags_nm ON "
            "(notes.id=tags_nm.note_id)"
-        << " WHERE (tag_id = " << std::to_string(tag_id) << ")";
+           " WHERE (tag_id = "
+        << std::to_string(tag_id) << ") ORDER BY notes.id asc";
     auto result = executeStatement();
 
     if (!checkResultCode(result.get(), PGRES_TUPLES_OK) ||
-        !checkResultSize(result.get(), -1, 5))
+        !checkResultSize(result.get(), -1, 6))
+        throw DatabaseException("listing notes failed, invalid result");
+
+    int results = PQntuples(result.get());
+
+    std::vector<Note> result_vec;
+    result_vec.reserve(results);
+
+    for (int i = 0; i < results; ++i) {
+        result_vec.emplace_back(
+            getInt(result.get(), i, 0), getString(result.get(), i, 1),
+            getString(result.get(), i, 2), getInt(result.get(), i, 3),
+            getTimestamp(result.get(), i, 4), getTimestamp(result.get(), i, 5));
+    }
+    return result_vec;
+}
+
+// DEMO : search using like and joins
+std::vector<Note> PgDatabase::searchNotes(const std::string &term)
+{
+    clearStatement();
+    stmt_cache_
+        << "SELECT notes.id, notes.title, notes.content, notes.notebook, "
+           "notes.last_change, notes.reminder FROM notes left join tags_nm ON "
+           "(notes.id=tags_nm.note_id) left join tags ON "
+           "(tags_nm.tag_id=tags.id)"
+           "WHERE (notes.title ilike '%"
+        << term << "%' or notes.content ilike '%" << term
+        << "%' or tags.title ilike '%" << term << "%') order by notes.id asc";
+
+    std::cout << "Query: " << stmt_cache_.str() << std::endl;
+    auto result = executeStatement();
+    if (!checkResultCode(result.get(), PGRES_TUPLES_OK) ||
+        !checkResultSize(result.get(), -1, 6))
         throw DatabaseException("listing notes failed, invalid result");
 
     int results = PQntuples(result.get());

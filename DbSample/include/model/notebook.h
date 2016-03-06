@@ -10,11 +10,13 @@ namespace model
 // a collection of notes
 class Notebook
 {
-  private:
+  protected:
     int id_;
     std::string title_;
 
   public:
+    Notebook() : id_(-1), title_() {}
+
     Notebook(const std::string &title) : id_(-1), title_(title) {}
 
     Notebook(const int id, const std::string &title) : id_(id), title_(title) {}

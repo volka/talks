@@ -13,7 +13,7 @@ namespace pt = boost::posix_time;
 // a note
 class Note
 {
-  private:
+  protected:
     int id_;
     std::string title_;
     std::string content_;
@@ -22,6 +22,12 @@ class Note
     pt::ptime reminder_;
 
   public:
+    Note()
+        : id_(-1), title_(), content_(), notebook_id_(0), last_change_(),
+          reminder_()
+    {
+    }
+
     // standard constructor filling all fields
     Note(const int id, const std::string &title, const std::string &content,
          const int notebook_id, const pt::ptime &last_change,

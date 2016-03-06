@@ -12,6 +12,9 @@ Sqlite3Database::Sqlite3Database(const std::string &connection_info)
     sqlite3 *conn;
     int result = sqlite3_open(connection_info.c_str(), &conn);
     if (result == SQLITE_OK) {
+        // enable foreign key checking ...
+        sqlite3_exec(conn, "PRAGMA foreign_keys = ON;", nullptr, nullptr,
+                     nullptr);
         connection_ = sqlite_conn(conn);
     } else {
         throw DatabaseException("Error opening SQLite database " +
@@ -35,15 +38,25 @@ int Sqlite3Database::getInt(const sqlite_stmt &stmt, const int column)
 std::string Sqlite3Database::getString(const sqlite_stmt &stmt,
                                        const int column)
 {
-    return std::string(reinterpret_cast<const char *>(
-        sqlite3_column_text(stmt.ptr(), column)));
+    const unsigned char *text_result = sqlite3_column_text(stmt.ptr(), column);
+    if (text_result == nullptr)
+        return std::string();
+
+    return std::string(reinterpret_cast<const char *>(text_result));
 }
 
 pt::ptime Sqlite3Database::getTimestamp(const sqlite_stmt &stmt,
                                         const int column)
 {
-    return pt::from_iso_string(reinterpret_cast<const char *>(
-        sqlite3_column_text(stmt.ptr(), column)));
+    const unsigned char *text_result = sqlite3_column_text(stmt.ptr(), column);
+    if (text_result == nullptr)
+        return pt::ptime();
+
+    try {
+        return pt::from_iso_string(reinterpret_cast<const char *>(text_result));
+    } catch (boost::bad_lexical_cast &) {
+        return pt::ptime();
+    }
 }
 
 int Sqlite3Database::bindString(sqlite_stmt &stmt, const int pos,
@@ -168,9 +181,6 @@ void Sqlite3Database::setupDb()
         throw DatabaseException("creating table tags_nm failed");
 }
 
-// create some dummy test data
-void Sqlite3Database::fillDb() {}
-
 // implementation of NotebookDatabase interface
 std::vector<Notebook> Sqlite3Database::listNotebooks()
 {
@@ -182,7 +192,7 @@ std::vector<Notebook> Sqlite3Database::listNotebooks()
     std::vector<Notebook> result_vec;
     while (status != SQLITE_DONE) {
         result_vec.emplace_back(getInt(result, 0), getString(result, 1));
-        executeStep(result);
+        status = executeStep(result);
     }
     return result_vec;
 }
@@ -190,7 +200,7 @@ std::vector<Notebook> Sqlite3Database::listNotebooks()
 int Sqlite3Database::newNotebook(const std::string &title)
 {
     clearStatement();
-    stmt_cache_ << "INSERT INTO notebooks(title) VALUES(" << title << ")";
+    stmt_cache_ << "INSERT INTO notebooks(title) VALUES('" << title << "')";
     auto result = prepareStatement(stmt_cache_.str());
     if (isError(executeStep(result)))
         throw DatabaseException("inserting notebook " + title + " failed");
@@ -203,7 +213,7 @@ void Sqlite3Database::renameNotebook(const int notebook_id,
 {
     clearStatement();
     stmt_cache_ << "UPDATE notebooks SET (title='" << new_title
-                << "'') WHERE id=" << notebook_id;
+                << "') WHERE id=" << notebook_id;
     auto result = prepareStatement(stmt_cache_.str());
 
     if (isError(executeStep(result)))
@@ -320,8 +330,7 @@ void Sqlite3Database::removeTag(const int note_id, const int tag_id)
 void Sqlite3Database::deleteNote(const int note_id)
 {
     clearStatement();
-    stmt_cache_ << "DELETE FROM notes WHERE note_id=" << std::to_string(note_id)
-                << ")";
+    stmt_cache_ << "DELETE FROM notes WHERE id=" << std::to_string(note_id);
     auto result = prepareStatement(stmt_cache_.str());
     if (isError(executeStep(result)))
         throw DatabaseException("deleting note " + std::to_string(note_id) +
@@ -331,7 +340,7 @@ void Sqlite3Database::deleteNote(const int note_id)
 int Sqlite3Database::newTag(const std::string &title)
 {
     clearStatement();
-    stmt_cache_ << "INSERT INTO tags(title) VALUES(" << title << ")";
+    stmt_cache_ << "INSERT INTO tags(title) VALUES('" << title << "')";
     auto result = prepareStatement(stmt_cache_.str());
     if (isError(executeStep(result)))
         throw DatabaseException("inserting tag " + title + " failed");
@@ -339,11 +348,30 @@ int Sqlite3Database::newTag(const std::string &title)
     return getLastInsertId();
 }
 
+std::vector<Tag> db::Sqlite3Database::listTags()
+{
+    clearStatement();
+    stmt_cache_ << "SELECT * FROM tags";
+    auto result = prepareStatement(stmt_cache_.str());
+    int state = SQLITE_OK;
+
+    std::vector<Tag> result_vec;
+    do {
+        state = executeStep(result);
+        if (isError(state))
+            throw DatabaseException("listing tags failed, invalid result");
+        if (state == SQLITE_DONE)
+            break;
+
+        result_vec.emplace_back(getInt(result, 0), getString(result, 1));
+    } while (!isError(state) && state != SQLITE_DONE);
+    return result_vec;
+}
+
 void Sqlite3Database::deleteTag(const int tag_id)
 {
     clearStatement();
-    stmt_cache_ << "DELETE FROM tags WHERE tag_id=" << std::to_string(tag_id)
-                << ")";
+    stmt_cache_ << "DELETE FROM tags WHERE id=" << std::to_string(tag_id);
     auto result = prepareStatement(stmt_cache_.str());
     if (isError(executeStep(result)))
         throw DatabaseException("deleting tag " + std::to_string(tag_id) +
@@ -381,6 +409,8 @@ std::vector<Note> Sqlite3Database::loadNotesFromNotebook(int notebook_id)
         state = executeStep(result);
         if (isError(state))
             throw DatabaseException("listing notes failed, invalid result");
+        if (state == SQLITE_DONE)
+            break;
 
         result_vec.emplace_back(getInt(result, 0), getString(result, 1),
                                 getString(result, 2), getInt(result, 3),
@@ -406,12 +436,44 @@ std::vector<Note> Sqlite3Database::loadNotesForTag(int tag_id)
         state = executeStep(result);
         if (isError(state))
             throw DatabaseException("listing notes failed, invalid result");
+        if (state == SQLITE_DONE)
+            break;
 
         result_vec.emplace_back(getInt(result, 0), getString(result, 1),
                                 getString(result, 2), getInt(result, 3),
                                 getTimestamp(result, 4),
                                 getTimestamp(result, 5));
-    } while (!isError(state) && state != SQLITE_DONE);
+    } while (state != SQLITE_DONE);
+    return result_vec;
+}
+
+std::vector<Note> Sqlite3Database::searchNotes(const std::string &term)
+{
+    clearStatement();
+    stmt_cache_
+        << "SELECT notes.id, notes.title, notes.content, notes.last_change, "
+        << "notes.reminder FROM notes left join tags_nm ON "
+           "(notes.id=tags_nm.note_id)"
+        << " left join tags ON (tags_nm.tag_id=tags.id) WHERE ("
+        << " notes.title ilike '%" << term << "%' or notes.content ilike '%"
+        << term << "%' or tags.title ilike '%" << term << "%')";
+    auto result = prepareStatement(stmt_cache_.str());
+    int state = SQLITE_OK;
+
+    std::vector<Note> result_vec;
+    do {
+        state = executeStep(result);
+        if (isError(state))
+            throw DatabaseException("Searching for notes failed with ec=" +
+                                    std::to_string(state));
+        if (state == SQLITE_DONE)
+            break;
+
+        result_vec.emplace_back(getInt(result, 0), getString(result, 1),
+                                getString(result, 2), getInt(result, 3),
+                                getTimestamp(result, 4),
+                                getTimestamp(result, 5));
+    } while (state != SQLITE_DONE);
     return result_vec;
 }
 

@@ -15,7 +15,8 @@ set(Boost_USE_MULTITHREADED ON)
 add_definitions(-std=gnu++14)
 find_package(PostgreSQL 9.4 REQUIRED)
 find_package(SQLite3 REQUIRED)
-find_package(Boost COMPONENTS date_time program_options REQUIRED)
+find_package(Boost COMPONENTS date_time REQUIRED)
+#find_package(Boost COMPONENTS date_time program_options REQUIRED)
 find_library(wtdbo NAMES libwtdbo.so)
 
 find_package(Qt5 COMPONENTS Quick Sql Core Network)
@@ -55,13 +56,11 @@ set(SRC_LIST
 
     # Sqlpp11
     include/db/sqlpp_db.h
+    include/db/sqlpp_model.h
     src/db/sqlpp_db.cpp
-
-    # UI code
-    include/client.h
-    src/ui/client.cpp
 )
 
+set(CLIENT_INTERFACE include/client.h src/ui/client.cpp)
 set(CLI_CLIENT include/ui/cli.h src/ui/cli.cpp)
 set(QT_CLIENT include/ui/qt.h src/ui/qt.cpp)
 set(QML_FILES resources/qtclient.qml)
@@ -69,7 +68,8 @@ set(QML_FILES resources/qtclient.qml)
 qt5_add_resources(RESOURCES resources/notes.qrc)
 set_source_files_properties(${RESOURCES} PROPERTIES GENERATED ON)
 
-add_executable(notebook src/main.cpp ${SRC_LIST} ${QT_CLIENT} ${CLI_CLIENT}
+add_executable(notebook src/main.cpp ${SRC_LIST} ${CLIENT_INTERFACE}
+                                     ${QT_CLIENT} ${CLI_CLIENT}
                                      ${RESOURCES} ${QML_FILES})
 
 qt5_use_modules(notebook Quick Core)
@@ -86,4 +86,6 @@ add_executable(notebook_test src/test.cpp ${SRC_LIST})
 target_link_libraries(notebook_test  ${PostgreSQL_LIBRARIES}
                                 ${SQLITE3_LIBRARIES}
                                 wtdbo
+                                Qt5::Core
+                                Qt5::Sql
                                 ${Boost_LIBRARIES})

@@ -33,7 +33,6 @@ class PgDatabase : public NotebookDatabase
 
     // helper functions to initialize DB and seed with some sample data
     virtual void setupDb() override;
-    virtual void fillDb() override;
 
     // create a notebook, return the generated ID
     virtual std::vector<Notebook> listNotebooks() override;
@@ -52,11 +51,14 @@ class PgDatabase : public NotebookDatabase
     virtual Note loadNote(const int note_id) override;
 
     virtual int newTag(const std::string &title) override;
+    virtual std::vector<Tag> listTags() override;
     virtual void deleteTag(const int tag_id) override;
 
     virtual std::vector<Note>
     loadNotesFromNotebook(const int notebook_id) override;
     virtual std::vector<Note> loadNotesForTag(const int tag_id) override;
+
+    virtual std::vector<Note> searchNotes(const std::string &term) override;
 
   private:
     pg_escaped_ptr escape(const std::string &str);

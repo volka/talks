@@ -15,8 +15,6 @@ SqlppDatabase::~SqlppDatabase() {}
 
 void SqlppDatabase::setupDb() {}
 
-void SqlppDatabase::fillDb() {}
-
 std::vector<Notebook> SqlppDatabase::listNotebooks()
 {
     return std::vector<Notebook>();
@@ -75,6 +73,11 @@ int SqlppDatabase::newTag(const std::string &title)
     return 0;
 }
 
+std::vector<Tag> db::SqlppDatabase::listTags()
+{
+    return std::vector<model::Tag>();
+}
+
 void SqlppDatabase::deleteTag(const int tag_id)
 {
     std::cout << "delete tag " << tag_id << std::endl;
@@ -89,6 +92,12 @@ std::vector<Note> SqlppDatabase::loadNotesFromNotebook(const int notebook_id)
 std::vector<Note> SqlppDatabase::loadNotesForTag(const int tag_id)
 {
     std::cout << "load notes for tag " << tag_id << std::endl;
+    return std::vector<Note>();
+}
+
+std::vector<Note> SqlppDatabase::searchNotes(const std::string &term)
+{
+    std::cout << "searching in notes for " << term << std::endl;
     return std::vector<Note>();
 }
 

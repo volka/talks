@@ -9,18 +9,20 @@ namespace model
 
 class Tag
 {
-  private:
-    long long id_;
+  protected:
+    int id_;
     std::string title_;
 
   public:
+    Tag() : id_(-1), title_() {}
+
     Tag(const std::string &title) : id_(-1), title_(title) {}
 
     Tag(const int id, const std::string &title) : id_(id), title_(title) {}
 
-    inline long long id() { return id_; }
+    inline int id() { return id_; }
 
-    inline void id(long long id) { id_ = id; }
+    inline void id(int id) { id_ = id; }
 
     inline const std::string &title() { return title_; }
 

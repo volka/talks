@@ -54,7 +54,7 @@ class NotebookDatabase
 
     // helper functions to initialize DB and seed with some sample data
     virtual void setupDb() = 0;
-    virtual void fillDb() = 0;
+    virtual void fillDb();
 
     // create a notebook, return the generated ID
     virtual std::vector<Notebook> listNotebooks() = 0;
@@ -73,10 +73,14 @@ class NotebookDatabase
     virtual Note loadNote(const int note_id) = 0;
 
     virtual int newTag(const std::string &title) = 0;
+    virtual std::vector<Tag> listTags() = 0;
     virtual void deleteTag(const int tag_id) = 0;
 
     virtual std::vector<Note> loadNotesFromNotebook(const int notebook_id) = 0;
     virtual std::vector<Note> loadNotesForTag(const int tag_id) = 0;
+
+    // find notes by term in title, content or tags
+    virtual std::vector<Note> searchNotes(const std::string &term) = 0;
 };
 
 // for parsing the connection string wiht QtSql / Wt::Dbo
