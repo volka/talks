@@ -73,10 +73,9 @@ class WtDatabase : public NotebookDatabase
     virtual void updateNote(const Note &) override;
     virtual void addTag(const int note_id, const int tag_id) override;
     virtual void removeTag(const int note_id, const int tag_id) override;
-    virtual void deleteNote(int id) override;
-    virtual Note loadNote(int note_id) override;
+    virtual void deleteNote(const int note_id) override;
+    virtual Note loadNote(const int note_id) override;
     virtual int newTag(const std::string &title) override;
-    virtual int findTag(const std::string &title) override;
     virtual void deleteTag(const int tag_id) override;
     virtual std::vector<Note> loadNotesFromNotebook(int notebook_id) override;
     virtual std::vector<Note> loadNotesForTag(int tag_id) override;

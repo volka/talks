@@ -17,7 +17,6 @@ namespace db
 {
 
 using namespace notes::model;
-namespace pt = boost::posix_time;
 
 // exceptions...
 class DatabaseException : public std::domain_error
@@ -70,15 +69,14 @@ class NotebookDatabase
     virtual void updateNote(const Note &) = 0;
     virtual void addTag(const int note_id, const int tag_id) = 0;
     virtual void removeTag(const int note_id, const int tag_id) = 0;
-    virtual void deleteNote(int id) = 0;
-    virtual Note loadNote(int note_id) = 0;
+    virtual void deleteNote(const int id) = 0;
+    virtual Note loadNote(const int note_id) = 0;
 
     virtual int newTag(const std::string &title) = 0;
-    virtual int findTag(const std::string &title) = 0;
     virtual void deleteTag(const int tag_id) = 0;
 
-    virtual std::vector<Note> loadNotesFromNotebook(int notebook_id) = 0;
-    virtual std::vector<Note> loadNotesForTag(int tag_id) = 0;
+    virtual std::vector<Note> loadNotesFromNotebook(const int notebook_id) = 0;
+    virtual std::vector<Note> loadNotesForTag(const int tag_id) = 0;
 };
 
 // for parsing the connection string wiht QtSql / Wt::Dbo

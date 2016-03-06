@@ -6,7 +6,8 @@ cmake_minimum_required(VERSION 3.0)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic -Wconversion")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Werror -Wextra -pedantic -Wconversion")
+#set(CMAKE_EXE_LINKER_FLAGS "-fPIC")
 set(CMAKE_AUTORCC ON)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
@@ -20,6 +21,10 @@ find_library(wtdbo NAMES libwtdbo.so)
 find_package(Qt5 COMPONENTS Quick Sql Core Network)
 INCLUDE_DIRECTORIES(${PostgreSQL_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
+# temp. relative include for SQLPP11
+INCLUDE_DIRECTORIES("../../sqlpp11/include")
+INCLUDE_DIRECTORIES("../../date")
 INCLUDE_DIRECTORIES(include)
 
 set(SRC_LIST
@@ -48,6 +53,10 @@ set(SRC_LIST
     include/db/wt_db.h
     src/db/wt_db.cpp
 
+    # Sqlpp11
+    include/db/sqlpp_db.h
+    src/db/sqlpp_db.cpp
+
     # UI code
     include/client.h
     src/ui/client.cpp
@@ -73,5 +82,8 @@ target_link_libraries(notebook  ${PostgreSQL_LIBRARIES}
                                 wtdbo
                                 ${Boost_LIBRARIES})
 
-add_executable(pg_main src/pg_main.cpp)
-add_executable(sqlite_main src/sqlite_main.cpp)
+add_executable(notebook_test src/test.cpp ${SRC_LIST})
+target_link_libraries(notebook_test  ${PostgreSQL_LIBRARIES}
+                                ${SQLITE3_LIBRARIES}
+                                wtdbo
+                                ${Boost_LIBRARIES})

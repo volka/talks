@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/date_time.hpp>
 
 namespace notes
 {
@@ -35,7 +35,7 @@ class Note
     Note(const std::string &title, const std::string &content,
          const int notebook_id, const pt::ptime &reminder)
         : id_(-1), title_(title), content_(content), notebook_id_(notebook_id),
-          reminder_(reminder), last_change_()
+          last_change_(), reminder_(reminder)
     {
     }
 

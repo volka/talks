@@ -1,25 +1,24 @@
 #pragma once
+
 #include "db_facade.h"
 
-#include <QString>
+#include <sqlpp11/sqlpp11.h>
 
 namespace notes
 {
 namespace db
 {
 
-class QtDatabase : public NotebookDatabase
+class SqlppDatabase : public NotebookDatabase
 {
 
   public:
-    QtDatabase(const QtDatabase &) = delete;
+    SqlppDatabase(const SqlppDatabase &) = delete;
 
-    // connection_info contains two parts: the DB type (QSQLITE, QPSQL)
-    // followed by ':' and then DB specific connection string
-    //
-    // e.g. "QSQLITE::memory:", or "PSQL:dbname=postgres host=localhost"
-    QtDatabase(const std::string &connection_info);
-    virtual ~QtDatabase();
+    // only SQLite is supported for SQLPP11 at the moment,
+    // just pass the DB path in the connection_info
+    SqlppDatabase(const std::string &connection_info);
+    virtual ~SqlppDatabase();
 
     // NotebookDatabase interface
     virtual void setupDb() override;
@@ -43,7 +42,7 @@ class QtDatabase : public NotebookDatabase
     virtual std::vector<Note> loadNotesForTag(const int tag_id) override;
 
   private:
-    ConnectionConfig config_;
+    std::string connection_info_;
 };
 
 } // ns db

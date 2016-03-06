@@ -9,6 +9,7 @@ namespace ui
 {
 
 using namespace std;
+namespace pt = boost::posix_time;
 
 CliClient::~CliClient() {}
 
@@ -122,7 +123,7 @@ void CliClient::listNotebooks()
 
 void CliClient::addNote()
 {
-    model::Note new_note;
+    model::Note new_note(-1, "", "", 0, pt::ptime(), pt::ptime());
     std::string tmp;
 
     // read title

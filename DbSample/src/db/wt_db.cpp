@@ -46,7 +46,7 @@ model::Notebook db::WtDatabase::loadNotebook(const int notebook_id)
 {
     wt::Notebook n;
     n.id = notebook_id;
-    return model::Notebook();
+    return model::Notebook(0, "default");
 }
 
 void db::WtDatabase::newNote(model::Note &) {}
@@ -69,27 +69,20 @@ void db::WtDatabase::removeTag(const int note_id, const int tag_id)
     t.id = tag_id;
 }
 
-void db::WtDatabase::deleteNote(int id)
-{
-    wt::Note n;
-    n.id = id;
-}
-
-model::Note db::WtDatabase::loadNote(int note_id)
+void db::WtDatabase::deleteNote(const int note_id)
 {
     wt::Note n;
     n.id = note_id;
-    return model::Note();
+}
+
+model::Note db::WtDatabase::loadNote(const int note_id)
+{
+    wt::Note n;
+    n.id = note_id;
+    return model::Note(-1, "foo", "bar", 0, pt::ptime(), pt::ptime());
 }
 
 int db::WtDatabase::newTag(const std::string &title)
-{
-    wt::Tag t;
-    t.title = title;
-    return 0;
-}
-
-int db::WtDatabase::findTag(const std::string &title)
 {
     wt::Tag t;
     t.title = title;
@@ -102,14 +95,15 @@ void db::WtDatabase::deleteTag(const int tag_id)
     t.id = tag_id;
 }
 
-std::vector<model::Note> db::WtDatabase::loadNotesFromNotebook(int notebook_id)
+std::vector<model::Note>
+db::WtDatabase::loadNotesFromNotebook(const int notebook_id)
 {
     wt::Notebook nb;
     nb.id = notebook_id;
     return std::vector<model::Note>();
 }
 
-std::vector<model::Note> db::WtDatabase::loadNotesForTag(int tag_id)
+std::vector<model::Note> db::WtDatabase::loadNotesForTag(const int tag_id)
 {
     wt::Tag t;
     t.id = tag_id;

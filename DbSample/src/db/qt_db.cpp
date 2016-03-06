@@ -96,7 +96,7 @@ void QtDatabase::deleteNotebook(const int id)
 Notebook QtDatabase::loadNotebook(const int notebook_id)
 {
     std::cout << notebook_id << std::endl;
-    return Notebook{};
+    return Notebook(0, "default");
 }
 
 void QtDatabase::newNote(Note &) { return; }
@@ -115,27 +115,21 @@ void QtDatabase::removeTag(const int note_id, const int tag_id)
     return;
 }
 
-void QtDatabase::deleteNote(int id)
+void QtDatabase::deleteNote(const int id)
 {
     std::cout << "deleteNote " << id << std::endl;
     return;
 }
 
-Note QtDatabase::loadNote(int note_id)
+Note QtDatabase::loadNote(const int note_id)
 {
     std::cout << "loadNote " << note_id << std::endl;
-    return Note{};
+    return Note(-1, "foo", "bar", 0, pt::ptime(), pt::ptime());
 }
 
 int QtDatabase::newTag(const std::string &title)
 {
     std::cout << "newTag " << title << std::endl;
-    return 0;
-}
-
-int QtDatabase::findTag(const std::string &title)
-{
-    std::cout << "findTag " << title << std::endl;
     return 0;
 }
 
@@ -145,13 +139,13 @@ void QtDatabase::deleteTag(const int tag_id)
     return;
 }
 
-std::vector<Note> QtDatabase::loadNotesFromNotebook(int notebook_id)
+std::vector<Note> QtDatabase::loadNotesFromNotebook(const int notebook_id)
 {
     std::cout << "loadNotesFromNotebook " << notebook_id << std::endl;
     return std::vector<Note>{};
 }
 
-std::vector<Note> QtDatabase::loadNotesForTag(int tag_id)
+std::vector<Note> QtDatabase::loadNotesForTag(const int tag_id)
 {
     std::cout << "loadNotesForTag " << tag_id << std::endl;
     return std::vector<Note>{};

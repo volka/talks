@@ -62,6 +62,7 @@ class Sqlite3Database : public NotebookDatabase
     std::string connection_info_;
     // sqlite uses plain ints as connection handles
     sqlite_conn connection_;
+    std::stringstream stmt_cache_;
 
   public:
     Sqlite3Database(const Sqlite3Database &) = delete;
@@ -79,19 +80,18 @@ class Sqlite3Database : public NotebookDatabase
     virtual int newNotebook(const std::string &title) override;
     virtual void renameNotebook(const int notebook_id,
                                 const std::string &new_title) override;
-    virtual void deleteNotebook(const int id) override;
+    virtual void deleteNotebook(const int notebook_id) override;
     virtual Notebook loadNotebook(const int notebook_id) override;
 
     // create a new note
-    virtual void newNote(Note &) override;
+    virtual void newNote(Note &note) override;
     virtual void updateNote(const Note &note) override;
     virtual void addTag(const int note_id, const int tag_id) override;
     virtual void removeTag(const int note_id, const int tag_id) override;
-    virtual void deleteNote(int id) override;
-    virtual Note loadNote(int note_id) override;
+    virtual void deleteNote(const int note_id) override;
+    virtual Note loadNote(const int note_id) override;
 
     virtual int newTag(const std::string &title) override;
-    virtual int findTag(const std::string &title) override;
     virtual void deleteTag(const int tag_id) override;
 
     virtual std::vector<Note> loadNotesFromNotebook(int notebook_id) override;
@@ -99,13 +99,21 @@ class Sqlite3Database : public NotebookDatabase
 
   private:
     // retrieve the last inserted row-id (usually the autoincrement ID)
-    uint64_t getLastInsertId();
+    int getLastInsertId();
     sqlite_stmt prepareStatement(const std::string &stmt);
-    bool executeStatement(sqlite_stmt &);
+    int executeStep(sqlite_stmt &);
     // simple check if an error was returned
-    bool checkResult(int result, int expected,
+    bool checkResult(int result, int expected = SQLITE_OK,
                      const std::string &msg = "Command failed",
-                     bool do_throw = false);
+                     bool do_throw = false) const;
+    bool isError(const int res) const;
+    inline void clearStatement() { stmt_cache_.str(std::string()); }
+    // note the missing
+    int bindString(sqlite_stmt &stmt, const int pos, const std::string &str);
+    int bindInt(sqlite_stmt &stmt, const int pos, const int val);
+    int getInt(const sqlite_stmt &stmt, const int column);
+    std::string getString(const sqlite_stmt &stmt, const int column);
+    pt::ptime getTimestamp(const sqlite_stmt &stmt, const int column);
 };
 
 } // db

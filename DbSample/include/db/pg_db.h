@@ -24,6 +24,7 @@ class PgDatabase : public NotebookDatabase
     std::string connection_info_;
     pg_conn_ptr connection_;
     std::stringstream stmt_cache_;
+    std::string update_note_str_; // name of prepared statement
 
   public:
     PgDatabase(const PgDatabase &) = delete;
@@ -47,15 +48,15 @@ class PgDatabase : public NotebookDatabase
     virtual void updateNote(const Note &) override;
     virtual void addTag(const int note_id, const int tag_id) override;
     virtual void removeTag(const int note_id, const int tag_id) override;
-    virtual void deleteNote(int id) override;
-    virtual Note loadNote(int note_id) override;
+    virtual void deleteNote(const int note_id) override;
+    virtual Note loadNote(const int note_id) override;
 
     virtual int newTag(const std::string &title) override;
-    virtual int findTag(const std::string &title) override;
     virtual void deleteTag(const int tag_id) override;
 
-    virtual std::vector<Note> loadNotesFromNotebook(int notebook_id) override;
-    virtual std::vector<Note> loadNotesForTag(int tag_id) override;
+    virtual std::vector<Note>
+    loadNotesFromNotebook(const int notebook_id) override;
+    virtual std::vector<Note> loadNotesForTag(const int tag_id) override;
 
   private:
     pg_escaped_ptr escape(const std::string &str);
@@ -64,9 +65,26 @@ class PgDatabase : public NotebookDatabase
     // execute statement saved in stmt_cache_
     pg_result_ptr executeStatement();
 
-    bool checkResult(PGresult *res, const int expect = PGRES_COMMAND_OK,
-                     const std::string &msg = "Command failed");
-    int get_id(PGresult *res);
+    // check if result gave the expected result code
+    bool checkResultCode(PGresult *res, const int expect = PGRES_COMMAND_OK,
+                         const std::string &msg = "Command failed");
+    // check if result has expected number of rows and columns, if -1 is given
+    // for either value it is ignored
+    bool checkResultSize(PGresult *res, const int exp_rows,
+                         const int exp_fields);
+
+    // get the ID returned by a "RETURNING ..." statement (or any query
+    // returning
+    // single integer row/column field
+    int getId(PGresult *res);
+
+    // get string at pos row/field from result
+    std::string getString(PGresult *res, const int row, const int field);
+    // get integer at pos row/field from result
+    int getInt(PGresult *res, const int row, const int field);
+    // get timestamp at pos row/field from result, rely on PSQL format being
+    // "YYYY-MM-DD hh:mm:ss"
+    pt::ptime getTimestamp(PGresult *res, const int row, const int field);
 };
 
 } // db

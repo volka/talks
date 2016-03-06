@@ -11,13 +11,17 @@ namespace model
 class Notebook
 {
   private:
-    long long id_;
+    int id_;
     std::string title_;
 
   public:
-    inline long long id() const { return id_; }
+    Notebook(const std::string &title) : id_(-1), title_(title) {}
 
-    inline void id(long long id) { id_ = id; }
+    Notebook(const int id, const std::string &title) : id_(id), title_(title) {}
+
+    inline int id() const { return id_; }
+
+    inline void id(int id) { id_ = id; }
 
     inline const std::string &title() const { return title_; }
 
