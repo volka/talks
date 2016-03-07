@@ -64,12 +64,13 @@ void test(shared_ptr<db::NotebookDatabase> db)
     // deleting tags and notes, check foregin key constrains
     int cpp_tag_id = tags[0].id();
     try {
-        db->deleteTag(tags[0].id());
+        db->deleteTag(cpp_tag_id);
         tags = db->listTags();
         assert(tags.size() == 0);
-    } catch (notes::db::DatabaseException &) {
+    } catch (notes::db::DatabaseException &ex) {
         // on PostgreSQL, this should fail and throw an exception
         // this we should never see the assert :)
+        std::cout << "expected exception: " << ex.what() << endl;
     }
 
     db->removeTag(notes_cpp[0].id(), cpp_tag_id);

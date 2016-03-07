@@ -80,6 +80,8 @@ parseConnectionInfo(const std::string &conn_info)
                 throw DatabaseException(
                     "Invalid DB name for Sqlite connection");
         } else if (config.driver == "QPSQL" || config.driver == "PG") {
+            config.port = "5432"; // set default
+            config.host = "/var/run/postgresql/";
             parsePgConfig(conn_info.substr(split, conn_info.size() - split),
                           config);
         } else {
