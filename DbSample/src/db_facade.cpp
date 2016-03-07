@@ -74,6 +74,8 @@ parseConnectionInfo(const std::string &conn_info)
     if (split != std::string::npos) {
         config.driver = conn_info.substr(0, split);
         ++split;
+        config.conn_str = conn_info.substr(split, conn_info.size() - split);
+
         if (config.driver == "QSQLITE" || config.driver == "SQLITE") {
             config.dbname = conn_info.substr(split, conn_info.size() - split);
             if (config.dbname.empty())

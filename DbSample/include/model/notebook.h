@@ -17,6 +17,11 @@ class Notebook
   public:
     Notebook() : id_(-1), title_() {}
 
+    Notebook(const Notebook &) = default;
+    Notebook &operator=(const Notebook &) = default;
+    Notebook(Notebook &&) = default;
+    Notebook &operator=(Notebook &&) = default;
+
     Notebook(const std::string &title) : id_(-1), title_(title) {}
 
     Notebook(const int id, const std::string &title) : id_(id), title_(title) {}

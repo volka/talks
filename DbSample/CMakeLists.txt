@@ -18,6 +18,8 @@ find_package(SQLite3 REQUIRED)
 find_package(Boost COMPONENTS date_time REQUIRED)
 #find_package(Boost COMPONENTS date_time program_options REQUIRED)
 find_library(wtdbo NAMES libwtdbo.so)
+find_library(wtdbosqlite3 NAMES libwtdbosqlite3.so)
+find_library(wtdbopostgres NAMES libwtdbopostgres.so)
 
 find_package(Qt5 COMPONENTS Quick Sql Core Network)
 INCLUDE_DIRECTORIES(${PostgreSQL_INCLUDE_DIRS})
@@ -80,12 +82,16 @@ target_link_libraries(notebook  ${PostgreSQL_LIBRARIES}
                                 Qt5::Quick
                                 Qt5::Sql
                                 wtdbo
+								wtdbopostgres
+								wtdbosqlite3
                                 ${Boost_LIBRARIES})
 
 add_executable(notebook_test src/test.cpp ${SRC_LIST})
 target_link_libraries(notebook_test  ${PostgreSQL_LIBRARIES}
                                 ${SQLITE3_LIBRARIES}
                                 wtdbo
+								wtdbopostgres
+								wtdbosqlite3
                                 Qt5::Core
                                 Qt5::Sql
                                 ${Boost_LIBRARIES})

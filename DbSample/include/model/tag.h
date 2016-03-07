@@ -16,6 +16,11 @@ class Tag
   public:
     Tag() : id_(-1), title_() {}
 
+    Tag(const Tag &) = default;
+    Tag &operator=(const Tag &) = default;
+    Tag(Tag &&) = default;
+    Tag &operator=(Tag &&) = default;
+
     Tag(const std::string &title) : id_(-1), title_(title) {}
 
     Tag(const int id, const std::string &title) : id_(id), title_(title) {}

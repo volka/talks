@@ -29,8 +29,7 @@ class NotebookDatabase
 {
   public:
     // constants for database types
-    struct Types
-    {
+    struct Types {
         static constexpr auto sqlite = "sqlite";
         static constexpr auto postgres = "postgres";
         static constexpr auto qtsql = "qtsql";
@@ -38,14 +37,14 @@ class NotebookDatabase
         static constexpr auto sqlpp = "sqlpp";
     };
 
-    struct ConnectionConfig
-    {
+    struct ConnectionConfig {
         std::string driver; // for QtSql QPSQL, QSQLITE, for Wt::Dbo SQLITE / PG
         std::string dbname; // file for SQLITE, database name for PG
         std::string host;
         std::string port;
         std::string username;
         std::string password;
+        std::string conn_str; // copy of complete string, only excluding driver
     };
 
     // factory for DB connections, call with Db type

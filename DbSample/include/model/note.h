@@ -28,6 +28,11 @@ class Note
     {
     }
 
+    Note(const Note &) = default;
+    Note &operator=(const Note &) = default;
+    Note(Note &&) = default;
+    Note &operator=(Note &&) = default;
+
     // standard constructor filling all fields
     Note(const int id, const std::string &title, const std::string &content,
          const int notebook_id, const pt::ptime &last_change,
