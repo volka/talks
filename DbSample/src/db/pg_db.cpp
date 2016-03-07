@@ -161,8 +161,9 @@ void PgDatabase::setupDb()
         PQexec(conn, "CREATE TABLE notes ("
                      "id      	serial primary key,"
                      "title   	varchar(255),"
-                     "content		text,"
-                     "notebook 	int references notebooks(id),"
+                     "content	text,"
+                     "notebook 	int references notebooks(id)"
+                     "  ON DELETE CASCADE,"
                      "last_change timestamp DEFAULT CURRENT_TIMESTAMP,"
                      "reminder	timestamp"
                      ")"),
@@ -173,8 +174,10 @@ void PgDatabase::setupDb()
 
     result = pg_result_ptr(
         PQexec(conn, "CREATE TABLE tags_nm ("
-                     "tag_id		serial references tags(id),"
+                     "tag_id	serial references tags(id)"
+                     "  ON DELETE CASCADE,"
                      "note_id	serial references notes(id)"
+                     "  ON DELETE CASCADE"
                      ")"),
         PQclear);
 

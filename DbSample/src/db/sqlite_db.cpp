@@ -163,8 +163,8 @@ void Sqlite3Database::setupDb()
         "CREATE TABLE notes ("
         "id      	integer primary key,"
         "title   	varchar(255),"
-        "content		text,"
-        "notebook 	int references notebooks(id),"
+        "content	text,"
+        "notebook 	int references notebooks(id) ON DELETE CASCADE,"
         "last_change timestamp DEFAULT (datetime('now','localtime')),"
         "reminder	timestamp"
         ")");
@@ -173,8 +173,10 @@ void Sqlite3Database::setupDb()
         throw DatabaseException("creating table notes failed");
 
     result = prepareStatement("CREATE TABLE tags_nm ("
-                              "tag_id		integer references tags(id),"
+                              "tag_id	integer references tags(id)"
+                              " ON DELETE CASCADE,"
                               "note_id	integer references notes(id)"
+                              " ON DELETE CASCADE"
                               ")");
 
     if (isError(executeStep(result)))
