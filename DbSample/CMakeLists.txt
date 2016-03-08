@@ -20,6 +20,7 @@ find_package(Boost COMPONENTS date_time REQUIRED)
 find_library(wtdbo NAMES libwtdbo.so)
 find_library(wtdbosqlite3 NAMES libwtdbosqlite3.so)
 find_library(wtdbopostgres NAMES libwtdbopostgres.so)
+find_library(sqlpp11-sqlite NAMES libsqlpp11-connector-sqlite3.a ../../sqlpp11-connector-sqlite/)
 
 find_package(Qt5 COMPONENTS Quick Sql Core Network)
 INCLUDE_DIRECTORIES(${PostgreSQL_INCLUDE_DIRS})
@@ -27,6 +28,7 @@ INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
 # temp. relative include for SQLPP11
 INCLUDE_DIRECTORIES("../../sqlpp11/include")
+INCLUDE_DIRECTORIES("../../sqlpp11-connector-sqlite/include")
 INCLUDE_DIRECTORIES("../../date")
 INCLUDE_DIRECTORIES(include)
 

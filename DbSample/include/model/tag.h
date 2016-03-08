@@ -25,11 +25,11 @@ class Tag
 
     Tag(const int id, const std::string &title) : id_(id), title_(title) {}
 
-    inline int id() { return id_; }
+    inline int id() const { return id_; }
 
     inline void id(int id) { id_ = id; }
 
-    inline const std::string &title() { return title_; }
+    inline const std::string &title() const { return title_; }
 
     inline void title(const std::string &title) { title_ = title; }
 };

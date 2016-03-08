@@ -20,15 +20,21 @@ namespace db
 {
 
 using namespace model;
+
+namespace {
+// we need a QCoreApplication to load QtSql Plugins, and that
+// wants argc/argv which must also live as long as the
+// QCoreApplciation does
 QCoreApplication *app;
 constexpr static const char appname[] = "notebook";
+static char* app_args[1] = {const_cast<char*>(appname)};
+static int app_argc = 0;
+}
 
 QtDatabase::QtDatabase(const std::string &connection_info)
 {
-    int params = 0;
-    char *args[1] = {const_cast<char *>(appname)};
     if (!app)
-        app = new QCoreApplication(params, args);
+        app = new QCoreApplication(app_argc, app_args);
 
     config_ = parseConnectionInfo(connection_info);
 
@@ -465,8 +471,8 @@ std::vector<Note> QtDatabase::searchNotes(const std::string &term)
         "notes.last_change, notes.reminder FROM notes "
         "LEFT JOIN tags_nm ON (notes.id=tags_nm.note_id) "
         "LEFT JOIN tags ON (tags_nm.tag_id=tags.id) WHERE "
-        "(notes.title ILIKE :term OR notes.content ILIKE :term OR "
-        "tags.title ILIKE :term) ORDER BY notes.id ASC");
+        "(notes.title LIKE :term OR notes.content LIKE :term OR "
+        "tags.title LIKE :term) ORDER BY notes.id ASC");
     if (ok) {
         q.bindValue(":term", QString::fromStdString("%" + term + "%"));
 

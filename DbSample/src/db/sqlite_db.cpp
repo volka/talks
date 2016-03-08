@@ -457,8 +457,8 @@ std::vector<Note> Sqlite3Database::searchNotes(const std::string &term)
         << "notes.reminder FROM notes left join tags_nm ON "
            "(notes.id=tags_nm.note_id)"
         << " left join tags ON (tags_nm.tag_id=tags.id) WHERE ("
-        << " notes.title ilike '%" << term << "%' or notes.content ilike '%"
-        << term << "%' or tags.title ilike '%" << term << "%')";
+        << " notes.title like '%" << term << "%' or notes.content like '%"
+        << term << "%' or tags.title like '%" << term << "%')";
     auto result = prepareStatement(stmt_cache_.str());
     int state = SQLITE_OK;
 

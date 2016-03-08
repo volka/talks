@@ -14,11 +14,14 @@ namespace dbo = Wt::Dbo;
 
 class Note;
 
-// table tags , tags_nm
+// table tags
 class Tag : public model::Tag
 {
   public:
-    using model::Tag::Tag;
+    Tag() = default;
+    Tag(const model::Tag& tag)
+        : model::Tag(tag)
+    {}
 
     dbo::collection<dbo::ptr<Note>> notes;
 
@@ -34,7 +37,10 @@ class Tag : public model::Tag
 class Notebook : public model::Notebook
 {
   public:
-    using model::Notebook::Notebook;
+    Notebook() = default;
+    Notebook(const model::Notebook& notebook)
+        : model::Notebook(notebook)
+    {}
 
     dbo::collection<dbo::ptr<Note>> notes;
 
@@ -50,7 +56,10 @@ class Notebook : public model::Notebook
 class Note : public model::Note
 {
   public:
-    using model::Note::Note;
+    Note() = default;
+    Note(const model::Note& note)
+        : model::Note(note)
+    {}
 
     dbo::collection<dbo::ptr<Tag>> tags;
     dbo::ptr<Notebook> notebook;
@@ -61,11 +70,10 @@ class Note : public model::Note
         dbo::field(a, id_, "id");
         dbo::field(a, title_, "title");
         dbo::field(a, content_, "content");
-        dbo::belongsTo(a, notebook, "notebook"); // TODO : map to notebooks
+        dbo::belongsTo(a, notebook, "notebook");
         dbo::field(a, last_change_, "last_change");
         dbo::field(a, reminder_, "reminder");
-        dbo::hasMany(a, tags, dbo::ManyToMany,
-                     "tags_nm"); // TODO : map to tags_nm
+        dbo::hasMany(a, tags, dbo::ManyToMany, "tags_nm");
     }
 };
 

@@ -10,14 +10,17 @@
 namespace notes
 {
 
+using namespace db;
 namespace dbo = Wt::Dbo;
 
-db::WtDatabase::WtDatabase(const std::string &conn_info)
+WtDatabase::WtDatabase(const std::string &conn_info)
 {
     // first create a connection and set it on the session_ object
-    config_ = db::parseConnectionInfo(conn_info);
+    config_ = parseConnectionInfo(conn_info);
     if (config_.driver == "SQLITE") {
         dbo::backend::Sqlite3 sqlite3(config_.dbname);
+        sqlite3.setDateTimeStorage(dbo::SqlDateTimeType::SqlDateTime,
+                                   dbo::backend::Sqlite3::DateTimeStorage::ISO8601AsText);
         session_.setConnection(sqlite3);
     } else if (config_.driver == "PG") {
         dbo::backend::Postgres pg(config_.conn_str);
@@ -29,20 +32,22 @@ db::WtDatabase::WtDatabase(const std::string &conn_info)
     session_.mapClass<wt::Tag>("tags");
 }
 
-db::WtDatabase::~WtDatabase() {}
+WtDatabase::~WtDatabase() {}
 
-void db::WtDatabase::setupDb()
+void WtDatabase::setupDb()
 {
+    dbo::Transaction t(session_);
     session_.dropTables();
     session_.createTables();
+    t.commit();
 }
 
 // listing per find - WARNING: result is sliced !
-std::vector<model::Notebook> db::WtDatabase::listNotebooks()
+std::vector<model::Notebook> WtDatabase::listNotebooks()
 {
     std::vector<model::Notebook> result;
 
-    dbo::collection<dbo::ptr<Notebook>> nb_list = session_.find<Notebook>();
+    dbo::collection<dbo::ptr<wt::Notebook>> nb_list = session_.find<wt::Notebook>();
     for (const auto &nb : nb_list) {
         result.emplace_back(*nb.get());
     }
@@ -51,42 +56,42 @@ std::vector<model::Notebook> db::WtDatabase::listNotebooks()
 
 // we can use unique_ptrs for resource management before adding values to
 // session_
-int db::WtDatabase::newNotebook(const std::string &title)
+int WtDatabase::newNotebook(const std::string &title)
 {
     dbo::Transaction t(session_);
     auto nb = std::make_unique<wt::Notebook>(title);
-    dbo::ptr<Notebook> nb_ptr = session_.add(nb.release());
+    dbo::ptr<wt::Notebook> nb_ptr = session_.add(nb.release());
     t.commit();
-    return nb_ptr.get()->id();
+    return nb_ptr->id();
 }
 
 // find() / modify() example
-void db::WtDatabase::renameNotebook(const int notebook_id,
+void WtDatabase::renameNotebook(const int notebook_id,
                                     const std::string &new_title)
 {
     dbo::Transaction t(session_);
-    dbo::ptr<Notebook> nb =
-        session_.find<Notebook>().where("id=?").bind(notebook_id);
+    dbo::ptr<wt::Notebook> nb =
+        session_.find<wt::Notebook>().where("id=?").bind(notebook_id);
     nb.modify()->title(new_title);
     t.commit();
 }
 
-void db::WtDatabase::deleteNotebook(const int id)
+void WtDatabase::deleteNotebook(const int id)
 {
     dbo::Transaction t(session_);
-    dbo::ptr<Notebook> nb = session_.find<Notebook>().where("id=?").bind(id);
+    dbo::ptr<wt::Notebook> nb = session_.find<wt::Notebook>().where("id=?").bind(id);
     nb.remove();
     t.commit();
 }
 
-model::Notebook db::WtDatabase::loadNotebook(const int notebook_id)
+model::Notebook WtDatabase::loadNotebook(const int notebook_id)
 {
-    dbo::ptr<Notebook> nb =
-        session_.find<Notebook>().where("id=?").bind(notebook_id);
-    return *(nb.modify());
+    dbo::ptr<wt::Notebook> nb =
+        session_.find<wt::Notebook>().where("id=?").bind(notebook_id);
+    return *nb;
 }
 
-void db::WtDatabase::newNote(model::Note &note)
+void WtDatabase::newNote(model::Note &note)
 {
     dbo::Transaction t(session_);
     auto db_note = std::make_unique<wt::Note>(note);
@@ -94,78 +99,105 @@ void db::WtDatabase::newNote(model::Note &note)
     t.commit();
 }
 
-void db::WtDatabase::updateNote(const model::Note &note)
+void WtDatabase::updateNote(const model::Note &note)
 {
     dbo::Transaction t(session_);
-    dbo::ptr<Note> db_note =
-        session_.find<Note>().where("id=?").bind(note.id());
-    *(db_note.modify()) = note;
+    dbo::ptr<wt::Note> db_note =
+        session_.find<wt::Note>().where("id=?").bind(note.id());
+    auto mod = db_note.modify();
+    mod->id(note.id());
+    mod->title(note.title());
+    mod->content(note.content());
+    mod->reminder(note.reminder());
+    mod->lastChanged(note.lastChanged());
     t.commit();
 }
 
-void db::WtDatabase::addTag(const int note_id, const int tag_id)
+void WtDatabase::addTag(const int note_id, const int tag_id)
 {
-    wt::Note n;
-    n.id(note_id);
-    wt::Tag t;
-    t.id(tag_id);
+    dbo::Transaction t(session_);
+    dbo::ptr<wt::Tag> tag = session_.find<wt::Tag>().where("id=?").bind(tag_id);
+    dbo::ptr<wt::Note> note = session_.find<wt::Note>().where("id=?").bind(note_id);
+    tag.modify()->notes.insert(note);
+    t.commit();
 }
 
-void db::WtDatabase::removeTag(const int note_id, const int tag_id)
+void WtDatabase::removeTag(const int note_id, const int tag_id)
 {
-    wt::Note n;
-    n.id(note_id);
-    wt::Tag t;
-    t.id(tag_id);
+    dbo::Transaction t(session_);
+    dbo::ptr<wt::Tag> tag = session_.find<wt::Tag>().where("id=?").bind(tag_id);
+    dbo::ptr<wt::Note> note = session_.find<wt::Note>().where("id=?").bind(note_id);
+    tag.modify()->notes.erase(note);
+    t.commit();
 }
 
-void db::WtDatabase::deleteNote(const int note_id)
+void WtDatabase::deleteNote(const int note_id)
 {
-    wt::Note n;
-    n.id(note_id);
+    dbo::Transaction t(session_);
+    dbo::ptr<wt::Note> note = session_.find<wt::Note>().where("id=?").bind(note_id);
+    note.remove();
+    t.commit();
 }
 
-model::Note db::WtDatabase::loadNote(const int note_id)
+model::Note WtDatabase::loadNote(const int note_id)
 {
-    wt::Note n;
-    n.id(note_id);
-    return model::Note(-1, "foo", "bar", 0, pt::ptime(), pt::ptime());
+    dbo::ptr<wt::Note> note = session_.find<wt::Note>().where("id=?").bind(note_id);
+    return *note;
 }
 
-int db::WtDatabase::newTag(const std::string &title)
+int WtDatabase::newTag(const std::string &title)
 {
-    wt::Tag t;
-    t.title(title);
-    return 0;
+    dbo::Transaction t(session_);
+    auto tag = std::make_unique<wt::Tag>(title);
+    dbo::ptr<wt::Tag> tag_ptr = session_.add(tag.release());
+    t.commit();
+    return tag_ptr->id();
 }
 
-std::vector<model::Tag> db::WtDatabase::listTags()
+std::vector<model::Tag> WtDatabase::listTags()
 {
-    return std::vector<model::Tag>();
+    dbo::collection<dbo::ptr<wt::Tag>> tags =
+                            session_.find<wt::Tag>();
+    std::vector<model::Tag> result;
+    for (const auto& tag_ptr: tags) {
+        result.push_back(*tag_ptr);
+    }
+    return result;
 }
 
-void db::WtDatabase::deleteTag(const int tag_id)
+void WtDatabase::deleteTag(const int tag_id)
 {
-    wt::Tag t;
-    t.id(tag_id);
+    dbo::Transaction t(session_);
+    dbo::ptr<wt::Tag> tag = session_.find<wt::Tag>().where("id=?").bind(tag_id);
+    tag.remove();
+    t.commit();
 }
 
 std::vector<model::Note>
-db::WtDatabase::loadNotesFromNotebook(const int notebook_id)
+WtDatabase::loadNotesFromNotebook(const int notebook_id)
 {
-    wt::Notebook nb;
-    nb.id(notebook_id);
-    return std::vector<model::Note>();
+    dbo::ptr<wt::Notebook> nb = session_.find<wt::Notebook>()
+            .where("id=?").bind(notebook_id);
+
+    std::vector<model::Note> result;
+    for (const auto& note_ptr: nb->notes) {
+        result.push_back(*note_ptr);
+    }
+    return result;
 }
 
-std::vector<model::Note> db::WtDatabase::loadNotesForTag(const int tag_id)
+std::vector<model::Note> WtDatabase::loadNotesForTag(const int tag_id)
 {
-    wt::Tag t;
-    t.id(tag_id);
-    return std::vector<model::Note>();
+    dbo::ptr<wt::Tag> tag = session_.find<wt::Tag>()
+            .where("id=?").bind(tag_id);
+    std::vector<model::Note> result;
+    for (const auto& note_ptr: tag->notes) {
+        result.push_back(*note_ptr);
+    }
+    return result;
 }
 
-std::vector<model::Note> db::WtDatabase::searchNotes(const std::string &term)
+std::vector<model::Note> WtDatabase::searchNotes(const std::string &term)
 {
     std::cout << "searching in notes for " << term << std::endl;
     return std::vector<model::Note>();
