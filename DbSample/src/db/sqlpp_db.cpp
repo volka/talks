@@ -213,14 +213,15 @@ std::vector<Note> SqlppDatabase::loadNotesForTag(const int tag_id)
 
 std::vector<Note> SqlppDatabase::searchNotes(const std::string &term)
 {
+    std::string search_term = "%" + term + "%";
     auto stmt = select(all_of(notes_))
                     .from(notes_.left_outer_join(tags_nm_)
                               .on(notes_.id == tags_nm_.note_id)
                               .left_outer_join(tags_)
                               .on(tags_nm_.tag_id == tags_.id))
-                    .where(notes_.title.like("%" + term + "%") or
-                           notes_.content.like("%" + term + "%") or
-                           tags_.title.like("%" + term + "%"));
+                    .where(notes_.title.like(search_term) or
+                           notes_.content.like(search_term) or
+                           tags_.title.like(search_term));
 
     std::vector<Note> result;
     for (auto &row : conn()(stmt)) {
