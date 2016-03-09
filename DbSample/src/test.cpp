@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "db_facade.h"
+#include <Wt/Dbo/Types>
 
 using namespace notes;
 using namespace std;

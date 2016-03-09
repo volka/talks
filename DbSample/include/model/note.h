@@ -41,6 +41,7 @@ class Note
           last_change_(last_change), reminder_(reminder)
     {
     }
+    virtual ~Note() = default;
 
     // "new note inserter" missing the ID (ignored on insert anyways)
     Note(const std::string &title, const std::string &content,

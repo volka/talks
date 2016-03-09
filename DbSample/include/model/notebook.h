@@ -26,6 +26,8 @@ class Notebook
 
     Notebook(const int id, const std::string &title) : id_(id), title_(title) {}
 
+    virtual ~Notebook() = default;
+
     inline int id() const { return id_; }
 
     inline void id(int id) { id_ = id; }

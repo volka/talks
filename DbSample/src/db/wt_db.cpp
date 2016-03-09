@@ -25,6 +25,8 @@ WtDatabase::WtDatabase(const std::string &conn_info)
     } else if (config_.driver == "PG") {
         dbo::backend::Postgres pg(config_.conn_str);
         session_.setConnection(pg);
+    } else {
+        throw DatabaseException("Invalid connection string, driver:" + config_.driver);
     }
 
     session_.mapClass<wt::Note>("notes");
@@ -36,10 +38,10 @@ WtDatabase::~WtDatabase() {}
 
 void WtDatabase::setupDb()
 {
-    dbo::Transaction t(session_);
+/*    dbo::Transaction t(session_);
     session_.dropTables();
     session_.createTables();
-    t.commit();
+    t.commit(); */
 }
 
 // listing per find - WARNING: result is sliced !

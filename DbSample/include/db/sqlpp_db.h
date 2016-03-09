@@ -1,8 +1,10 @@
 #pragma once
 
 #include "db_facade.h"
+#include "sqlpp_model.h"
 
 #include <sqlpp11/sqlpp11.h>
+#include <sqlpp11/sqlite3/connection.h>
 
 namespace notes
 {
@@ -29,8 +31,8 @@ class SqlppDatabase : public NotebookDatabase
     virtual void deleteNotebook(const int id) override;
     virtual Notebook loadNotebook(const int notebook_id) override;
 
-    virtual void newNote(Note &) override;
-    virtual void updateNote(const Note &) override;
+    virtual void newNote(Note &note) override;
+    virtual void updateNote(const Note &note) override;
     virtual void addTag(const int note_id, const int tag_id) override;
     virtual void removeTag(const int note_id, const int tag_id) override;
     virtual void deleteNote(const int id) override;
@@ -46,7 +48,15 @@ class SqlppDatabase : public NotebookDatabase
     virtual std::vector<Note> searchNotes(const std::string &term) override;
 
   private:
+    // sqlpp model tables
+    sqlpp_model::Notebooks notebooks_;
+    sqlpp_model::Notes notes_;
+    sqlpp_model::Tags tags_;
+    sqlpp_model::Tags_NM tags_nm_;
+
+    sqlpp::sqlite3::connection& conn();
     std::string connection_info_;
+    std::unique_ptr<sqlpp::sqlite3::connection> connection_;
 };
 
 } // ns db

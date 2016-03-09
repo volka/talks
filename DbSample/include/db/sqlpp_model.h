@@ -53,6 +53,20 @@ struct content {
     using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::can_be_null>;
 };
 
+struct notebook {
+    struct _alias_t {
+        static constexpr const char _literal[] = "notebook";
+        using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+        template <typename T> struct _member_t {
+            T notebook;
+            T &operator()() { return notebook; }
+            const T &operator()() const { return notebook; }
+        };
+    };
+    using _traits =
+        sqlpp::make_traits<sqlpp::integer, sqlpp::tag::can_be_null>;
+};
+
 struct last_change {
     struct _alias_t {
         static constexpr const char _literal[] = "last_change";
@@ -83,7 +97,8 @@ struct reminder {
 }
 
 struct Notes : sqlpp::table_t<Notes, notes_::id, notes_::title, notes_::content,
-                              notes_::last_change, notes_::reminder> {
+                              notes_::notebook, notes_::last_change,
+                              notes_::reminder> {
     struct _alias_t {
         static constexpr const char _literal[] = "notes";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
@@ -196,8 +211,7 @@ struct tag_id {
         };
     };
     using _traits =
-        sqlpp::make_traits<sqlpp::integer, sqlpp::tag::must_not_insert,
-                           sqlpp::tag::must_not_update>;
+        sqlpp::make_traits<sqlpp::integer>;
 };
 
 struct note_id {
@@ -211,12 +225,11 @@ struct note_id {
         };
     };
     using _traits =
-        sqlpp::make_traits<sqlpp::integer, sqlpp::tag::must_not_insert,
-                           sqlpp::tag::must_not_update>;
+        sqlpp::make_traits<sqlpp::integer>;
 };
 }
 
-struct Tags_NM : sqlpp::table_t<Tags_NM, tags_::tag_id, tags_::note_id> {
+struct Tags_NM : sqlpp::table_t<Tags_NM, tags_nm_::tag_id, tags_nm_::note_id> {
     struct _alias_t {
         static constexpr const char _literal[] = "tags_nm";
         using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
