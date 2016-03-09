@@ -96,8 +96,7 @@ void QtDatabase::setupDb()
                                 "id		" +
                                 serial_type + " primary key,"
                                               "title	varchar(255)"
-                                              ")")
-                                   .c_str()))
+                                              ")").c_str()))
         throw_query("Could not create table notebooks", create_notebooks);
 
     QSqlQuery create_tags;
@@ -105,8 +104,7 @@ void QtDatabase::setupDb()
                            "id	    " +
                            serial_type + " primary key,"
                                          "title	varchar(255)"
-                                         ")")
-                              .c_str()))
+                                         ")").c_str()))
         throw_query("Could not create table tags", create_tags);
 
     QSqlQuery create_notes;
@@ -120,8 +118,7 @@ void QtDatabase::setupDb()
              "notebook 	    bigint references notebooks(id) ON DELETE CASCADE,"
              "last_change   timestamp DEFAULT CURRENT_TIMESTAMP,"
              "reminder	    timestamp"
-             ")")
-                .c_str()))
+             ")").c_str()))
         throw_query("Could not create table notes", create_notes);
 
     QSqlQuery create_tags_nm;
@@ -131,8 +128,7 @@ void QtDatabase::setupDb()
              serial_type + " references tags(id) ON DELETE CASCADE,"
                            "note_id	" +
              serial_type + " references notes(id) ON DELETE CASCADE"
-                           ")")
-                .c_str()))
+                           ")").c_str()))
         throw_query("Could not create table tags_nm", create_tags_nm);
 }
 

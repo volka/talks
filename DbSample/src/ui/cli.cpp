@@ -186,8 +186,7 @@ model::Note CliClient::readNote()
     bool parse_ok = false;
     while (!parse_ok) {
         cout << "Enter reminder date: (yyyy-mm-dd hh:mm:ss) or 0 to skip"
-             << endl
-             << kPrompt;
+             << endl << kPrompt;
         cin >> tmp;
         try {
             if (tmp.size() > 0 && tmp[0] == '0')
@@ -198,8 +197,7 @@ model::Note CliClient::readNote()
 
         } catch (std::exception &ex) {
             cout << "!!! error: date format is invalid, try again (or enter 0 "
-                    "to skip)"
-                 << endl;
+                    "to skip)" << endl;
         }
     }
     new_note.reminder(time_tmp);
