@@ -60,6 +60,7 @@ void test(shared_ptr<db::NotebookDatabase> db)
     db->updateNote(food);
     Note food_reload = db->loadNote(food.id());
     assert(food_reload.title() == "Futter");
+    cout << "reminder: " << food_reload.reminder( ) << std::endl;
     assert(food_reload.reminder() == new_reminder);
 
     // deleting tags and notes, check foregin key constrains

@@ -14,7 +14,7 @@ SqlppDatabase::SqlppDatabase(const std::string &connection_info)
     : connection_info_(connection_info)
 {
     sqlite3::connection_config config;
-    config.path_to_database = ":memory:";
+    config.path_to_database = connection_info;
     config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
     config.debug = true;
 
@@ -156,9 +156,9 @@ Note SqlppDatabase::loadNote(const int note_id)
                         row.content,
                         static_cast<int>(row.notebook),
                         pt::from_time_t(
-                            system_clock::to_time_t(row.reminder.value())),
+                            system_clock::to_time_t(row.last_change.value())),
                         pt::from_time_t(
-                            system_clock::to_time_t(row.last_change.value()))
+                            system_clock::to_time_t(row.reminder.value()))
                         );
     }
     return Note();
@@ -201,9 +201,9 @@ std::vector<Note> SqlppDatabase::loadNotesFromNotebook(const int notebook_id)
                         row.content,
                         static_cast<int>(row.notebook),
                         pt::from_time_t(
-                             system_clock::to_time_t(row.reminder.value())),
+                             system_clock::to_time_t(row.last_change.value())),
                         pt::from_time_t(
-                             system_clock::to_time_t(row.last_change.value()))
+                             system_clock::to_time_t(row.reminder.value()))
                         ));
     }
     return result;
@@ -223,9 +223,9 @@ std::vector<Note> SqlppDatabase::loadNotesForTag(const int tag_id)
                         row.content,
                         static_cast<int>(row.notebook),
                         pt::from_time_t(
-                             system_clock::to_time_t(row.reminder.value())),
+                             system_clock::to_time_t(row.last_change.value())),
                         pt::from_time_t(
-                             system_clock::to_time_t(row.last_change.value()))
+                             system_clock::to_time_t(row.reminder.value()))
                         ));
     }
     return result;
@@ -239,8 +239,8 @@ std::vector<Note> SqlppDatabase::searchNotes(const std::string &term)
                     .left_outer_join(tags_)
                                 .on(tags_nm_.tag_id==tags_.id))
                     .where(
-                            notes_.title.like("%"+term+"%") and
-                            notes_.content.like("%"+term+"%") and
+                            notes_.title.like("%"+term+"%") or
+                            notes_.content.like("%"+term+"%") or
                             tags_.title.like("%"+term+"%")
                 );
 
@@ -252,9 +252,9 @@ std::vector<Note> SqlppDatabase::searchNotes(const std::string &term)
                         row.content,
                         static_cast<int>(row.notebook),
                         pt::from_time_t(
-                             system_clock::to_time_t(row.reminder.value())),
+                             system_clock::to_time_t(row.last_change.value())),
                         pt::from_time_t(
-                             system_clock::to_time_t(row.last_change.value()))
+                             system_clock::to_time_t(row.reminder.value()))
                         ));
     }
     return result;

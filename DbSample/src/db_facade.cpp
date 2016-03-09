@@ -4,6 +4,7 @@
 #include "db/pg_db.h"
 #include "db/qt_db.h"
 #include "db/wt_db.h"
+#include "db/sqlpp_db.h"
 
 #include <string>
 #include <memory>
@@ -113,6 +114,7 @@ NotebookDatabase::create(const std::string &dbtype, const std::string &config)
         return std::make_unique<WtDatabase>(config);
     }
     if (dbtype == Types::sqlpp) {
+        return std::make_unique<SqlppDatabase>(config);
     }
 
     throw DatabaseException("I don't know how to use a '" + dbtype +
