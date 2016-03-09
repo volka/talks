@@ -70,7 +70,9 @@ int WtDatabase::newNotebook(const std::string &title)
     auto nb = std::make_unique<wt::Notebook>(title);
     dbo::ptr<wt::Notebook> nb_ptr = session_.add(nb.release());
     t.commit();
-    return nb_ptr->id();
+    // WARNING : I am using Wt::Dbo IDs here instead of the id() defined on my objects
+    std::cout << "created new notebook with id " << nb_ptr.id() << std::endl;
+    return static_cast<int>(nb_ptr.id());
 }
 
 // find() / modify() example
@@ -95,6 +97,7 @@ void WtDatabase::deleteNotebook(const int id)
 
 model::Notebook WtDatabase::loadNotebook(const int notebook_id)
 {
+
     dbo::Transaction t(session_);
     dbo::ptr<wt::Notebook> nb =
         session_.find<wt::Notebook>().where("id=?").bind(notebook_id);

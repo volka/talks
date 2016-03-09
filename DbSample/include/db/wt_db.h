@@ -2,6 +2,39 @@
 
 #include <Wt/Dbo/Dbo>
 
+namespace notes {
+namespace db {
+namespace wt {
+class Tag;
+class Notebook;
+class Note;
+}
+}
+}
+
+namespace Wt {
+namespace Dbo {
+    template<>
+    struct dbo_traits<notes::db::wt::Tag> : public dbo_default_traits {
+        static const char *surrogateIdField() {
+            return 0;
+        }
+    };
+    template<>
+    struct dbo_traits<notes::db::wt::Notebook> : public dbo_default_traits {
+        static const char *surrogateIdField() {
+            return 0;
+        }
+    };
+    template<>
+    struct dbo_traits<notes::db::wt::Note> : public dbo_default_traits {
+        static const char *surrogateIdField() {
+            return 0;
+        }
+    };
+} // ns Dbo
+} // ns Wt
+
 namespace notes
 {
 namespace db
@@ -25,7 +58,7 @@ class Tag : public model::Tag
 
     template <class Action> void persist(Action &a)
     {
-        //dbo::field(a, id_, "id");
+        dbo::field(a, id_, "id");
         dbo::field(a, title_, "title");
         dbo::hasMany(a, notes, dbo::ManyToMany, "tags_nm");
     }
@@ -42,7 +75,7 @@ class Notebook : public model::Notebook
 
     template <class Action> void persist(Action &a)
     {
-        //dbo::field(a, id_, "id");
+        dbo::field(a, id_, "id");
         dbo::field(a, title_, "title");
         dbo::hasMany(a, notes, dbo::ManyToOne, "notebook");
     }
@@ -61,7 +94,7 @@ class Note : public model::Note
     template <class Action> void persist(Action &a)
     {
         // field name, name in DB
-        //dbo::field(a, id_, "id");
+        dbo::field(a, id_, "id");
         dbo::field(a, title_, "title");
         dbo::field(a, content_, "content");
         dbo::belongsTo(a, notebook, "notebook");
