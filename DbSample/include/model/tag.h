@@ -7,10 +7,12 @@ namespace notes
 namespace model
 {
 
+using bigint_t = long long;
+
 class Tag
 {
   protected:
-    int id_;
+    bigint_t id_;
     std::string title_;
 
   public:
@@ -23,13 +25,13 @@ class Tag
 
     Tag(const std::string &title) : id_(-1), title_(title) {}
 
-    Tag(const int id, const std::string &title) : id_(id), title_(title) {}
+    Tag(const bigint_t id, const std::string &title) : id_(id), title_(title) {}
 
     virtual ~Tag() = default;
 
-    inline int id() const { return id_; }
+    inline bigint_t id() const { return id_; }
 
-    inline void id(int id) { id_ = id; }
+    inline void id(bigint_t id) { id_ = id; }
 
     inline const std::string &title() const { return title_; }
 

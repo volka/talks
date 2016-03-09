@@ -16,14 +16,19 @@ namespace db
 const char *DEFAULT_TIME = "0000-00-00 00:00:00";
 
 // helper for result validation
-bool PgDatabase::checkResultCode(PGresult *res, int expected,
+bool PgDatabase::checkResultCode(PGresult *res, const int expected,
                                  const std::string &msg)
 {
-    if (res == nullptr || PQresultStatus(res) != expected) {
-        if (connection_) {
-            std::cout << msg << ": " << PQerrorMessage(connection_.get());
-        }
+    if (res == nullptr)
         return false;
+    else {
+        auto status = PQresultStatus(res);
+        if (status != expected) {
+            if (connection_) {
+                std::cout << msg << ": " << PQerrorMessage(connection_.get());
+            }
+            return false;
+        }
     }
     return true;
 }
@@ -54,11 +59,11 @@ std::string PgDatabase::getString(PGresult *res, const int row, const int field)
 }
 
 // note: no error checking ... use checkResultSize
-int PgDatabase::getInt(PGresult *res, const int row, const int field)
+bigint_t PgDatabase::getInt(PGresult *res, const int row, const int field)
 {
     if (PQgetisnull(res, row, field))
         return -1;
-    return atoi(PQgetvalue(res, row, field));
+    return std::strtoll(PQgetvalue(res, row, field), nullptr, 10);
 }
 
 // note: no error checking ... use checkResultSize
@@ -79,16 +84,16 @@ pt::ptime PgDatabase::getTimestamp(PGresult *res, const int row,
 }
 
 // get an ID from a query using "RETURNING id"
-int PgDatabase::getId(PGresult *res)
+bigint_t PgDatabase::getId(PGresult *res)
 {
     int fields = PQnfields(res);
     if (fields != 1)
         throw DatabaseException(
             "RETURNING id query did not return one field as expected");
 
-    int id = -1;
+    bigint_t id = -1;
     for (int i = 0; i < PQntuples(res); ++i) {
-        id = atoi(PQgetvalue(res, i, 0));
+        id = std::strtoll(PQgetvalue(res, i, 0), nullptr, 10);
     }
     return id;
 }
@@ -141,7 +146,7 @@ void PgDatabase::setupDb()
         throw std::runtime_error("dropping pre-existing tables failed");
 
     result = pg_result_ptr(PQexec(conn, "CREATE TABLE notebooks ("
-                                        "id		serial primary key,"
+                                        "id		bigserial primary key,"
                                         "title	varchar(255)"
                                         ")"),
                            PQclear);
@@ -149,7 +154,7 @@ void PgDatabase::setupDb()
         throw std::runtime_error("creating table notebooks failed");
 
     result = pg_result_ptr(PQexec(conn, "CREATE TABLE tags ("
-                                        "id	 	serial primary key,"
+                                        "id	 	bigserial primary key,"
                                         "title	varchar(255)"
                                         ")"),
                            PQclear);
@@ -159,10 +164,10 @@ void PgDatabase::setupDb()
 
     result = pg_result_ptr(
         PQexec(conn, "CREATE TABLE notes ("
-                     "id      	serial primary key,"
+                     "id      	bigserial primary key,"
                      "title   	varchar(255),"
                      "content	text,"
-                     "notebook 	int references notebooks(id)"
+                     "notebook 	bigint references notebooks(id)"
                      "  ON DELETE CASCADE,"
                      "last_change timestamp DEFAULT CURRENT_TIMESTAMP,"
                      "reminder	timestamp"
@@ -211,7 +216,7 @@ std::vector<Notebook> PgDatabase::listNotebooks()
     return result_vec;
 }
 
-int PgDatabase::newNotebook(const std::string &title)
+bigint_t PgDatabase::newNotebook(const std::string &title)
 {
     auto title_str = escape(title);
 
@@ -228,14 +233,14 @@ int PgDatabase::newNotebook(const std::string &title)
 }
 
 // Query not returning anything --> PGRES_COMMAND_OK !
-void PgDatabase::renameNotebook(const int notebook_id,
+void PgDatabase::renameNotebook(const bigint_t notebook_id,
                                 const std::string &new_title)
 {
     auto title_str = escape(new_title);
     clearStatement();
 
-    stmt_cache_ << "UPDATE notebooks SET (title=" << title_str.get()
-                << ") WHERE id=" << notebook_id;
+    stmt_cache_ << "UPDATE notebooks SET title=" << title_str.get()
+                << " WHERE id=" << notebook_id;
     auto result = executeStatement();
 
     if (!checkResultCode(result.get(), PGRES_COMMAND_OK))
@@ -243,7 +248,7 @@ void PgDatabase::renameNotebook(const int notebook_id,
                                 std::to_string(notebook_id) + " failed");
 }
 
-void PgDatabase::deleteNotebook(const int notebook_id)
+void PgDatabase::deleteNotebook(const bigint_t notebook_id)
 {
     clearStatement();
     stmt_cache_ << "DELETE FROM notebooks WHERE id="
@@ -256,7 +261,7 @@ void PgDatabase::deleteNotebook(const int notebook_id)
                                 std::to_string(notebook_id));
 }
 
-Notebook PgDatabase::loadNotebook(const int notebook_id)
+Notebook PgDatabase::loadNotebook(const bigint_t notebook_id)
 {
     clearStatement();
     stmt_cache_ << "SELECT * FROM notebooks WHERE id="
@@ -323,9 +328,9 @@ void PgDatabase::updateNote(const Note &note)
         update_note_str_ = "updateNoteName";
         auto result = pg_result_ptr(
             PQprepare(connection_.get(), update_note_str_.c_str(),
-                      "UPDATE notes set (title=$1, content=$2,"
+                      "UPDATE notes set title=$1, content=$2,"
                       "notebook=$3, last_change=CURRENT_TIMESTAMP,"
-                      "reminder=$4) WHERE (id=$5)",
+                      "reminder=$4 WHERE (id=$5)",
                       num_params, nullptr), // note paramTypes here
             PQclear);
         if (!checkResultCode(result.get(), PGRES_COMMAND_OK))
@@ -335,17 +340,18 @@ void PgDatabase::updateNote(const Note &note)
     }
 
     // simply re-insert all values here
-    auto title_str = escape(note.title());
-    auto content_str = escape(note.content());
     auto nb_id_str = std::to_string(note.notebook());
     auto date_str = pt::to_iso_string(note.reminder());
+    auto note_id = std::to_string(note.id());
 
-    const char *paramValues[num_params] = {title_str.get(), content_str.get(),
-                                           nb_id_str.c_str(), date_str.c_str()};
+    const char *paramValues[num_params] = {
+        note.title().c_str(), note.content().c_str(), nb_id_str.c_str(),
+        date_str.c_str(), note_id.c_str()};
     const int paramLength[num_params] = {
-        static_cast<int>(strlen(title_str.get())),
-        static_cast<int>(strlen(content_str.get())),
-        static_cast<int>(nb_id_str.size()), static_cast<int>(date_str.size())};
+        static_cast<int>(note.title().size()),
+        static_cast<int>(note.content().size()),
+        static_cast<int>(nb_id_str.size()), static_cast<int>(date_str.size()),
+        static_cast<int>(note_id.size())};
 
     auto result = pg_result_ptr(
         PQexecPrepared(
@@ -358,11 +364,11 @@ void PgDatabase::updateNote(const Note &note)
             ),
         PQclear);
 
-    if (!checkResultCode(result.get(), PGRES_TUPLES_OK))
-        throw DatabaseException("inserting note " + note.title() + " failed");
+    if (!checkResultCode(result.get(), PGRES_COMMAND_OK))
+        throw DatabaseException("updating note " + note.title() + " failed");
 }
 
-void PgDatabase::addTag(const int note_id, const int tag_id)
+void PgDatabase::addTag(const bigint_t note_id, const bigint_t tag_id)
 {
     clearStatement();
     stmt_cache_ << "INSERT INTO tags_nm VALUES(" << std::to_string(tag_id)
@@ -376,7 +382,7 @@ void PgDatabase::addTag(const int note_id, const int tag_id)
                                 " failed");
 }
 
-void PgDatabase::removeTag(const int note_id, const int tag_id)
+void PgDatabase::removeTag(const bigint_t note_id, const bigint_t tag_id)
 {
     clearStatement();
     if (note_id < 0) {
@@ -398,7 +404,7 @@ void PgDatabase::removeTag(const int note_id, const int tag_id)
                                 " failed");
 }
 
-void PgDatabase::deleteNote(int note_id)
+void PgDatabase::deleteNote(const bigint_t note_id)
 {
     clearStatement();
     stmt_cache_ << "DELETE FROM notes WHERE (id=" << std::to_string(note_id)
@@ -411,7 +417,7 @@ void PgDatabase::deleteNote(int note_id)
                                 " failed");
 }
 
-Note PgDatabase::loadNote(const int note_id)
+Note PgDatabase::loadNote(const bigint_t note_id)
 {
     clearStatement();
     stmt_cache_ << "SELECT * FROM notes WHERE id=" << std::to_string(note_id);
@@ -430,7 +436,7 @@ Note PgDatabase::loadNote(const int note_id)
                 );
 }
 
-int PgDatabase::newTag(const std::string &title)
+bigint_t PgDatabase::newTag(const std::string &title)
 {
     auto title_str = escape(title);
 
@@ -468,7 +474,7 @@ std::vector<Tag> db::PgDatabase::listTags()
     return result_vec;
 }
 
-void PgDatabase::deleteTag(const int tag_id)
+void PgDatabase::deleteTag(const bigint_t tag_id)
 {
     clearStatement();
     stmt_cache_ << "DELETE FROM tags WHERE (id=" << std::to_string(tag_id)
@@ -481,7 +487,7 @@ void PgDatabase::deleteTag(const int tag_id)
                                 " failed (" + stmt_cache_.str() + ")");
 }
 
-std::vector<Note> PgDatabase::loadNotesFromNotebook(const int notebook_id)
+std::vector<Note> PgDatabase::loadNotesFromNotebook(const bigint_t notebook_id)
 {
     clearStatement();
     stmt_cache_ << "SELECT * FROM notes where (notebook="
@@ -507,15 +513,15 @@ std::vector<Note> PgDatabase::loadNotesFromNotebook(const int notebook_id)
     return result_vec;
 }
 
-std::vector<Note> PgDatabase::loadNotesForTag(const int tag_id)
+std::vector<Note> PgDatabase::loadNotesForTag(const bigint_t tag_id)
 {
     clearStatement();
     stmt_cache_
         << "SELECT notes.id, notes.title, notes.content, notes.notebook, "
            "notes.last_change, notes.reminder FROM notes join tags_nm ON "
            "(notes.id=tags_nm.note_id)"
-           " WHERE (tag_id = " << std::to_string(tag_id)
-        << ") ORDER BY notes.id asc";
+           " WHERE (tag_id = "
+        << std::to_string(tag_id) << ") ORDER BY notes.id asc";
     auto result = executeStatement();
 
     if (!checkResultCode(result.get(), PGRES_TUPLES_OK) ||
@@ -545,11 +551,10 @@ std::vector<Note> PgDatabase::searchNotes(const std::string &term)
            "notes.last_change, notes.reminder FROM notes left join tags_nm ON "
            "(notes.id=tags_nm.note_id) left join tags ON "
            "(tags_nm.tag_id=tags.id)"
-           "WHERE (notes.title ilike '%" << term
-        << "%' or notes.content ilike '%" << term << "%' or tags.title ilike '%"
-        << term << "%') order by notes.id asc";
+           "WHERE (notes.title ilike '%"
+        << term << "%' or notes.content ilike '%" << term
+        << "%' or tags.title ilike '%" << term << "%') order by notes.id asc";
 
-    std::cout << "Query: " << stmt_cache_.str() << std::endl;
     auto result = executeStatement();
     if (!checkResultCode(result.get(), PGRES_TUPLES_OK) ||
         !checkResultSize(result.get(), -1, 6))

@@ -86,7 +86,7 @@ void QtDatabase::setupDb()
         throw DatabaseException("Could not drop tables - error: " +
                                 drop_tables.lastError().text().toStdString());
 
-    std::string serial_type = "serial";
+    std::string serial_type = "bigserial";
     if (QSqlDatabase::database().driverName() == "QSQLITE") {
         serial_type = "integer";
     }
@@ -96,7 +96,8 @@ void QtDatabase::setupDb()
                                 "id		" +
                                 serial_type + " primary key,"
                                               "title	varchar(255)"
-                                              ")").c_str()))
+                                              ")")
+                                   .c_str()))
         throw_query("Could not create table notebooks", create_notebooks);
 
     QSqlQuery create_tags;
@@ -104,7 +105,8 @@ void QtDatabase::setupDb()
                            "id	    " +
                            serial_type + " primary key,"
                                          "title	varchar(255)"
-                                         ")").c_str()))
+                                         ")")
+                              .c_str()))
         throw_query("Could not create table tags", create_tags);
 
     QSqlQuery create_notes;
@@ -113,12 +115,13 @@ void QtDatabase::setupDb()
              "id    	    " +
              serial_type +
              " primary key,"
-             "title   	varchar(255),"
+             "title   	    varchar(255),"
              "content		text,"
-             "notebook 	int references notebooks(id) ON DELETE CASCADE,"
-             "last_change timestamp DEFAULT CURRENT_TIMESTAMP,"
-             "reminder	timestamp"
-             ")").c_str()))
+             "notebook 	    bigint references notebooks(id) ON DELETE CASCADE,"
+             "last_change   timestamp DEFAULT CURRENT_TIMESTAMP,"
+             "reminder	    timestamp"
+             ")")
+                .c_str()))
         throw_query("Could not create table notes", create_notes);
 
     QSqlQuery create_tags_nm;
@@ -128,7 +131,8 @@ void QtDatabase::setupDb()
              serial_type + " references tags(id) ON DELETE CASCADE,"
                            "note_id	" +
              serial_type + " references notes(id) ON DELETE CASCADE"
-                           ")").c_str()))
+                           ")")
+                .c_str()))
         throw_query("Could not create table tags_nm", create_tags_nm);
 }
 
@@ -145,18 +149,18 @@ std::vector<Notebook> QtDatabase::listNotebooks()
     std::vector<Notebook> result_vec;
 
     while (q.next()) {
-        result_vec.emplace_back(q.value(0).toInt(),
+        result_vec.emplace_back(q.value(0).toLongLong(),
                                 q.value(1).toString().toStdString());
     }
     return result_vec;
 }
 
 // DEMO: generic result ID query is not very nice ...
-int QtDatabase::newNotebook(const std::string &title)
+bigint_t QtDatabase::newNotebook(const std::string &title)
 {
     bool ok{true};
     QSqlQuery q;
-    ok = q.prepare("INSERT INTO notebooks(title) VALUES( :title )");
+    ok = q.prepare("INSERT INTO notebooks(id, title) VALUES(null, :title )");
     if (ok) {
         q.bindValue(":title", QString::fromStdString(title));
         ok = q.exec();
@@ -176,10 +180,10 @@ int QtDatabase::newNotebook(const std::string &title)
     if (!ok)
         throw_query("Error retrieving ID from inserted notebook", res);
 
-    return res.value(0).toInt();
+    return res.value(0).toLongLong();
 }
 
-void QtDatabase::renameNotebook(const int notebook_id,
+void QtDatabase::renameNotebook(const bigint_t notebook_id,
                                 const std::string &new_title)
 {
     bool ok{true};
@@ -195,11 +199,11 @@ void QtDatabase::renameNotebook(const int notebook_id,
         throw_query("Error updating notebook name", q);
 }
 
-void QtDatabase::deleteNotebook(const int id)
+void QtDatabase::deleteNotebook(const bigint_t id)
 {
     bool ok{true};
     QSqlQuery q;
-    ok = q.prepare("DELETE FROM notebooks WHERE id=:id");
+    ok = q.prepare("DELETE FROM notebooks WHERE (id=:id)");
     if (ok) {
         q.bindValue(":id", id);
         ok = q.exec();
@@ -208,7 +212,7 @@ void QtDatabase::deleteNotebook(const int id)
         throw_query("Error deleting notebook", q);
 }
 
-Notebook QtDatabase::loadNotebook(const int notebook_id)
+Notebook QtDatabase::loadNotebook(const bigint_t notebook_id)
 {
     bool ok{true};
     QSqlQuery q;
@@ -222,7 +226,8 @@ Notebook QtDatabase::loadNotebook(const int notebook_id)
     }
     if (!ok)
         throw_query("Could not execute notebook select query", q);
-    return Notebook(q.value(0).toInt(), q.value(1).toString().toStdString());
+    return Notebook(q.value(0).toLongLong(),
+                    q.value(1).toString().toStdString());
 }
 
 // DEMO : prepare / bind and generic result ID query
@@ -230,8 +235,8 @@ void QtDatabase::newNote(Note &note)
 {
     bool ok{true};
     QSqlQuery q;
-    ok = q.prepare("INSERT INTO notes(title,content,notebook,reminder)"
-                   "VALUES(:title, :content, :notebook, :reminder)");
+    ok = q.prepare("INSERT INTO notes(id, title,content,notebook,reminder)"
+                   "VALUES(null, :title, :content, :notebook, :reminder)");
     if (ok) {
         q.bindValue(":title", QString::fromStdString(note.title()));
         q.bindValue(":content", QString::fromStdString(note.content()));
@@ -249,7 +254,7 @@ void QtDatabase::newNote(Note &note)
             if (ok)
                 ok = res.first();
             if (ok)
-                note.id(res.value(0).toInt());
+                note.id(res.value(0).toLongLong());
         }
     }
     if (!ok)
@@ -277,7 +282,7 @@ void QtDatabase::updateNote(const Note &note)
         throw_query("Error updating note", q);
 }
 
-void QtDatabase::addTag(const int note_id, const int tag_id)
+void QtDatabase::addTag(const bigint_t note_id, const bigint_t tag_id)
 {
     bool ok{true};
     QSqlQuery q;
@@ -303,13 +308,13 @@ std::vector<model::Tag> db::QtDatabase::listTags()
     std::vector<Tag> result_vec;
 
     while (q.next()) {
-        result_vec.emplace_back(q.value(0).toInt(),
+        result_vec.emplace_back(q.value(0).toLongLong(),
                                 q.value(1).toString().toStdString());
     }
     return result_vec;
 }
 
-void QtDatabase::removeTag(const int note_id, const int tag_id)
+void QtDatabase::removeTag(const bigint_t note_id, const bigint_t tag_id)
 {
     bool ok{true};
     QSqlQuery q;
@@ -324,7 +329,7 @@ void QtDatabase::removeTag(const int note_id, const int tag_id)
         throw_query("Error deleting tag", q);
 }
 
-void QtDatabase::deleteNote(const int id)
+void QtDatabase::deleteNote(const bigint_t id)
 {
     bool ok{true};
     QSqlQuery q;
@@ -337,7 +342,7 @@ void QtDatabase::deleteNote(const int id)
         throw_query("Error deleting note", q);
 }
 
-Note QtDatabase::loadNote(const int note_id)
+Note QtDatabase::loadNote(const bigint_t note_id)
 {
     bool ok{true};
     QSqlQuery q;
@@ -352,17 +357,17 @@ Note QtDatabase::loadNote(const int note_id)
     if (!ok)
         throw_query("Could not execute note select query", q);
 
-    return Note(q.value(0).toInt(), q.value(1).toString().toStdString(),
-                q.value(2).toString().toStdString(), q.value(3).toInt(),
+    return Note(q.value(0).toLongLong(), q.value(1).toString().toStdString(),
+                q.value(2).toString().toStdString(), q.value(3).toLongLong(),
                 pt::from_time_t(q.value(4).toDateTime().toTime_t()),
                 pt::from_time_t(q.value(5).toDateTime().toTime_t()));
 }
 
-int QtDatabase::newTag(const std::string &title)
+bigint_t QtDatabase::newTag(const std::string &title)
 {
     bool ok{true};
     QSqlQuery q;
-    ok = q.prepare("INSERT INTO tags(title) VALUES( :title )");
+    ok = q.prepare("INSERT INTO tags(id,title) VALUES( null, :title )");
     if (ok) {
         q.bindValue(":title", QString::fromStdString(title));
         ok = q.exec();
@@ -379,14 +384,14 @@ int QtDatabase::newTag(const std::string &title)
         if (ok)
             ok = res.first();
         if (ok)
-            return res.value(0).toInt();
+            return res.value(0).toLongLong();
     }
     if (!ok)
         throw_query("Error retrieving ID from inserted tag", res);
     return -1;
 }
 
-void QtDatabase::deleteTag(const int tag_id)
+void QtDatabase::deleteTag(const bigint_t tag_id)
 {
     bool ok{true};
     QSqlQuery q;
@@ -399,7 +404,7 @@ void QtDatabase::deleteTag(const int tag_id)
         throw_query("Error deleting tag", q);
 }
 
-std::vector<Note> QtDatabase::loadNotesFromNotebook(const int notebook_id)
+std::vector<Note> QtDatabase::loadNotesFromNotebook(const bigint_t notebook_id)
 {
     bool ok{true};
     std::vector<Note> result_vec;
@@ -419,7 +424,7 @@ std::vector<Note> QtDatabase::loadNotesFromNotebook(const int notebook_id)
 
         while (ok && q.next()) {
             result_vec.emplace_back(
-                q.value(0).toInt(), q.value(1).toString().toStdString(),
+                q.value(0).toLongLong(), q.value(1).toString().toStdString(),
                 q.value(2).toString().toStdString(), notebook_id,
                 pt::from_time_t(q.value(3).toDateTime().toTime_t()),
                 pt::from_time_t(q.value(4).toDateTime().toTime_t()));
@@ -431,7 +436,7 @@ std::vector<Note> QtDatabase::loadNotesFromNotebook(const int notebook_id)
     return result_vec;
 }
 
-std::vector<Note> QtDatabase::loadNotesForTag(const int tag_id)
+std::vector<Note> QtDatabase::loadNotesForTag(const bigint_t tag_id)
 {
     QSqlQuery q;
     q.prepare("SELECT notes.id, notes.title, notes.content, notes.notebook, "
@@ -449,8 +454,8 @@ std::vector<Note> QtDatabase::loadNotesForTag(const int tag_id)
 
     while (q.next()) {
         result_vec.emplace_back(
-            q.value(0).toInt(), q.value(1).toString().toStdString(),
-            q.value(2).toString().toStdString(), q.value(3).toInt(),
+            q.value(0).toLongLong(), q.value(1).toString().toStdString(),
+            q.value(2).toString().toStdString(), q.value(3).toLongLong(),
             pt::from_time_t(q.value(4).toDateTime().toTime_t()),
             pt::from_time_t(q.value(5).toDateTime().toTime_t()));
     }
@@ -479,8 +484,8 @@ std::vector<Note> QtDatabase::searchNotes(const std::string &term)
 
         while (q.next()) {
             result_vec.emplace_back(
-                q.value(0).toInt(), q.value(1).toString().toStdString(),
-                q.value(2).toString().toStdString(), q.value(3).toInt(),
+                q.value(0).toLongLong(), q.value(1).toString().toStdString(),
+                q.value(2).toString().toStdString(), q.value(3).toLongLong(),
                 pt::from_time_t(q.value(4).toDateTime().toTime_t()),
                 pt::from_time_t(q.value(5).toDateTime().toTime_t()));
         }

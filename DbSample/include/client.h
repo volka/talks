@@ -20,8 +20,7 @@ class Client
     virtual ~Client() = 0;
     virtual int run() = 0;
 
-    struct Types
-    {
+    struct Types {
         static constexpr auto cli = "cli";
         static constexpr auto qt = "qt";
     };

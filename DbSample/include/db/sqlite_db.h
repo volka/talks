@@ -28,7 +28,7 @@ class sqlite_conn
     ~sqlite_conn()
     {
         if (conn_) {
-            int result = sqlite3_close_v2(conn_);
+            bigint_t result = sqlite3_close_v2(conn_);
             if (result != SQLITE_OK) {
                 std::cout << "Error closing Sqlite connection, ec="
                           << std::to_string(result) << std::endl;
@@ -58,7 +58,7 @@ class sqlite_stmt
 
     ~sqlite_stmt()
     {
-        int result = sqlite3_finalize(stmt_);
+        bigint_t result = sqlite3_finalize(stmt_);
         if (result != SQLITE_OK) {
             std::cout << "Error finalizing Sqlite Statement pointer, ec="
                       << std::to_string(result) << std::endl;
@@ -75,7 +75,7 @@ class Sqlite3Database : public NotebookDatabase
   private:
     // filename or ":memory:"
     std::string connection_info_;
-    // sqlite uses plain ints as connection handles
+    // sqlite uses plain bigint_ts as connection handles
     sqlite_conn connection_;
     std::stringstream stmt_cache_;
 
@@ -91,44 +91,46 @@ class Sqlite3Database : public NotebookDatabase
 
     // create a notebook, return the generated ID
     virtual std::vector<Notebook> listNotebooks() override;
-    virtual int newNotebook(const std::string &title) override;
-    virtual void renameNotebook(const int notebook_id,
+    virtual bigint_t newNotebook(const std::string &title) override;
+    virtual void renameNotebook(const bigint_t notebook_id,
                                 const std::string &new_title) override;
-    virtual void deleteNotebook(const int notebook_id) override;
-    virtual Notebook loadNotebook(const int notebook_id) override;
+    virtual void deleteNotebook(const bigint_t notebook_id) override;
+    virtual Notebook loadNotebook(const bigint_t notebook_id) override;
 
     // create a new note
     virtual void newNote(Note &note) override;
     virtual void updateNote(const Note &note) override;
-    virtual void addTag(const int note_id, const int tag_id) override;
-    virtual void removeTag(const int note_id, const int tag_id) override;
-    virtual void deleteNote(const int note_id) override;
-    virtual Note loadNote(const int note_id) override;
+    virtual void addTag(const bigint_t note_id, const bigint_t tag_id) override;
+    virtual void removeTag(const bigint_t note_id,
+                           const bigint_t tag_id) override;
+    virtual void deleteNote(const bigint_t note_id) override;
+    virtual Note loadNote(const bigint_t note_id) override;
 
-    virtual int newTag(const std::string &title) override;
+    virtual bigint_t newTag(const std::string &title) override;
     virtual std::vector<Tag> listTags() override;
-    virtual void deleteTag(const int tag_id) override;
+    virtual void deleteTag(const bigint_t tag_id) override;
 
-    virtual std::vector<Note> loadNotesFromNotebook(int notebook_id) override;
-    virtual std::vector<Note> loadNotesForTag(int tag_id) override;
+    virtual std::vector<Note>
+    loadNotesFromNotebook(const bigint_t notebook_id) override;
+    virtual std::vector<Note> loadNotesForTag(const bigint_t tag_id) override;
 
     virtual std::vector<Note> searchNotes(const std::string &term) override;
 
   private:
     // retrieve the last inserted row-id (usually the autoincrement ID)
-    int getLastInsertId();
+    bigint_t getLastInsertId();
     sqlite_stmt prepareStatement(const std::string &stmt);
     int executeStep(sqlite_stmt &);
     // simple check if an error was returned
-    bool checkResult(int result, int expected = SQLITE_OK,
+    bool checkResult(const int result, const int expected = SQLITE_OK,
                      const std::string &msg = "Command failed",
                      bool do_throw = false) const;
     bool isError(const int res) const;
     inline void clearStatement() { stmt_cache_.str(std::string()); }
     // note the missing
     int bindString(sqlite_stmt &stmt, const int pos, const std::string &str);
-    int bindInt(sqlite_stmt &stmt, const int pos, const int val);
-    int getInt(const sqlite_stmt &stmt, const int column);
+    int bindInt(sqlite_stmt &stmt, const int pos, const bigint_t val);
+    bigint_t getInt(const sqlite_stmt &stmt, const int column);
     std::string getString(const sqlite_stmt &stmt, const int column);
     pt::ptime getTimestamp(const sqlite_stmt &stmt, const int column);
 };

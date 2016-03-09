@@ -65,33 +65,35 @@ std::vector<Notebook> SqlppDatabase::listNotebooks()
     return result;
 }
 
-int SqlppDatabase::newNotebook(const std::string &title)
+bigint_t SqlppDatabase::newNotebook(const std::string &title)
 {
     auto stmt = insert_into(notebooks_).set(notebooks_.title = title);
     // sqlite connector returns last inserted ID
-    return static_cast<int>(conn()(stmt));
+    return conn()(stmt);
 }
 
-void SqlppDatabase::renameNotebook(const int notebook_id,
+void SqlppDatabase::renameNotebook(const bigint_t notebook_id,
                                    const std::string &new_title)
 {
-    auto stmt = update(notebooks_).set(notebooks_.title = new_title).where(
-        notebooks_.id == notebook_id);
+    auto stmt = update(notebooks_)
+                    .set(notebooks_.title = new_title)
+                    .where(notebooks_.id == notebook_id);
     conn()(stmt);
 }
 
-void SqlppDatabase::deleteNotebook(const int id)
+void SqlppDatabase::deleteNotebook(const bigint_t id)
 {
     auto stmt = remove_from(notebooks_).where(notebooks_.id == id);
     conn()(stmt);
 }
 
-Notebook SqlppDatabase::loadNotebook(const int notebook_id)
+Notebook SqlppDatabase::loadNotebook(const bigint_t notebook_id)
 {
-    auto stmt = select(all_of(notebooks_)).from(notebooks_).where(
-        notebooks_.id == notebook_id);
+    auto stmt = select(all_of(notebooks_))
+                    .from(notebooks_)
+                    .where(notebooks_.id == notebook_id);
     for (auto &row : conn()(stmt)) {
-        return Notebook(static_cast<int>(row.id), row.title);
+        return Notebook(row.id, row.title);
     }
     return Notebook();
 }
@@ -105,7 +107,7 @@ void SqlppDatabase::newNote(Note &note)
         notes_.title = note.title(), notes_.content = note.content(),
         notes_.notebook = note.notebook(), notes_.reminder = reminder);
 
-    note.id(static_cast<int>(conn()(stmt)));
+    note.id(conn()(stmt));
 }
 
 void SqlppDatabase::updateNote(const Note &note)
@@ -120,44 +122,43 @@ void SqlppDatabase::updateNote(const Note &note)
     conn()(stmt);
 }
 
-void SqlppDatabase::addTag(const int note_id, const int tag_id)
+void SqlppDatabase::addTag(const bigint_t note_id, const bigint_t tag_id)
 {
     auto stmt = insert_into(tags_nm_)
                     .set(tags_nm_.tag_id = tag_id, tags_nm_.note_id = note_id);
     conn()(stmt);
 }
 
-void SqlppDatabase::removeTag(const int note_id, const int tag_id)
+void SqlppDatabase::removeTag(const bigint_t note_id, const bigint_t tag_id)
 {
     auto stmt = remove_from(tags_nm_).where(tags_nm_.tag_id == tag_id and
                                             tags_nm_.note_id == note_id);
     conn()(stmt);
 }
 
-void SqlppDatabase::deleteNote(const int id)
+void SqlppDatabase::deleteNote(const bigint_t id)
 {
     auto stmt = remove_from(notes_).where(notes_.id == id);
     conn()(stmt);
 }
 
-Note SqlppDatabase::loadNote(const int note_id)
+Note SqlppDatabase::loadNote(const bigint_t note_id)
 {
     auto stmt = select(all_of(notes_)).from(notes_).where(notes_.id == note_id);
     for (auto &row : conn()(stmt)) {
         // only 1 iteration
         return Note(
-            static_cast<int>(row.id), row.title, row.content,
-            static_cast<int>(row.notebook),
+            row.id, row.title, row.content, row.notebook,
             pt::from_time_t(system_clock::to_time_t(row.last_change.value())),
             pt::from_time_t(system_clock::to_time_t(row.reminder.value())));
     }
     return Note();
 }
 
-int SqlppDatabase::newTag(const std::string &title)
+bigint_t SqlppDatabase::newTag(const std::string &title)
 {
     auto stmt = insert_into(tags_).set(tags_.title = title);
-    return static_cast<int>(conn()(stmt));
+    return conn()(stmt);
 }
 
 std::vector<Tag> db::SqlppDatabase::listTags()
@@ -171,29 +172,30 @@ std::vector<Tag> db::SqlppDatabase::listTags()
     return result;
 }
 
-void SqlppDatabase::deleteTag(const int tag_id)
+void SqlppDatabase::deleteTag(const bigint_t tag_id)
 {
     auto stmt = remove_from(tags_).where(tags_.id == tag_id);
     conn()(stmt);
 }
 
-std::vector<Note> SqlppDatabase::loadNotesFromNotebook(const int notebook_id)
+std::vector<Note>
+SqlppDatabase::loadNotesFromNotebook(const bigint_t notebook_id)
 {
-    auto stmt = select(all_of(notes_)).from(notes_).where(notes_.notebook ==
-                                                          notebook_id);
+    auto stmt = select(all_of(notes_))
+                    .from(notes_)
+                    .where(notes_.notebook == notebook_id);
 
     std::vector<Note> result;
     for (auto &row : conn()(stmt)) {
         result.push_back(Note(
-            static_cast<int>(row.id), row.title, row.content,
-            static_cast<int>(row.notebook),
+            row.id, row.title, row.content, row.notebook,
             pt::from_time_t(system_clock::to_time_t(row.last_change.value())),
             pt::from_time_t(system_clock::to_time_t(row.reminder.value()))));
     }
     return result;
 }
 
-std::vector<Note> SqlppDatabase::loadNotesForTag(const int tag_id)
+std::vector<Note> SqlppDatabase::loadNotesForTag(const bigint_t tag_id)
 {
     auto stmt =
         select(all_of(notes_))
@@ -203,8 +205,7 @@ std::vector<Note> SqlppDatabase::loadNotesForTag(const int tag_id)
     std::vector<Note> result;
     for (auto &row : conn()(stmt)) {
         result.push_back(Note(
-            static_cast<int>(row.id), row.title, row.content,
-            static_cast<int>(row.notebook),
+            row.id, row.title, row.content, row.notebook,
             pt::from_time_t(system_clock::to_time_t(row.last_change.value())),
             pt::from_time_t(system_clock::to_time_t(row.reminder.value()))));
     }
@@ -226,8 +227,7 @@ std::vector<Note> SqlppDatabase::searchNotes(const std::string &term)
     std::vector<Note> result;
     for (auto &row : conn()(stmt)) {
         result.push_back(Note(
-            static_cast<int>(row.id), row.title, row.content,
-            static_cast<int>(row.notebook),
+            row.id, row.title, row.content, row.notebook,
             pt::from_time_t(system_clock::to_time_t(row.last_change.value())),
             pt::from_time_t(system_clock::to_time_t(row.reminder.value()))));
     }

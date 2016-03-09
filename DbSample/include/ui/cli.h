@@ -8,6 +8,8 @@ namespace notes
 namespace ui
 {
 
+using bigint_t = long long;
+
 class CliClient : public Client
 {
 
@@ -25,25 +27,33 @@ class CliClient : public Client
     int processInput();
 
     void showMainView();
-    void showNotes();
+    void showNotes(bool withDetails);
     void showTags();
     void showNotebooks();
 
-    int openNotebook();
+    bigint_t openNotebook();
     void listNotebooks();
-    void addNote();
+    model::Note readNote();
+    model::Notebook readNotebook();
+    model::Tag readTag();
+    std::pair<bigint_t, bigint_t> readTagAssignment();
+
     void deleteNote();
     void listNotes();
     void searchNotes();
     void printNote(const notes::model::Note &);
 
+    constexpr static const char *kPrompt = "->> ";
     constexpr static int kDefaultNotebook = 0;
+    constexpr static int kCliWidth = 30;
 
-    int current_notebook_ = kDefaultNotebook;
+    bigint_t current_notebook_ = kDefaultNotebook;
     std::shared_ptr<db::NotebookDatabase> db_;
     CliState state_;
     int argc_;
     char **args_;
+    void printSep(char c, size_t width);
+    void printHeader();
 };
 
 } // ui

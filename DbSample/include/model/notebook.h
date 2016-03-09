@@ -7,11 +7,13 @@ namespace notes
 namespace model
 {
 
+using bigint_t = long long;
+
 // a collection of notes
 class Notebook
 {
   protected:
-    int id_;
+    bigint_t id_;
     std::string title_;
 
   public:
@@ -24,13 +26,16 @@ class Notebook
 
     Notebook(const std::string &title) : id_(-1), title_(title) {}
 
-    Notebook(const int id, const std::string &title) : id_(id), title_(title) {}
+    Notebook(const bigint_t id, const std::string &title)
+        : id_(id), title_(title)
+    {
+    }
 
     virtual ~Notebook() = default;
 
-    inline int id() const { return id_; }
+    inline bigint_t id() const { return id_; }
 
-    inline void id(int id) { id_ = id; }
+    inline void id(bigint_t id) { id_ = id; }
 
     inline const std::string &title() const { return title_; }
 

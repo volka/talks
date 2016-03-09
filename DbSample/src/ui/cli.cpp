@@ -1,6 +1,7 @@
 #include "ui/cli.h"
 
 #include <iostream>
+#include <iomanip>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace notes
@@ -27,13 +28,57 @@ int CliClient::run()
     return 0;
 }
 
-void CliClient::showMainView() {}
+void CliClient::printSep(char c, size_t width)
+{
+    std::string sep(width, c);
+    std::cout << sep << endl;
+}
 
-void CliClient::showNotes() {}
+void CliClient::printHeader()
+{
+    cout << " ====== Notes Main Menu ======" << endl;
+}
+
+void CliClient::showMainView()
+{
+    cout << endl;
+    printSep('-', kCliWidth);
+    printHeader();
+    printSep('-', kCliWidth);
+    cout << endl;
+    showNotebooks();
+}
+
+void CliClient::showNotes(bool withDetails)
+{
+    auto notes = db_->loadNotesFromNotebook(current_notebook_);
+    for (const auto &note : notes) {
+        cout << setw(5);
+        cout << note.id() << " | " << note.title() << endl;
+        if (withDetails) {
+            printSep('-', kCliWidth);
+            cout << note.content() << endl;
+            if (note.reminder() != pt::ptime()) {
+                cout << "Reminder: " << note.reminder() << endl;
+            }
+            cout << "Last change: " << note.lastChanged() << endl;
+        }
+        printSep('-', kCliWidth);
+    }
+}
 
 void CliClient::showTags() {}
 
-void CliClient::showNotebooks() {}
+void CliClient::showNotebooks()
+{
+    auto nbs = db_->listNotebooks();
+    for (const auto &nb : nbs) {
+        cout << setw(5);
+        cout << nb.id() << " | " << nb.title() << endl;
+    }
+    cout << endl;
+    printSep('-', kCliWidth);
+}
 
 void CliClient::printMenu()
 {
@@ -46,18 +91,12 @@ void CliClient::printMenu()
     case CliState::NOTEBOOKS:
         showNotebooks();
     case CliState::NOTES:
-        showNotes();
+        showNotes(true);
     case CliState::TAGS:
         showTags();
     }
     processInput();
 
-    cout << endl;
-    cout << "-----------------------" << endl;
-    cout << "=== Notes Main Menu ===" << endl;
-    cout << "-----------------------" << endl << endl;
-
-    listNotebooks();
     // listNotes();
 
     cout << "-----------------------" << endl << endl;
@@ -78,14 +117,14 @@ void CliClient::printMenu()
 // if true, quit the cli loop
 int CliClient::processInput()
 {
-    // TODO : handle state
+    cout << "->> ";
     char input;
     std::cin >> input;
     switch (input) {
     case 'o':
         openNotebook();
     case 'a':
-        addNote();
+        readNote();
         break;
     case 'l':
         listNotes();
@@ -102,12 +141,12 @@ int CliClient::processInput()
     return false;
 }
 
-int CliClient::openNotebook()
+bigint_t CliClient::openNotebook()
 {
     listNotebooks();
     cout << "Select notebook id: " << endl;
     cout << ">> ";
-    int notebook_id;
+    bigint_t notebook_id;
     cin >> notebook_id;
     return notebook_id;
 }
@@ -121,13 +160,13 @@ void CliClient::listNotebooks()
     }
 }
 
-void CliClient::addNote()
+model::Note CliClient::readNote()
 {
     model::Note new_note(-1, "", "", 0, pt::ptime(), pt::ptime());
     std::string tmp;
 
     // read title
-    cout << "Enter title:" << endl << ">> ";
+    cout << "Enter title:" << endl << kPrompt;
     cin >> tmp;
     new_note.title(tmp);
 
@@ -135,7 +174,7 @@ void CliClient::addNote()
     cin.ignore();
     cout << "Enter content: (finish with an empty line)" << endl;
     do {
-        cout << "->>";
+        cout << kPrompt;
         getline(cin, tmp);
         if (!tmp.empty())
             new_note.content(new_note.content() + tmp + "\n");
@@ -147,7 +186,8 @@ void CliClient::addNote()
     bool parse_ok = false;
     while (!parse_ok) {
         cout << "Enter reminder date: (yyyy-mm-dd hh:mm:ss) or 0 to skip"
-             << endl << ">> ";
+             << endl
+             << kPrompt;
         cin >> tmp;
         try {
             if (tmp.size() > 0 && tmp[0] == '0')
@@ -158,16 +198,52 @@ void CliClient::addNote()
 
         } catch (std::exception &ex) {
             cout << "!!! error: date format is invalid, try again (or enter 0 "
-                    "to skip)" << endl;
+                    "to skip)"
+                 << endl;
         }
     }
     new_note.reminder(time_tmp);
 
     // last change is always now
     new_note.lastChanged(pt::second_clock::local_time());
-    cout << "Inserting Note into DB: " << endl;
-    printNote(new_note);
-    db_->newNote(new_note);
+    return new_note;
+}
+
+model::Notebook CliClient::readNotebook()
+{
+    model::Notebook nb;
+    std::string tmp;
+
+    cout << "Enter title: " << endl << kPrompt;
+    cin >> tmp;
+    nb.title(tmp);
+    return nb;
+}
+
+model::Tag CliClient::readTag()
+{
+    model::Tag tag;
+    std::string tmp;
+
+    cout << "Enter title: " << endl << kPrompt;
+    cin >> tmp;
+    tag.title(tmp);
+    return tag;
+}
+
+std::pair<bigint_t, bigint_t> CliClient::readTagAssignment()
+{
+    bigint_t tag_id, note_id;
+    printSep('-', kCliWidth);
+    cout << "Tags: ";
+    showTags();
+    cout << endl << "Choose tag " << kPrompt;
+    cin >> tag_id;
+    cout << "Notes: " << endl;
+    showNotes(false);
+    cout << endl << "Choose note " << kPrompt;
+    cin >> note_id;
+    return make_pair(tag_id, note_id);
 }
 
 void CliClient::deleteNote() {}

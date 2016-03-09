@@ -36,27 +36,28 @@ class PgDatabase : public NotebookDatabase
 
     // create a notebook, return the generated ID
     virtual std::vector<Notebook> listNotebooks() override;
-    virtual int newNotebook(const std::string &title) override;
-    virtual void renameNotebook(const int notebook_id,
+    virtual bigint_t newNotebook(const std::string &title) override;
+    virtual void renameNotebook(const bigint_t notebook_id,
                                 const std::string &new_title) override;
-    virtual void deleteNotebook(const int notebook_id) override;
-    virtual Notebook loadNotebook(const int notebook_id) override;
+    virtual void deleteNotebook(const bigint_t notebook_id) override;
+    virtual Notebook loadNotebook(const bigint_t notebook_id) override;
 
     // create a new note
     virtual void newNote(Note &) override;
     virtual void updateNote(const Note &) override;
-    virtual void addTag(const int note_id, const int tag_id) override;
-    virtual void removeTag(const int note_id, const int tag_id) override;
-    virtual void deleteNote(const int note_id) override;
-    virtual Note loadNote(const int note_id) override;
+    virtual void addTag(const bigint_t note_id, const bigint_t tag_id) override;
+    virtual void removeTag(const bigint_t note_id,
+                           const bigint_t tag_id) override;
+    virtual void deleteNote(const bigint_t note_id) override;
+    virtual Note loadNote(const bigint_t note_id) override;
 
-    virtual int newTag(const std::string &title) override;
+    virtual bigint_t newTag(const std::string &title) override;
     virtual std::vector<Tag> listTags() override;
-    virtual void deleteTag(const int tag_id) override;
+    virtual void deleteTag(const bigint_t tag_id) override;
 
     virtual std::vector<Note>
-    loadNotesFromNotebook(const int notebook_id) override;
-    virtual std::vector<Note> loadNotesForTag(const int tag_id) override;
+    loadNotesFromNotebook(const bigint_t notebook_id) override;
+    virtual std::vector<Note> loadNotesForTag(const bigint_t tag_id) override;
 
     virtual std::vector<Note> searchNotes(const std::string &term) override;
 
@@ -77,13 +78,13 @@ class PgDatabase : public NotebookDatabase
 
     // get the ID returned by a "RETURNING ..." statement (or any query
     // returning
-    // single integer row/column field
-    int getId(PGresult *res);
+    // single bigint_teger row/column field
+    bigint_t getId(PGresult *res);
 
     // get string at pos row/field from result
     std::string getString(PGresult *res, const int row, const int field);
-    // get integer at pos row/field from result
-    int getInt(PGresult *res, const int row, const int field);
+    // get bigint_teger at pos row/field from result
+    bigint_t getInt(PGresult *res, const int row, const int field);
     // get timestamp at pos row/field from result, rely on PSQL format being
     // "YYYY-MM-DD hh:mm:ss"
     pt::ptime getTimestamp(PGresult *res, const int row, const int field);

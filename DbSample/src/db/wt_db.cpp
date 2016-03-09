@@ -41,10 +41,15 @@ WtDatabase::~WtDatabase() {}
 
 void WtDatabase::setupDb()
 {
-        dbo::Transaction t(session_);
-        session_.dropTables();
-        session_.createTables();
-        t.commit();
+    dbo::Transaction t(session_);
+    // try {
+    //    session_.dropTables();
+    //} catch (dbo::Exception& ex) {
+    //    std::cout << "Ignoring exeption during dropTables: "
+    //              << ex.what() << std::endl;
+    //}
+    session_.createTables();
+    t.commit();
 }
 
 // listing per find - WARNING: result is sliced !
@@ -64,19 +69,21 @@ std::vector<model::Notebook> WtDatabase::listNotebooks()
 
 // we can use unique_ptrs for resource management before adding values to
 // session_
-int WtDatabase::newNotebook(const std::string &title)
+bigint_t WtDatabase::newNotebook(const std::string &title)
 {
     dbo::Transaction t(session_);
     auto nb = std::make_unique<wt::Notebook>(title);
     dbo::ptr<wt::Notebook> nb_ptr = session_.add(nb.release());
+    nb_ptr.reread();
     t.commit();
-    // WARNING : I am using Wt::Dbo IDs here instead of the id() defined on my objects
-    std::cout << "created new notebook with id " << nb_ptr.id() << std::endl;
-    return static_cast<int>(nb_ptr.id());
+    // WARNING : I am using Wt::Dbo IDs here instead of the id() defined on my
+    // objects
+    std::cout << "created new notebook with id " << nb_ptr->id() << std::endl;
+    return nb_ptr->id();
 }
 
 // find() / modify() example
-void WtDatabase::renameNotebook(const int notebook_id,
+void WtDatabase::renameNotebook(const bigint_t notebook_id,
                                 const std::string &new_title)
 {
     dbo::Transaction t(session_);
@@ -86,7 +93,7 @@ void WtDatabase::renameNotebook(const int notebook_id,
     t.commit();
 }
 
-void WtDatabase::deleteNotebook(const int id)
+void WtDatabase::deleteNotebook(const bigint_t id)
 {
     dbo::Transaction t(session_);
     dbo::ptr<wt::Notebook> nb =
@@ -95,7 +102,7 @@ void WtDatabase::deleteNotebook(const int id)
     t.commit();
 }
 
-model::Notebook WtDatabase::loadNotebook(const int notebook_id)
+model::Notebook WtDatabase::loadNotebook(const bigint_t notebook_id)
 {
 
     dbo::Transaction t(session_);
@@ -127,7 +134,7 @@ void WtDatabase::updateNote(const model::Note &note)
     t.commit();
 }
 
-void WtDatabase::addTag(const int note_id, const int tag_id)
+void WtDatabase::addTag(const bigint_t note_id, const bigint_t tag_id)
 {
     dbo::Transaction t(session_);
     dbo::ptr<wt::Tag> tag = session_.find<wt::Tag>().where("id=?").bind(tag_id);
@@ -137,7 +144,7 @@ void WtDatabase::addTag(const int note_id, const int tag_id)
     t.commit();
 }
 
-void WtDatabase::removeTag(const int note_id, const int tag_id)
+void WtDatabase::removeTag(const bigint_t note_id, const bigint_t tag_id)
 {
     dbo::Transaction t(session_);
     dbo::ptr<wt::Tag> tag = session_.find<wt::Tag>().where("id=?").bind(tag_id);
@@ -147,7 +154,7 @@ void WtDatabase::removeTag(const int note_id, const int tag_id)
     t.commit();
 }
 
-void WtDatabase::deleteNote(const int note_id)
+void WtDatabase::deleteNote(const bigint_t note_id)
 {
     dbo::Transaction t(session_);
     dbo::ptr<wt::Note> note =
@@ -156,7 +163,7 @@ void WtDatabase::deleteNote(const int note_id)
     t.commit();
 }
 
-model::Note WtDatabase::loadNote(const int note_id)
+model::Note WtDatabase::loadNote(const bigint_t note_id)
 {
     dbo::Transaction t(session_);
     dbo::ptr<wt::Note> note =
@@ -165,7 +172,7 @@ model::Note WtDatabase::loadNote(const int note_id)
     return *note;
 }
 
-int WtDatabase::newTag(const std::string &title)
+bigint_t WtDatabase::newTag(const std::string &title)
 {
     dbo::Transaction t(session_);
     auto tag = std::make_unique<wt::Tag>(title);
@@ -186,7 +193,7 @@ std::vector<model::Tag> WtDatabase::listTags()
     return result;
 }
 
-void WtDatabase::deleteTag(const int tag_id)
+void WtDatabase::deleteTag(const bigint_t tag_id)
 {
     dbo::Transaction t(session_);
     dbo::ptr<wt::Tag> tag = session_.find<wt::Tag>().where("id=?").bind(tag_id);
@@ -195,7 +202,7 @@ void WtDatabase::deleteTag(const int tag_id)
 }
 
 std::vector<model::Note>
-WtDatabase::loadNotesFromNotebook(const int notebook_id)
+WtDatabase::loadNotesFromNotebook(const bigint_t notebook_id)
 {
     dbo::Transaction t(session_);
     dbo::ptr<wt::Notebook> nb =
@@ -209,7 +216,7 @@ WtDatabase::loadNotesFromNotebook(const int notebook_id)
     return result;
 }
 
-std::vector<model::Note> WtDatabase::loadNotesForTag(const int tag_id)
+std::vector<model::Note> WtDatabase::loadNotesForTag(const bigint_t tag_id)
 {
     dbo::Transaction t(session_);
     dbo::ptr<wt::Tag> tag = session_.find<wt::Tag>().where("id=?").bind(tag_id);

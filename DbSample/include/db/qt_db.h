@@ -25,26 +25,27 @@ class QtDatabase : public NotebookDatabase
     virtual void setupDb() override;
 
     virtual std::vector<Notebook> listNotebooks() override;
-    virtual int newNotebook(const std::string &title) override;
-    virtual void renameNotebook(const int notebook_id,
+    virtual bigint_t newNotebook(const std::string &title) override;
+    virtual void renameNotebook(const bigint_t notebook_id,
                                 const std::string &new_title) override;
-    virtual void deleteNotebook(const int id) override;
-    virtual Notebook loadNotebook(const int notebook_id) override;
+    virtual void deleteNotebook(const bigint_t id) override;
+    virtual Notebook loadNotebook(const bigint_t notebook_id) override;
 
     virtual void newNote(Note &) override;
     virtual void updateNote(const Note &) override;
-    virtual void addTag(const int note_id, const int tag_id) override;
-    virtual void removeTag(const int note_id, const int tag_id) override;
-    virtual void deleteNote(const int id) override;
-    virtual Note loadNote(const int note_id) override;
+    virtual void addTag(const bigint_t note_id, const bigint_t tag_id) override;
+    virtual void removeTag(const bigint_t note_id,
+                           const bigint_t tag_id) override;
+    virtual void deleteNote(const bigint_t id) override;
+    virtual Note loadNote(const bigint_t note_id) override;
 
-    virtual int newTag(const std::string &title) override;
+    virtual bigint_t newTag(const std::string &title) override;
     virtual std::vector<Tag> listTags() override;
-    virtual void deleteTag(const int tag_id) override;
+    virtual void deleteTag(const bigint_t tag_id) override;
 
     virtual std::vector<Note>
-    loadNotesFromNotebook(const int notebook_id) override;
-    virtual std::vector<Note> loadNotesForTag(const int tag_id) override;
+    loadNotesFromNotebook(const bigint_t notebook_id) override;
+    virtual std::vector<Note> loadNotesForTag(const bigint_t tag_id) override;
 
     virtual std::vector<Note> searchNotes(const std::string &term) override;
 

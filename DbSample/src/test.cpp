@@ -64,7 +64,7 @@ void test(shared_ptr<db::NotebookDatabase> db)
     assert(food_reload.reminder() == new_reminder);
 
     // deleting tags and notes, check foregin key constrains
-    int cpp_tag_id = tags[0].id();
+    bigint_t cpp_tag_id = tags[0].id();
     try {
         db->deleteTag(cpp_tag_id);
         tags = db->listTags();

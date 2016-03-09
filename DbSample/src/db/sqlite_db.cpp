@@ -25,14 +25,14 @@ Sqlite3Database::Sqlite3Database(const std::string &connection_info)
 
 Sqlite3Database::~Sqlite3Database() {}
 
-int Sqlite3Database::getLastInsertId()
+bigint_t Sqlite3Database::getLastInsertId()
 {
-    return static_cast<int>(sqlite3_last_insert_rowid(connection_.ptr()));
+    return sqlite3_last_insert_rowid(connection_.ptr());
 }
 
-int Sqlite3Database::getInt(const sqlite_stmt &stmt, const int column)
+bigint_t Sqlite3Database::getInt(const sqlite_stmt &stmt, const int column)
 {
-    return sqlite3_column_int(stmt.ptr(), column);
+    return sqlite3_column_int64(stmt.ptr(), column);
 }
 
 std::string Sqlite3Database::getString(const sqlite_stmt &stmt,
@@ -69,9 +69,10 @@ int Sqlite3Database::bindString(sqlite_stmt &stmt, const int pos,
                              static_cast<int>(str.size()), SQLITE_STATIC);
 }
 
-int Sqlite3Database::bindInt(sqlite_stmt &stmt, const int pos, const int val)
+int Sqlite3Database::bindInt(sqlite_stmt &stmt, const int pos,
+                             const bigint_t val)
 {
-    return sqlite3_bind_int(stmt.ptr(), pos, val);
+    return sqlite3_bind_int64(stmt.ptr(), pos, val);
 }
 
 sqlite_stmt Sqlite3Database::prepareStatement(const std::string &stmt)
@@ -144,7 +145,7 @@ void Sqlite3Database::setupDb()
         throw DatabaseException("dropping table tags failed");
 
     result = prepareStatement("CREATE TABLE notebooks ("
-                              "id		integer primary key,"
+                              "id		bigint primary key,"
                               "title	varchar(255)"
                               ")");
 
@@ -152,7 +153,7 @@ void Sqlite3Database::setupDb()
         throw DatabaseException("creating table notebooks failed");
 
     result = prepareStatement("CREATE TABLE tags ("
-                              "id	 	integer primary key,"
+                              "id	 	bigint primary key,"
                               "title	varchar(255)"
                               ")");
 
@@ -161,21 +162,21 @@ void Sqlite3Database::setupDb()
 
     result = prepareStatement(
         "CREATE TABLE notes ("
-        "id      	integer primary key,"
-        "title   	varchar(255),"
-        "content	text,"
-        "notebook 	int references notebooks(id) ON DELETE CASCADE,"
-        "last_change timestamp DEFAULT (datetime('now','localtime')),"
-        "reminder	timestamp"
+        "id      	    bigint primary key,"
+        "title   	    varchar(255),"
+        "content	    text,"
+        "notebook 	    bigint references notebooks(id) ON DELETE CASCADE,"
+        "last_change    timestamp DEFAULT (datetime('now','localtime')),"
+        "reminder	    timestamp"
         ")");
 
     if (isError(executeStep(result)))
         throw DatabaseException("creating table notes failed");
 
     result = prepareStatement("CREATE TABLE tags_nm ("
-                              "tag_id	integer references tags(id)"
+                              "tag_id	bigint references tags(id)"
                               " ON DELETE CASCADE,"
-                              "note_id	integer references notes(id)"
+                              "note_id	bigint references notes(id)"
                               " ON DELETE CASCADE"
                               ")");
 
@@ -199,7 +200,7 @@ std::vector<Notebook> Sqlite3Database::listNotebooks()
     return result_vec;
 }
 
-int Sqlite3Database::newNotebook(const std::string &title)
+bigint_t Sqlite3Database::newNotebook(const std::string &title)
 {
     clearStatement();
     stmt_cache_ << "INSERT INTO notebooks(title) VALUES('" << title << "')";
@@ -210,12 +211,12 @@ int Sqlite3Database::newNotebook(const std::string &title)
     return getLastInsertId();
 }
 
-void Sqlite3Database::renameNotebook(const int notebook_id,
+void Sqlite3Database::renameNotebook(const bigint_t notebook_id,
                                      const std::string &new_title)
 {
     clearStatement();
-    stmt_cache_ << "UPDATE notebooks SET (title='" << new_title
-                << "') WHERE id=" << notebook_id;
+    stmt_cache_ << "UPDATE notebooks SET title='" << new_title
+                << "' WHERE id=" << notebook_id;
     auto result = prepareStatement(stmt_cache_.str());
 
     if (isError(executeStep(result)))
@@ -223,7 +224,7 @@ void Sqlite3Database::renameNotebook(const int notebook_id,
                                 new_title);
 }
 
-void Sqlite3Database::deleteNotebook(const int notebook_id)
+void Sqlite3Database::deleteNotebook(const bigint_t notebook_id)
 {
     clearStatement();
     stmt_cache_ << "DELETE FROM notebooks WHERE id="
@@ -236,7 +237,7 @@ void Sqlite3Database::deleteNotebook(const int notebook_id)
                                 std::to_string(notebook_id));
 }
 
-Notebook Sqlite3Database::loadNotebook(const int notebook_id)
+Notebook Sqlite3Database::loadNotebook(const bigint_t notebook_id)
 {
     clearStatement();
     stmt_cache_ << "SELECT * FROM notebooks WHERE id="
@@ -274,7 +275,7 @@ void Sqlite3Database::newNote(Note &note)
         throw DatabaseException("inserting note " + note.title() + " failed");
 
     // get the generated ID
-    note.id(static_cast<int>(getLastInsertId()));
+    note.id(getLastInsertId());
 }
 
 void Sqlite3Database::updateNote(const Note &note)
@@ -282,9 +283,9 @@ void Sqlite3Database::updateNote(const Note &note)
     auto date_str = pt::to_iso_string(note.reminder());
 
     clearStatement();
-    stmt_cache_ << "UPDATE notes SET(title=?1,content=?2,"
+    stmt_cache_ << "UPDATE notes SET title=?1,content=?2,"
                 << "notebook=?3,last_change=datetime('now','localtime'),"
-                << "reminder=?4)";
+                << "reminder=?4 where (id=?5)";
 
     auto result = prepareStatement(stmt_cache_.str());
 
@@ -292,11 +293,12 @@ void Sqlite3Database::updateNote(const Note &note)
     bindString(result, 2, note.content());
     bindInt(result, 3, note.notebook());
     bindString(result, 4, date_str);
+    bindInt(result, 5, note.id());
     if (isError(executeStep(result)))
-        throw DatabaseException("inserting note " + note.title() + " failed");
+        throw DatabaseException("updating note " + note.title() + " failed");
 }
 
-void Sqlite3Database::addTag(const int note_id, const int tag_id)
+void Sqlite3Database::addTag(const bigint_t note_id, const bigint_t tag_id)
 {
 
     clearStatement();
@@ -308,7 +310,7 @@ void Sqlite3Database::addTag(const int note_id, const int tag_id)
                                 " to " + std::to_string(note_id) + " failed");
 }
 
-void Sqlite3Database::removeTag(const int note_id, const int tag_id)
+void Sqlite3Database::removeTag(const bigint_t note_id, const bigint_t tag_id)
 {
 
     clearStatement();
@@ -329,7 +331,7 @@ void Sqlite3Database::removeTag(const int note_id, const int tag_id)
                                 " failed");
 }
 
-void Sqlite3Database::deleteNote(const int note_id)
+void Sqlite3Database::deleteNote(const bigint_t note_id)
 {
     clearStatement();
     stmt_cache_ << "DELETE FROM notes WHERE id=" << std::to_string(note_id);
@@ -339,7 +341,7 @@ void Sqlite3Database::deleteNote(const int note_id)
                                 " failed");
 }
 
-int Sqlite3Database::newTag(const std::string &title)
+bigint_t Sqlite3Database::newTag(const std::string &title)
 {
     clearStatement();
     stmt_cache_ << "INSERT INTO tags(title) VALUES('" << title << "')";
@@ -370,7 +372,7 @@ std::vector<Tag> db::Sqlite3Database::listTags()
     return result_vec;
 }
 
-void Sqlite3Database::deleteTag(const int tag_id)
+void Sqlite3Database::deleteTag(const bigint_t tag_id)
 {
     clearStatement();
     stmt_cache_ << "DELETE FROM tags WHERE id=" << std::to_string(tag_id);
@@ -380,7 +382,7 @@ void Sqlite3Database::deleteTag(const int tag_id)
                                 " failed");
 }
 
-Note Sqlite3Database::loadNote(const int note_id)
+Note Sqlite3Database::loadNote(const bigint_t note_id)
 {
     clearStatement();
     stmt_cache_ << "SELECT * FROM notes WHERE id=" << std::to_string(note_id);
@@ -398,7 +400,8 @@ Note Sqlite3Database::loadNote(const int note_id)
                 );
 }
 
-std::vector<Note> Sqlite3Database::loadNotesFromNotebook(int notebook_id)
+std::vector<Note>
+Sqlite3Database::loadNotesFromNotebook(const bigint_t notebook_id)
 {
     clearStatement();
     stmt_cache_ << "SELECT * FROM notes where (notebook="
@@ -422,7 +425,7 @@ std::vector<Note> Sqlite3Database::loadNotesFromNotebook(int notebook_id)
     return result_vec;
 }
 
-std::vector<Note> Sqlite3Database::loadNotesForTag(int tag_id)
+std::vector<Note> Sqlite3Database::loadNotesForTag(const bigint_t tag_id)
 {
     clearStatement();
     stmt_cache_
