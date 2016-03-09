@@ -21,13 +21,14 @@ namespace db
 
 using namespace model;
 
-namespace {
+namespace
+{
 // we need a QCoreApplication to load QtSql Plugins, and that
 // wants argc/argv which must also live as long as the
 // QCoreApplciation does
 QCoreApplication *app;
 constexpr static const char appname[] = "notebook";
-static char* app_args[1] = {const_cast<char*>(appname)};
+static char *app_args[1] = {const_cast<char *>(appname)};
 static int app_argc = 0;
 }
 
@@ -95,8 +96,7 @@ void QtDatabase::setupDb()
                                 "id		" +
                                 serial_type + " primary key,"
                                               "title	varchar(255)"
-                                              ")")
-                                   .c_str()))
+                                              ")").c_str()))
         throw_query("Could not create table notebooks", create_notebooks);
 
     QSqlQuery create_tags;
@@ -104,8 +104,7 @@ void QtDatabase::setupDb()
                            "id	    " +
                            serial_type + " primary key,"
                                          "title	varchar(255)"
-                                         ")")
-                              .c_str()))
+                                         ")").c_str()))
         throw_query("Could not create table tags", create_tags);
 
     QSqlQuery create_notes;
@@ -119,8 +118,7 @@ void QtDatabase::setupDb()
              "notebook 	int references notebooks(id) ON DELETE CASCADE,"
              "last_change timestamp DEFAULT CURRENT_TIMESTAMP,"
              "reminder	timestamp"
-             ")")
-                .c_str()))
+             ")").c_str()))
         throw_query("Could not create table notes", create_notes);
 
     QSqlQuery create_tags_nm;
@@ -130,8 +128,7 @@ void QtDatabase::setupDb()
              serial_type + " references tags(id) ON DELETE CASCADE,"
                            "note_id	" +
              serial_type + " references notes(id) ON DELETE CASCADE"
-                           ")")
-                .c_str()))
+                           ")").c_str()))
         throw_query("Could not create table tags_nm", create_tags_nm);
 }
 

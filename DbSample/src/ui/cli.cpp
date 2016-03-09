@@ -147,8 +147,7 @@ void CliClient::addNote()
     bool parse_ok = false;
     while (!parse_ok) {
         cout << "Enter reminder date: (yyyy-mm-dd hh:mm:ss) or 0 to skip"
-             << endl
-             << ">> ";
+             << endl << ">> ";
         cin >> tmp;
         try {
             if (tmp.size() > 0 && tmp[0] == '0')
@@ -159,8 +158,7 @@ void CliClient::addNote()
 
         } catch (std::exception &ex) {
             cout << "!!! error: date format is invalid, try again (or enter 0 "
-                    "to skip)"
-                 << endl;
+                    "to skip)" << endl;
         }
     }
     new_note.reminder(time_tmp);

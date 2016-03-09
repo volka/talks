@@ -54,7 +54,7 @@ class SqlppDatabase : public NotebookDatabase
     sqlpp_model::Tags tags_;
     sqlpp_model::Tags_NM tags_nm_;
 
-    sqlpp::sqlite3::connection& conn();
+    sqlpp::sqlite3::connection &conn();
     std::string connection_info_;
     std::unique_ptr<sqlpp::sqlite3::connection> connection_;
 };

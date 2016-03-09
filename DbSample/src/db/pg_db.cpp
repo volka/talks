@@ -514,8 +514,8 @@ std::vector<Note> PgDatabase::loadNotesForTag(const int tag_id)
         << "SELECT notes.id, notes.title, notes.content, notes.notebook, "
            "notes.last_change, notes.reminder FROM notes join tags_nm ON "
            "(notes.id=tags_nm.note_id)"
-           " WHERE (tag_id = "
-        << std::to_string(tag_id) << ") ORDER BY notes.id asc";
+           " WHERE (tag_id = " << std::to_string(tag_id)
+        << ") ORDER BY notes.id asc";
     auto result = executeStatement();
 
     if (!checkResultCode(result.get(), PGRES_TUPLES_OK) ||
@@ -545,9 +545,9 @@ std::vector<Note> PgDatabase::searchNotes(const std::string &term)
            "notes.last_change, notes.reminder FROM notes left join tags_nm ON "
            "(notes.id=tags_nm.note_id) left join tags ON "
            "(tags_nm.tag_id=tags.id)"
-           "WHERE (notes.title ilike '%"
-        << term << "%' or notes.content ilike '%" << term
-        << "%' or tags.title ilike '%" << term << "%') order by notes.id asc";
+           "WHERE (notes.title ilike '%" << term
+        << "%' or notes.content ilike '%" << term << "%' or tags.title ilike '%"
+        << term << "%') order by notes.id asc";
 
     std::cout << "Query: " << stmt_cache_.str() << std::endl;
     auto result = executeStatement();
