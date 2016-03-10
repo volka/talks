@@ -62,7 +62,7 @@ class Tag : public model::Tag
 
     template <class Action> void persist(Action &a)
     {
-        //dbo::id(a, id_, "id");
+        // dbo::id(a, id_, "id");
         dbo::field(a, title_, "title");
         dbo::hasMany(a, notes, dbo::ManyToMany, "tags_nm");
     }
@@ -79,7 +79,7 @@ class Notebook : public model::Notebook
 
     template <class Action> void persist(Action &a)
     {
-        //dbo::id(a, id_, "id");
+        // dbo::id(a, id_, "id");
         dbo::field(a, title_, "title");
         dbo::hasMany(a, notes, dbo::ManyToOne, "notebook");
     }
@@ -98,7 +98,7 @@ class Note : public model::Note
     template <class Action> void persist(Action &a)
     {
         // field name, name in DB
-        //dbo::id(a, id_, "id");
+        // dbo::id(a, id_, "id");
         dbo::field(a, title_, "title");
         dbo::field(a, content_, "content");
         dbo::belongsTo(a, notebook, "notebook", dbo::OnDeleteCascade);

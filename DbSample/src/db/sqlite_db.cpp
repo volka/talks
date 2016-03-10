@@ -144,18 +144,20 @@ void Sqlite3Database::setupDb()
     if (isError(executeStep(result)))
         throw DatabaseException("dropping table tags failed");
 
-    result = prepareStatement("CREATE TABLE notebooks ("
-                              "id		integer primary key autoincrement,"
-                              "title	varchar(255)"
-                              ")");
+    result =
+        prepareStatement("CREATE TABLE notebooks ("
+                         "id		integer primary key autoincrement,"
+                         "title	varchar(255)"
+                         ")");
 
     if (isError(executeStep(result)))
         throw DatabaseException("creating table notebooks failed");
 
-    result = prepareStatement("CREATE TABLE tags ("
-                              "id	 	integer primary key autoincrement,"
-                              "title	varchar(255)"
-                              ")");
+    result =
+        prepareStatement("CREATE TABLE tags ("
+                         "id	 	integer primary key autoincrement,"
+                         "title	varchar(255)"
+                         ")");
 
     if (isError(executeStep(result)))
         throw DatabaseException("creating table tags failed");
@@ -386,7 +388,7 @@ Note Sqlite3Database::loadNote(const bigint_t note_id)
 {
     clearStatement();
     stmt_cache_ << "SELECT title,content,notebook,last_change,reminder"
-                   " FROM notes WHERE (id=" << std::to_string(note_id) << ")" ;
+                   " FROM notes WHERE (id=" << std::to_string(note_id) << ")";
     auto result = prepareStatement(stmt_cache_.str());
 
     if (isError(executeStep(result))) {
@@ -429,11 +431,11 @@ Sqlite3Database::loadNotesFromNotebook(const bigint_t notebook_id)
 std::vector<Note> Sqlite3Database::loadNotesForTag(const bigint_t tag_id)
 {
     clearStatement();
-    stmt_cache_
-        << "SELECT notes.id, notes.title, notes.content, notes.notebook, notes.last_change, "
-        << "notes.reminder FROM notes join tags_nm ON "
-           "(notes.id=tags_nm.note_id)"
-        << " WHERE (tag_id = " << std::to_string(tag_id) << ")";
+    stmt_cache_ << "SELECT notes.id, notes.title, notes.content, "
+                   "notes.notebook, notes.last_change, "
+                << "notes.reminder FROM notes join tags_nm ON "
+                   "(notes.id=tags_nm.note_id)"
+                << " WHERE (tag_id = " << std::to_string(tag_id) << ")";
     auto result = prepareStatement(stmt_cache_.str());
     int state = SQLITE_OK;
 

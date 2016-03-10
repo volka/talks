@@ -165,9 +165,8 @@ bigint_t QtDatabase::newNotebook(const std::string &title)
 {
     bool ok{true};
     QSqlQuery q;
-    ok = q.prepare(("INSERT INTO notebooks(" + nullInsertCol_
-                    + " title) VALUES(" + nullInsert_
-                    + " :title )").c_str());
+    ok = q.prepare(("INSERT INTO notebooks(" + nullInsertCol_ +
+                    " title) VALUES(" + nullInsert_ + " :title )").c_str());
     if (ok) {
         q.bindValue(":title", QString::fromStdString(title));
         ok = q.exec();
@@ -242,10 +241,11 @@ void QtDatabase::newNote(Note &note)
 {
     bool ok{true};
     QSqlQuery q;
-    ok = q.prepare(("INSERT INTO notes(" + nullInsertCol_
-                    + "title,content,notebook,reminder)"
-                      "VALUES(" + nullInsert_
-                    + " :title, :content, :notebook, :reminder)").c_str());
+    ok = q.prepare(("INSERT INTO notes(" + nullInsertCol_ +
+                    "title,content,notebook,reminder)"
+                    "VALUES(" +
+                    nullInsert_ +
+                    " :title, :content, :notebook, :reminder)").c_str());
     if (ok) {
         q.bindValue(":title", QString::fromStdString(note.title()));
         q.bindValue(":content", QString::fromStdString(note.content()));
@@ -376,9 +376,8 @@ bigint_t QtDatabase::newTag(const std::string &title)
 {
     bool ok{true};
     QSqlQuery q;
-    ok = q.prepare(("INSERT INTO tags(" + nullInsertCol_
-                    +"title) VALUES( " + nullInsert_
-                    + " :title )").c_str());
+    ok = q.prepare(("INSERT INTO tags(" + nullInsertCol_ + "title) VALUES( " +
+                    nullInsert_ + " :title )").c_str());
     if (ok) {
         q.bindValue(":title", QString::fromStdString(title));
         ok = q.exec();

@@ -118,8 +118,8 @@ void WtDatabase::newNote(model::Note &note)
     dbo::Transaction t(session_);
     auto db_note = std::make_unique<wt::Note>(note);
     // we need to add the notebook manually
-    dbo::ptr<wt::Notebook> nb = session_.find<wt::Notebook>()
-            .where("id=?").bind(note.notebook());
+    dbo::ptr<wt::Notebook> nb =
+        session_.find<wt::Notebook>().where("id=?").bind(note.notebook());
     db_note->notebook = nb;
     dbo::ptr<wt::Note> new_note = session_.add(db_note.release());
     t.commit();
@@ -218,14 +218,16 @@ WtDatabase::loadNotesFromNotebook(const bigint_t notebook_id)
     dbo::ptr<wt::Notebook> nb =
         session_.find<wt::Notebook>().where("id=?").bind(notebook_id);
 
-
-    std::cout << "found notebook notes: " << nb.modify()->notes.size() << std::endl;
+    std::cout << "found notebook notes: " << nb.modify()->notes.size()
+              << std::endl;
 
     std::vector<model::Note> result;
     model::Note tmp;
-    for (dbo::collection<dbo::ptr<wt::Note>>::const_iterator it = nb->notes.begin();
+    for (dbo::collection<dbo::ptr<wt::Note>>::const_iterator it =
+             nb->notes.begin();
          it != nb->notes.end(); ++it) {
-        std::cout << "found note " << (*it).id() << " - " << (*it)->title() << std::endl;
+        std::cout << "found note " << (*it).id() << " - " << (*it)->title()
+                  << std::endl;
         tmp = **it;
         tmp.id((*it).id());
         result.push_back(tmp);

@@ -75,9 +75,8 @@ bigint_t SqlppDatabase::newNotebook(const std::string &title)
 void SqlppDatabase::renameNotebook(const bigint_t notebook_id,
                                    const std::string &new_title)
 {
-    auto stmt = update(notebooks_)
-                    .set(notebooks_.title = new_title)
-                    .where(notebooks_.id == notebook_id);
+    auto stmt = update(notebooks_).set(notebooks_.title = new_title).where(
+        notebooks_.id == notebook_id);
     conn()(stmt);
 }
 
@@ -89,9 +88,8 @@ void SqlppDatabase::deleteNotebook(const bigint_t id)
 
 Notebook SqlppDatabase::loadNotebook(const bigint_t notebook_id)
 {
-    auto stmt = select(all_of(notebooks_))
-                    .from(notebooks_)
-                    .where(notebooks_.id == notebook_id);
+    auto stmt = select(all_of(notebooks_)).from(notebooks_).where(
+        notebooks_.id == notebook_id);
     for (auto &row : conn()(stmt)) {
         return Notebook(row.id, row.title);
     }
@@ -181,9 +179,8 @@ void SqlppDatabase::deleteTag(const bigint_t tag_id)
 std::vector<Note>
 SqlppDatabase::loadNotesFromNotebook(const bigint_t notebook_id)
 {
-    auto stmt = select(all_of(notes_))
-                    .from(notes_)
-                    .where(notes_.notebook == notebook_id);
+    auto stmt = select(all_of(notes_)).from(notes_).where(notes_.notebook ==
+                                                          notebook_id);
 
     std::vector<Note> result;
     for (auto &row : conn()(stmt)) {

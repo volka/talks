@@ -30,7 +30,6 @@ class CliClient : public Client
     void showMainView();
     void showNotebookView();
 
-
     // display text of model classes
     void showNotes(bool withDetails);
     void showTags();

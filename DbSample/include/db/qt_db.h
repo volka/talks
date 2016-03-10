@@ -51,7 +51,7 @@ class QtDatabase : public NotebookDatabase
 
   private:
     bool useNullInsert_;
-    std::string nullInsert_; // used for sqlite but not for PG
+    std::string nullInsert_;    // used for sqlite but not for PG
     std::string nullInsertCol_; // used for sqlite but not for PG
     ConnectionConfig config_;
 };
