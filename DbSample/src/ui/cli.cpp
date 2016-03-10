@@ -36,7 +36,7 @@ void CliClient::printSep(char c, size_t width)
 
 void CliClient::printHeader()
 {
-    cout << " ====== Notes Main Menu ======" << endl;
+    cout << "======= Notes Main Menu =======" << endl;
 }
 
 void CliClient::showMainView()
@@ -47,7 +47,8 @@ void CliClient::showMainView()
     printSep('-', kCliWidth);
     try {
         auto nb = db_->loadNotebook(current_notebook_);
-        cout << "Current notebook: " << nb.title() << endl;
+        cout << "Current notebook: " << nb.id() << " - "
+             << nb.title() << endl;
         printSep('-', kCliWidth);
         showNotes(false);
     } catch (notes::db::DatabaseException &) {
@@ -121,28 +122,46 @@ void CliClient::printMenu()
         showTags();
     }
     processInput();
-
-    // listNotes();
-
-    cout << "-----------------------" << endl << endl;
-    cout << "o: Open Notebook" << endl;
-    cout << "n: New Notebook" << endl;
-    cout << "e: Edit current notebook" << endl;
-    cout << "q: Quit" << endl;
-
-    // TODO: move to note screen
-    cout << "a: Add Note" << endl;
-    cout << "e: Edit Note" << endl;
-    cout << "d: Delete Note" << endl;
-    cout << "l: List by tag" << endl;
-    cout << "q: Quit" << endl << endl;
-    cout << ">> ";
 }
 
 // if true, quit the cli loop
 int CliClient::processInput()
 {
-    cout << "->> ";
+    switch (state_) {
+    case CliState::MAIN:
+       cout << "s: switch notebook" << endl;
+       cout << "n: edit notebooks" << endl;
+       cout << "a: show notes" << endl;
+       cout << "t: show tags" << endl;
+       cout << "q: quit" << endl;
+        break;
+    case CliState::NOTEBOOKS:
+        cout << "n: new notebook" << endl;
+        cout << "r: rename notebook" << endl;
+        cout << "d: delete notebook" << endl;
+        cout << "q: back to main menu" << endl;
+        break;
+    case CliState::NOTES:
+        cout << "n: new note" << endl;
+        cout << "e: edit note" << endl;
+        cout << "d: delete note" << endl;
+        cout << "s: search note" << endl;
+        cout << "t: add tag to note" << endl;
+        cout << "r: remove tag from note" << endl;
+        cout << "q: back to main menu" << endl;
+        break;
+    case CliState::TAGS:
+        cout << "n: new tag" << endl;
+        cout << "d: delete tag" << endl;
+        cout << "s: search notes for tag" << endl;
+        cout << "a: add tag to note" << endl;
+        cout << "r: remove tag from note" << endl;
+        cout << "q: back to main menu" << endl;
+        break;
+    default:
+        break;
+    }
+    cout << kPrompt;
     char input;
     std::cin >> input;
     switch (input) {

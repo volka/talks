@@ -49,7 +49,7 @@ class CliClient : public Client
 
     constexpr static const char *kPrompt = "->> ";
     constexpr static int kDefaultNotebook = 0;
-    constexpr static int kCliWidth = 30;
+    constexpr static int kCliWidth = 80;
 
     bigint_t current_notebook_ = kDefaultNotebook;
     std::shared_ptr<db::NotebookDatabase> db_;

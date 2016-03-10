@@ -107,27 +107,39 @@ void test(shared_ptr<db::NotebookDatabase> db)
         std::cout << "expected exception: " << ex.what() << endl;
     }
 
+    cout << ".. and try to remove deleted tag from notes..." << endl;
     db->removeTag(notes_cpp[0].id(), cpp_tag_id);
     db->removeTag(notes_cpp[1].id(), cpp_tag_id);
 
+    cout << "Now load notes by deleted tag" << endl;
     auto empty_notes = db->loadNotesForTag(cpp_tag_id);
     assert(empty_notes.empty());
+    if (empty_notes.empty()) cout << "Got empty note list as expected" << endl;
 
+    cout << "now really remove tag if constaints prevented us from doing this earlier" << endl;
     db->deleteTag(cpp_tag_id);
     tags = db->listTags();
-    assert(tags.size() == 0);
+    assert(tags.empty());
+    if (tags.empty()) cout << "Now tag list is empty" << endl;
 
+    cout << "Delete note 0 from 'Einkauf'" << endl;
     db->deleteNote(notes_ek[0].id());
     notes_ek = db->loadNotesFromNotebook(notebooks[1].id());
     assert(notes_ek.empty());
+    cout << "Reload of notebook 'Einkauf' - now with " << notes_ek.size() << " notes" << endl;
 
     // notebook modifications
+    cout << "Delete a notebook" << endl;
     db->deleteNotebook(notebooks[1].id());
+    cout << "Rename the other one" << endl;
     db->renameNotebook(notebooks[0].id(), "Foo");
 
+    cout << "List and check if that worked ..." << endl;
     notebooks = db->listNotebooks();
     assert(notebooks.size() == 1);
     assert(notebooks[0].title() == "Foo");
+    cout << "Notebooks changed as expected" << endl;
+    cout << "=== TEST FINISHED ===" << endl;
 }
 
 int main(int argc, char **argv)
