@@ -42,6 +42,8 @@ class CliClient : public Client
     model::Tag readTag();
     std::pair<bigint_t, bigint_t> readTagAssignment();
 
+    void newNote();
+    void editNote();
     void deleteNote();
     void listNotes();
     void searchNotes();
@@ -56,8 +58,10 @@ class CliClient : public Client
     CliState state_;
     int argc_;
     char **args_;
+
     void printSep(char c, size_t width);
     void printHeader();
+    void printNote(const model::Note &note, bool withDetails);
 };
 
 } // ui

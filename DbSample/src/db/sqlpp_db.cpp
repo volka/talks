@@ -16,7 +16,7 @@ SqlppDatabase::SqlppDatabase(const std::string &connection_info)
     sqlite3::connection_config config;
     config.path_to_database = connection_info;
     config.flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
-    config.debug = true;
+    config.debug = false;
 
     connection_.reset(new sqlite3::connection(config));
 }

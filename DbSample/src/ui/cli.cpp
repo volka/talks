@@ -9,6 +9,7 @@ namespace notes
 namespace ui
 {
 
+using namespace notes::model;
 using namespace std;
 namespace pt = boost::posix_time;
 
@@ -56,20 +57,25 @@ void CliClient::showMainView()
     }
 }
 
+void CliClient::printNote(const Note &note, bool withDetails)
+{
+    cout << setw(5);
+    cout << note.id() << " | " << note.title() << endl;
+    if (withDetails) {
+        printSep('-', kCliWidth);
+        cout << note.content() << endl;
+        if (note.reminder() != pt::ptime()) {
+            cout << "Reminder: " << note.reminder() << endl;
+        }
+        cout << "Last change: " << note.lastChanged() << endl;
+    }
+}
+
 void CliClient::showNotes(bool withDetails)
 {
     auto notes = db_->loadNotesFromNotebook(current_notebook_);
     for (const auto &note : notes) {
-        cout << setw(5);
-        cout << note.id() << " | " << note.title() << endl;
-        if (withDetails) {
-            printSep('-', kCliWidth);
-            cout << note.content() << endl;
-            if (note.reminder() != pt::ptime()) {
-                cout << "Reminder: " << note.reminder() << endl;
-            }
-            cout << "Last change: " << note.lastChanged() << endl;
-        }
+        printNote(note, withDetails);
         printSep('-', kCliWidth);
     }
 }
@@ -120,7 +126,6 @@ void CliClient::printMenu()
     case CliState::TAGS:
         showTags();
     }
-    processInput();
 }
 
 // if true, quit the cli loop
@@ -163,23 +168,113 @@ int CliClient::processInput()
     cout << kPrompt;
     char input;
     std::cin >> input;
-    switch (input) {
-    case 'o':
-        openNotebook();
-    case 'a':
-        readNote();
+
+    switch (state_) {
+    case CliState::MAIN:
+        switch (input) {
+        case 's':
+            current_notebook_ = openNotebook();
+            return false;
+            break;
+        case 'n':
+            state_ = CliState::NOTEBOOKS;
+            return false;
+            break;
+        case 'a':
+            state_ = CliState::NOTES;
+            return false;
+            break;
+        case 't':
+            state_ = CliState::TAGS;
+            return false;
+            break;
+        case 'q':
+            return true;
+            break;
+        }
         break;
-    case 'l':
-        listNotes();
+    case CliState::NOTEBOOKS:
+        switch (input) {
+        case 'n':
+            cout << "n: new notebook" << endl;
+            return false;
+            break;
+        case 'r':
+            cout << "r: rename notebook" << endl;
+            return false;
+            break;
+        case 'd':
+            cout << "d: delete notebook" << endl;
+            return false;
+            break;
+        case 'q':
+            cout << "q: back to main menu" << endl;
+            state_ = CliState::MAIN;
+            return false;
+            break;
+        }
         break;
-    case 'd':
-        deleteNote();
+    case CliState::NOTES:
+        switch (input) {
+        case 'n':
+            newNote();
+            return false;
+            break;
+        case 'e':
+            editNote();
+            return false;
+            break;
+        case 'd':
+            deleteNote();
+            return false;
+            break;
+        case 's':
+            cout << "s: search note" << endl;
+            return false;
+            break;
+        case 't':
+            cout << "t: add tag to note" << endl;
+            return false;
+            break;
+        case 'r':
+            cout << "r: remove tag from note" << endl;
+            return false;
+            break;
+        case 'q':
+            cout << "q: back to main menu" << endl;
+            state_ = CliState::MAIN;
+            return false;
+            break;
+        }
         break;
-    case 'q':
-        return true;
-        break;
-    default:
-        std::cout << "Invalid input, please try again ..." << std::endl;
+    case CliState::TAGS:
+        switch (input) {
+        case 'n':
+            cout << "n: new tag" << endl;
+            return false;
+            break;
+        case 'd':
+            cout << "d: delete tag" << endl;
+            return false;
+            break;
+        case 's':
+            cout << "s: search notes for tag" << endl;
+            return false;
+            break;
+        case 'a':
+            cout << "a: add tag to note" << endl;
+            return false;
+            break;
+        case 'r':
+            cout << "r: remove tag from note" << endl;
+            return false;
+            break;
+        case 'q':
+            cout << "q: back to main menu" << endl;
+            state_ = CliState::MAIN;
+            return false;
+            break;
+        }
     }
     return false;
 }
@@ -201,6 +296,31 @@ void CliClient::listNotebooks()
     for (const auto &notebook : notebooks) {
         cout << notebook.id() << ": " << notebook.title() << endl;
     }
+}
+
+void CliClient::newNote()
+{
+    auto note = readNote();
+    db_->newNote(note);
+    cout << "Added new note to DB with ID " << note.id() << endl;
+}
+
+void CliClient::editNote()
+{
+    long long id;
+    showNotes(false);
+    printSep('-', kCliWidth);
+    cout << "Choose note to edit:";
+    cin >> id;
+    auto note = db_->loadNote(id);
+    cout << "Old data:" << endl;
+    printNote(note);
+    printSep('-', kCliWidth);
+    cout << "Enter new values:" << endl;
+    auto changed_note = readNote();
+    changed_note.id(note.id());
+    db_->updateNote(changed_note);
+    cout << "Wrote updated note to DB" << endl;
 }
 
 model::Note CliClient::readNote()
