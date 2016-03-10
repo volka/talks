@@ -61,7 +61,7 @@ std::vector<model::Notebook> WtDatabase::listNotebooks()
     dbo::collection<dbo::ptr<wt::Notebook>> nb_list =
         session_.find<wt::Notebook>();
     for (const auto &nb : nb_list) {
-        result.emplace_back(*nb.get());
+        result.emplace_back(nb.id(), nb->title());
     }
     t.commit();
     return result;
@@ -74,12 +74,11 @@ bigint_t WtDatabase::newNotebook(const std::string &title)
     dbo::Transaction t(session_);
     auto nb = std::make_unique<wt::Notebook>(title);
     dbo::ptr<wt::Notebook> nb_ptr = session_.add(nb.release());
-    nb_ptr.reread();
     t.commit();
     // WARNING : I am using Wt::Dbo IDs here instead of the id() defined on my
     // objects
-    std::cout << "created new notebook with id " << nb_ptr->id() << std::endl;
-    return nb_ptr->id();
+    std::cout << "created new notebook with id " << nb_ptr.id() << std::endl;
+    return nb_ptr.id();
 }
 
 // find() / modify() example
@@ -104,20 +103,27 @@ void WtDatabase::deleteNotebook(const bigint_t id)
 
 model::Notebook WtDatabase::loadNotebook(const bigint_t notebook_id)
 {
-
+    model::Notebook model_nb;
     dbo::Transaction t(session_);
     dbo::ptr<wt::Notebook> nb =
         session_.find<wt::Notebook>().where("id=?").bind(notebook_id);
     t.commit();
-    return *nb;
+    model_nb = *nb;
+    model_nb.id(nb.id());
+    return model_nb;
 }
 
 void WtDatabase::newNote(model::Note &note)
 {
     dbo::Transaction t(session_);
     auto db_note = std::make_unique<wt::Note>(note);
-    session_.add(db_note.release());
+    // we need to add the notebook manually
+    dbo::ptr<wt::Notebook> nb = session_.find<wt::Notebook>()
+            .where("id=?").bind(note.notebook());
+    db_note->notebook = nb;
+    dbo::ptr<wt::Note> new_note = session_.add(db_note.release());
     t.commit();
+    note.id(new_note.id());
 }
 
 void WtDatabase::updateNote(const model::Note &note)
@@ -165,11 +171,15 @@ void WtDatabase::deleteNote(const bigint_t note_id)
 
 model::Note WtDatabase::loadNote(const bigint_t note_id)
 {
+    model::Note model_note;
     dbo::Transaction t(session_);
     dbo::ptr<wt::Note> note =
         session_.find<wt::Note>().where("id=?").bind(note_id);
     t.commit();
-    return *note;
+    model_note = *note;
+    model_note.id(note.id());
+    model_note.notebook(note->notebook.id());
+    return model_note;
 }
 
 bigint_t WtDatabase::newTag(const std::string &title)
@@ -178,7 +188,7 @@ bigint_t WtDatabase::newTag(const std::string &title)
     auto tag = std::make_unique<wt::Tag>(title);
     dbo::ptr<wt::Tag> tag_ptr = session_.add(tag.release());
     t.commit();
-    return tag_ptr->id();
+    return tag_ptr.id();
 }
 
 std::vector<model::Tag> WtDatabase::listTags()
@@ -187,7 +197,7 @@ std::vector<model::Tag> WtDatabase::listTags()
     dbo::collection<dbo::ptr<wt::Tag>> tags = session_.find<wt::Tag>();
     std::vector<model::Tag> result;
     for (const auto &tag_ptr : tags) {
-        result.push_back(*tag_ptr);
+        result.emplace_back(tag_ptr.id(), tag_ptr->title());
     }
     t.commit();
     return result;
@@ -208,9 +218,17 @@ WtDatabase::loadNotesFromNotebook(const bigint_t notebook_id)
     dbo::ptr<wt::Notebook> nb =
         session_.find<wt::Notebook>().where("id=?").bind(notebook_id);
 
+
+    std::cout << "found notebook notes: " << nb.modify()->notes.size() << std::endl;
+
     std::vector<model::Note> result;
-    for (const auto &note_ptr : nb->notes) {
-        result.push_back(*note_ptr);
+    model::Note tmp;
+    for (dbo::collection<dbo::ptr<wt::Note>>::const_iterator it = nb->notes.begin();
+         it != nb->notes.end(); ++it) {
+        std::cout << "found note " << (*it).id() << " - " << (*it)->title() << std::endl;
+        tmp = **it;
+        tmp.id((*it).id());
+        result.push_back(tmp);
     }
     t.commit();
     return result;
@@ -221,8 +239,11 @@ std::vector<model::Note> WtDatabase::loadNotesForTag(const bigint_t tag_id)
     dbo::Transaction t(session_);
     dbo::ptr<wt::Tag> tag = session_.find<wt::Tag>().where("id=?").bind(tag_id);
     std::vector<model::Note> result;
+    model::Note tmp;
     for (const auto &note_ptr : tag->notes) {
-        result.push_back(*note_ptr);
+        tmp = *note_ptr;
+        tmp.id(note_ptr.id());
+        result.push_back(tmp);
     }
     t.commit();
     return result;

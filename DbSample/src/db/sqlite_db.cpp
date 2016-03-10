@@ -145,7 +145,7 @@ void Sqlite3Database::setupDb()
         throw DatabaseException("dropping table tags failed");
 
     result = prepareStatement("CREATE TABLE notebooks ("
-                              "id		bigint primary key,"
+                              "id		integer primary key autoincrement,"
                               "title	varchar(255)"
                               ")");
 
@@ -153,7 +153,7 @@ void Sqlite3Database::setupDb()
         throw DatabaseException("creating table notebooks failed");
 
     result = prepareStatement("CREATE TABLE tags ("
-                              "id	 	bigint primary key,"
+                              "id	 	integer primary key autoincrement,"
                               "title	varchar(255)"
                               ")");
 
@@ -162,10 +162,10 @@ void Sqlite3Database::setupDb()
 
     result = prepareStatement(
         "CREATE TABLE notes ("
-        "id      	    bigint primary key,"
+        "id      	    integer primary key autoincrement,"
         "title   	    varchar(255),"
         "content	    text,"
-        "notebook 	    bigint references notebooks(id) ON DELETE CASCADE,"
+        "notebook 	    integer references notebooks(id) ON DELETE CASCADE,"
         "last_change    timestamp DEFAULT (datetime('now','localtime')),"
         "reminder	    timestamp"
         ")");
@@ -174,9 +174,9 @@ void Sqlite3Database::setupDb()
         throw DatabaseException("creating table notes failed");
 
     result = prepareStatement("CREATE TABLE tags_nm ("
-                              "tag_id	bigint references tags(id)"
+                              "tag_id	integer references tags(id)"
                               " ON DELETE CASCADE,"
-                              "note_id	bigint references notes(id)"
+                              "note_id	integer references notes(id)"
                               " ON DELETE CASCADE"
                               ")");
 
@@ -385,18 +385,19 @@ void Sqlite3Database::deleteTag(const bigint_t tag_id)
 Note Sqlite3Database::loadNote(const bigint_t note_id)
 {
     clearStatement();
-    stmt_cache_ << "SELECT * FROM notes WHERE id=" << std::to_string(note_id);
+    stmt_cache_ << "SELECT title,content,notebook,last_change,reminder"
+                   " FROM notes WHERE (id=" << std::to_string(note_id) << ")" ;
     auto result = prepareStatement(stmt_cache_.str());
 
     if (isError(executeStep(result))) {
         throw DatabaseException("loading note id " + std::to_string(note_id) +
                                 " failed, invalid result");
     }
-    return Note(note_id, getString(result, 1), // title
-                getString(result, 2),          // content
-                getInt(result, 3),             // notebook
-                getTimestamp(result, 4),       // last change
-                getTimestamp(result, 5)        // reminder
+    return Note(note_id, getString(result, 0), // title
+                getString(result, 1),          // content
+                getInt(result, 2),             // notebook
+                getTimestamp(result, 3),       // last change
+                getTimestamp(result, 4)        // reminder
                 );
 }
 
@@ -429,7 +430,7 @@ std::vector<Note> Sqlite3Database::loadNotesForTag(const bigint_t tag_id)
 {
     clearStatement();
     stmt_cache_
-        << "SELECT notes.id, notes.title, notes.content, notes.last_change, "
+        << "SELECT notes.id, notes.title, notes.content, notes.notebook, notes.last_change, "
         << "notes.reminder FROM notes join tags_nm ON "
            "(notes.id=tags_nm.note_id)"
         << " WHERE (tag_id = " << std::to_string(tag_id) << ")";
@@ -456,11 +457,11 @@ std::vector<Note> Sqlite3Database::searchNotes(const std::string &term)
 {
     clearStatement();
     stmt_cache_
-        << "SELECT notes.id, notes.title, notes.content, notes.last_change, "
-        << "notes.reminder FROM notes left join tags_nm ON "
+        << "SELECT notes.id, notes.title, notes.content, notes.notebook,"
+           "notes.last_change, notes.reminder FROM notes left join tags_nm ON "
            "(notes.id=tags_nm.note_id)"
-        << " left join tags ON (tags_nm.tag_id=tags.id) WHERE ("
-        << " notes.title like '%" << term << "%' or notes.content like '%"
+           " left join tags ON (tags_nm.tag_id=tags.id) WHERE ("
+           " notes.title like '%" << term << "%' or notes.content like '%"
         << term << "%' or tags.title like '%" << term << "%')";
     auto result = prepareStatement(stmt_cache_.str());
     int state = SQLITE_OK;

@@ -45,8 +45,14 @@ void CliClient::showMainView()
     printSep('-', kCliWidth);
     printHeader();
     printSep('-', kCliWidth);
-    cout << endl;
-    showNotebooks();
+    try {
+        auto nb = db_->loadNotebook(current_notebook_);
+        cout << "Current notebook: " << nb.title() << endl;
+        printSep('-',kCliWidth);
+        showNotes(false);
+    } catch (notes::db::DatabaseException&) {
+        cout << "Invalid notebook " << current_notebook_ << ", select/create a new one" << endl;
+    }
 }
 
 void CliClient::showNotes(bool withDetails)
@@ -67,7 +73,14 @@ void CliClient::showNotes(bool withDetails)
     }
 }
 
-void CliClient::showTags() {}
+void CliClient::showTags() {
+    auto tags = db_->listTags();
+    for (const auto &tag : tags) {
+        cout << setw(2);
+        cout << tag.id() << ": " << tag.title() << " | ";
+    }
+    cout << endl;
+}
 
 void CliClient::showNotebooks()
 {
@@ -80,15 +93,25 @@ void CliClient::showNotebooks()
     printSep('-', kCliWidth);
 }
 
+void CliClient::showNotebookView()
+{
+    long long selection;
+    printSep('-', kCliWidth);
+    showNotebooks();
+    cout << "Select Notebook to open:" ;
+    cin >> selection;
+    current_notebook_ = selection;
+    state_ = CliState::MAIN;
+}
+
 void CliClient::printMenu()
 {
-    using namespace std;
-
     switch (state_) {
     case CliState::MAIN:
         showMainView();
         break;
     case CliState::NOTEBOOKS:
+        showNotebookView();
         showNotebooks();
     case CliState::NOTES:
         showNotes(true);

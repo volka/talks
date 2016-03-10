@@ -50,6 +50,9 @@ class QtDatabase : public NotebookDatabase
     virtual std::vector<Note> searchNotes(const std::string &term) override;
 
   private:
+    bool useNullInsert_;
+    std::string nullInsert_; // used for sqlite but not for PG
+    std::string nullInsertCol_; // used for sqlite but not for PG
     ConnectionConfig config_;
 };
 

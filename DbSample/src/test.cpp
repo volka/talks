@@ -18,33 +18,53 @@ void test(shared_ptr<db::NotebookDatabase> db)
     db->setupDb();
     db->fillDb();
 
+    cout << "Listing notebooks ..." << endl;
     auto notebooks = db->listNotebooks();
     assert(notebooks.size() == 2);
     assert(notebooks[0].title() == "Privat");
     assert(notebooks[1].title() == "Einkaufslisten");
 
+    for (const auto& nb: notebooks) {
+        cout << nb.id() << " - " << nb.title() << endl;
+    }
+
+    cout << "Listing tags ..." << endl;
     auto tags = db->listTags();
     assert(tags.size() == 1);
     assert(tags[0].title() == "C++");
+    cout << tags[0].id() << " - " << tags[0].title() << endl;
 
+    cout << "Loading notes for notebook " << notebooks[1].id() << endl;
     auto notes_ek = db->loadNotesFromNotebook(notebooks[1].id());
     assert(notes_ek.size() == 1);
+    for (const auto& note: notes_ek) {
+        cout << "Got note " << note.id() << " - title: " << note.title() << endl;
+    }
 
+    cout << "Loading notes for tag " << tags[0].id() << endl;
     auto notes_cpp = db->loadNotesForTag(tags[0].id());
     assert(notes_cpp.size() == 2);
     assert(notes_cpp[0].title() == "Vortrag");
     assert(notes_cpp[1].content() == "Code schreiben und testen");
+    for (const auto& note: notes_ek) {
+        cout << "Got note " << note.id() << " - title: " << note.title() << endl;
+    }
 
+    cout << "Load note by ID " << notes_cpp[0].id() << endl;
     // second copy of note
     Note vortrag = db->loadNote(notes_cpp[0].id());
     assert(vortrag.id() == notes_cpp[0].id());
     assert(vortrag.title() == "Vortrag");
     assert(vortrag.notebook() == notebooks[0].id()); // 'Privat' notebook
+    cout << "Got note " << vortrag.id() << " - title: " << vortrag.title() << endl;
 
+    cout << "Loading notebook by id " << notebooks[0].id() << endl;
     // load single notebook
     Notebook privat = db->loadNotebook(notebooks[0].id());
     assert(privat.title() == "Privat");
+    cout << "Got notebook " << privat.id() << " - " << privat.title() << endl;
 
+    cout << "Fetching notes using search ... " << endl;
     // search notes
     auto search = db->searchNotes("C++");
     assert(search.size() == 2);
@@ -52,17 +72,24 @@ void test(shared_ptr<db::NotebookDatabase> db)
     assert(search.size() == 1);
     assert(search[0].title() == "Essen");
 
+    for (const auto& note: search) {
+        cout << "Got note " << note.id() << " - title: " << note.title() << endl;
+    }
+
+    cout << "Updating note " << search[0].id() << endl;
     // update
     Note &food = search[0];
     food.title("Futter");
     auto new_reminder = pt::ptime(pt::time_from_string("2016-03-11 13:12:01"));
     food.reminder(new_reminder);
     db->updateNote(food);
+    cout << "Update done ... reloading note" << endl;
     Note food_reload = db->loadNote(food.id());
     assert(food_reload.title() == "Futter");
-    cout << "reminder: " << food_reload.reminder() << std::endl;
     assert(food_reload.reminder() == new_reminder);
 
+    cout << "Got note " << food_reload.id() << " - title: " << food_reload.title() << endl;
+    cout << "Deleting tag " << tags[0].id() << endl;
     // deleting tags and notes, check foregin key constrains
     bigint_t cpp_tag_id = tags[0].id();
     try {

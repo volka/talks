@@ -26,7 +26,12 @@ class CliClient : public Client
     // notebook ID of current notebook, or -1 for exit
     int processInput();
 
+    // "windows" for each state
     void showMainView();
+    void showNotebookView();
+
+
+    // display text of model classes
     void showNotes(bool withDetails);
     void showTags();
     void showNotebooks();

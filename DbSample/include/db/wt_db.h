@@ -14,7 +14,7 @@ class Note;
 }
 }
 }
-
+/*
 namespace Wt
 {
 namespace Dbo
@@ -37,7 +37,7 @@ template <> struct dbo_traits<notes::db::wt::Note> : public dbo_default_traits {
 };
 } // ns Dbo
 } // ns Wt
-
+*/
 namespace notes
 {
 namespace db
@@ -58,11 +58,11 @@ class Tag : public model::Tag
     Tag() = default;
     Tag(const model::Tag &tag) : model::Tag(tag) {}
 
-    dbo::collection<dbo::ptr<Note>> notes;
+    dbo::collection<dbo::ptr<wt::Note>> notes;
 
     template <class Action> void persist(Action &a)
     {
-        dbo::id(a, id_, "id");
+        //dbo::id(a, id_, "id");
         dbo::field(a, title_, "title");
         dbo::hasMany(a, notes, dbo::ManyToMany, "tags_nm");
     }
@@ -75,11 +75,11 @@ class Notebook : public model::Notebook
     Notebook() = default;
     Notebook(const model::Notebook &notebook) : model::Notebook(notebook) {}
 
-    dbo::collection<dbo::ptr<Note>> notes;
+    dbo::collection<dbo::ptr<wt::Note>> notes;
 
     template <class Action> void persist(Action &a)
     {
-        dbo::id(a, id_, "id");
+        //dbo::id(a, id_, "id");
         dbo::field(a, title_, "title");
         dbo::hasMany(a, notes, dbo::ManyToOne, "notebook");
     }
@@ -92,13 +92,13 @@ class Note : public model::Note
     Note() = default;
     Note(const model::Note &note) : model::Note(note) {}
 
-    dbo::collection<dbo::ptr<Tag>> tags;
-    dbo::ptr<Notebook> notebook;
+    dbo::collection<dbo::ptr<wt::Tag>> tags;
+    dbo::ptr<wt::Notebook> notebook;
 
     template <class Action> void persist(Action &a)
     {
         // field name, name in DB
-        dbo::id(a, id_, "id");
+        //dbo::id(a, id_, "id");
         dbo::field(a, title_, "title");
         dbo::field(a, content_, "content");
         dbo::belongsTo(a, notebook, "notebook", dbo::OnDeleteCascade);

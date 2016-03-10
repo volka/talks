@@ -17,16 +17,21 @@ find_package(PostgreSQL 9.4 REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Boost COMPONENTS date_time REQUIRED)
 #find_package(Boost COMPONENTS date_time program_options REQUIRED)
-#find_library(wtdbo NAMES libwtdbo.so HINTS ../../wt/wt-3.3.5/ /usr/lib64 /usr/lib)
-#find_library(wtdbosqlite3 NAMES libwtdbosqlite3.so HINTS ../../wt/wt-3.3.5/ /usr/lib64 /usr/lib)
-#find_library(wtdbopostgres NAMES libwtdbopostgres.so HINTS ../../wt/wt-3.3.5/ /usr/lib64 /usr/lib)
-find_library(wtdbo NAMES libwtdbo.so)
-find_library(wtdbosqlite3 NAMES libwtdbosqlite3.so)
-find_library(wtdbopostgres NAMES libwtdbopostgres.so)
+
+# Self compiled ...
+find_library(wtdbo NAMES libwtdbo.so HINTS ../../wt/wt-3.3.5/ /usr/lib64 /usr/lib)
+find_library(wtdbosqlite3 NAMES libwtdbosqlite3.so HINTS ../../wt/wt-3.3.5/ /usr/lib64 /usr/lib)
+find_library(wtdbopostgres NAMES libwtdbopostgres.so HINTS ../../wt/wt-3.3.5/ /usr/lib64 /usr/lib)
+### System Wt::Dbo
+#find_library(wtdbo NAMES libwtdbo.so)
+#find_library(wtdbosqlite3 NAMES libwtdbosqlite3.so)
+#find_library(wtdbopostgres NAMES libwtdbopostgres.so)
+
+# Connector Library - search for .so in local directories and relative sqlpp11-connector-sqlite3 main dir
 find_library(sqlpp11-sqlite3 NAMES libsqlpp11-connector-sqlite3.so HINTS . .. ../../sqlpp11-connector-sqlite3 )
 
 find_package(Qt5 COMPONENTS Quick Sql Core Network)
-#INCLUDE_DIRECTORIES("../../wt/wt-3.3.5/src/")
+INCLUDE_DIRECTORIES("../../wt/wt-3.3.5/src/")
 INCLUDE_DIRECTORIES(${PostgreSQL_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
