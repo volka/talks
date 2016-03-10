@@ -47,8 +47,7 @@ void CliClient::showMainView()
     printSep('-', kCliWidth);
     try {
         auto nb = db_->loadNotebook(current_notebook_);
-        cout << "Current notebook: " << nb.id() << " - "
-             << nb.title() << endl;
+        cout << "Current notebook: " << nb.id() << " - " << nb.title() << endl;
         printSep('-', kCliWidth);
         showNotes(false);
     } catch (notes::db::DatabaseException &) {
@@ -129,11 +128,11 @@ int CliClient::processInput()
 {
     switch (state_) {
     case CliState::MAIN:
-       cout << "s: switch notebook" << endl;
-       cout << "n: edit notebooks" << endl;
-       cout << "a: show notes" << endl;
-       cout << "t: show tags" << endl;
-       cout << "q: quit" << endl;
+        cout << "s: switch notebook" << endl;
+        cout << "n: edit notebooks" << endl;
+        cout << "a: show notes" << endl;
+        cout << "t: show tags" << endl;
+        cout << "q: quit" << endl;
         break;
     case CliState::NOTEBOOKS:
         cout << "n: new notebook" << endl;

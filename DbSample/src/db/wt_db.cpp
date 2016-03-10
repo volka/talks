@@ -259,10 +259,10 @@ std::vector<model::Note> WtDatabase::searchNotes(const std::string &term)
     // TODO : not implemented
     std::vector<model::Note> result;
     if (term == "C++") {
-        result.emplace_back(0,"test", "test", 0, pt::ptime(), pt::ptime());
-        result.emplace_back(1,"test", "test", 0, pt::ptime(), pt::ptime());
+        result.emplace_back(0, "test", "test", 0, pt::ptime(), pt::ptime());
+        result.emplace_back(1, "test", "test", 0, pt::ptime(), pt::ptime());
     } else {
-        result.emplace_back(2,"Essen", "Eier", 1, pt::ptime(), pt::ptime());
+        result.emplace_back(2, "Essen", "Eier", 1, pt::ptime(), pt::ptime());
     }
     return result;
 }

@@ -114,19 +114,23 @@ void test(shared_ptr<db::NotebookDatabase> db)
     cout << "Now load notes by deleted tag" << endl;
     auto empty_notes = db->loadNotesForTag(cpp_tag_id);
     assert(empty_notes.empty());
-    if (empty_notes.empty()) cout << "Got empty note list as expected" << endl;
+    if (empty_notes.empty())
+        cout << "Got empty note list as expected" << endl;
 
-    cout << "now really remove tag if constaints prevented us from doing this earlier" << endl;
+    cout << "now really remove tag if constaints prevented us from doing this "
+            "earlier" << endl;
     db->deleteTag(cpp_tag_id);
     tags = db->listTags();
     assert(tags.empty());
-    if (tags.empty()) cout << "Now tag list is empty" << endl;
+    if (tags.empty())
+        cout << "Now tag list is empty" << endl;
 
     cout << "Delete note 0 from 'Einkauf'" << endl;
     db->deleteNote(notes_ek[0].id());
     notes_ek = db->loadNotesFromNotebook(notebooks[1].id());
     assert(notes_ek.empty());
-    cout << "Reload of notebook 'Einkauf' - now with " << notes_ek.size() << " notes" << endl;
+    cout << "Reload of notebook 'Einkauf' - now with " << notes_ek.size()
+         << " notes" << endl;
 
     // notebook modifications
     cout << "Delete a notebook" << endl;
