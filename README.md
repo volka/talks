@@ -1,7 +1,12 @@
 # talks
 Slides and demo code for talks ...
 
-## DbSample
+## SQL and C++ (german)
+
+An overview of different database access APIs for C++, from native C SQLite3/PostgreSQL to SQLPP11. See 
+the sample application below for code.
+
+### Sample application: NotebookDatabase
 
 This directory contains a Demo application showing different ways to interface with Sqlite / PostgreSQL 
 databases from C++.
