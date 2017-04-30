@@ -1,0 +1,76 @@
+{"name": "root", "type": "record", 
+"fields": [
+{ "name": "ints_vec", "type": ["null", { "type": "array", "items":
+{
+    "type": "record",
+    "name": "ints",
+    "fields" : [
+        {"name": "id", "type": "long"},
+        {"name": "int1", "type": "long"},
+        {"name": "int2", "type": "long"},
+        {"name": "int3", "type": "int"},
+        {"name": "int4", "type": "int"}
+    ]
+} }] },
+{ "name": "mixed_vec", "type": ["null", { "type": "array", "items":
+{
+    "type": "record",
+    "name": "mixed",
+    "fields": [
+        {"name": "id", "type": "int"},
+        {"name": "int1", "type": "int"},
+        {"name": "int2", "type": "long"},
+        {"name": "uint1", "type": "long"},
+        {"name": "float1", "type": "double"},
+        {"name": "text1", "type": "string"},
+        {"name": "enum1", "type": { "type": "enum", "name": "ENUM", "symbols": ["ONE","TWO","THREE","FOUR"]}}
+    ]
+} }] },
+{ "name": "complex_vec", "type": ["null", { "type": "array", "items":
+{
+    "type": "record",
+    "name": "complex",
+    "fields": [
+        {"name": "id", "type": "long"},
+        {"name": "text1", "type": "string"},
+        {"name": "text2", "type": "string"},
+        {"name": "text3", "type": "string"},
+        {"name": "int1", "type": "int"},
+        {"name": "int2", "type": "int"},
+        {"name": "int3", "type": "int"},
+        {"name": "text4", "type": "string"},
+        {"name": "enum1", "type": { "type": "enum", "name": "ENUM",
+            "symbols": ["ONE","TWO","THREE","FOUR"]}},
+        {"name": "float1", "type": "double"},
+        {"name": "int4", "type": "long"},
+        {"name": "uint1", "type": "long"},
+        {"name": "uint2", "type": "long"},
+        {"name": "int5", "type": "long"},
+        {"name": "int6", "type": "int"},
+        {"name": "float2", "type": "double"},
+        {"name": "text5", "type": "string"}
+    ]
+} }] },
+{ "name": "cont_vec_vec", "type": ["null", { "type": "array", "items":
+{
+    "type": "record",
+    "name": "container_vec",
+    "fields": [
+        {"name": "id", "type": "int"},
+        {"name": "int1", "type": "long"},
+        {"name": "text1", "type": "string"},
+        {"name": "stringvec", "type": { "type": "array", "items": "string"}},
+        {"name": "intvec", "type": { "type": "array", "items": "long"}}
+    ]
+} }] },
+{ "name": "cont_map_vec", "type": ["null", { "type": "array", "items":
+{
+    "type": "record",
+    "name": "container_map",
+    "fields": [
+        {"name": "id", "type": "int"},
+        {"name": "int1", "type": "long"},
+        {"name": "text1", "type": "string"},
+        {"name": "map1", "type": {"type": "map", "values": "string"}}
+    ]
+} }]} ] }

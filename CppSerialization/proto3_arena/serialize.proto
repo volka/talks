@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package serialize;
+
+enum ENUMERATION {
+    ONE = 0;
+    TWO = 1;
+    THREE = 2;
+    FOUR = 3;
+}
+
+message Ints {
+    int64 id = 1;
+    int64 int1 = 2;
+    int64 int2 = 3;
+    int32 int3 = 4;
+    int32 int4 = 5;
+}
+
+message Mixed {
+    int32 id = 1;
+    int32 int1 = 2;
+    int64 int2 = 3;
+    uint32 uint1 = 4;
+    double float1 = 5;
+    string text1 = 6;
+    ENUMERATION enum1 = 7;
+}
+
+message Container_Vec {
+    int32 id = 1;
+    int64 int1 = 2;
+    string text1 = 3;
+    repeated string stringvec = 4;
+    repeated int64 intvec = 5;
+}
+
+message Container_Map {
+    int32 id = 1;
+    int64 int1 = 2;
+    string text1 = 3;
+    map<int32, string> map1 = 4;
+}
+
+message Complex {
+    int64 id = 1;
+    string text1 = 2;
+    string text2 = 3;
+    string text3 = 4;
+    int32 int1 = 5;
+    int32 int2 = 6;
+    int32 int3 = 7;
+    string text4 = 8;
+    ENUMERATION enum1 = 9;
+    double float1 = 10;
+    int64 int4 = 11;
+    uint32 uint1 = 12;
+    uint64 uint2 = 13;
+    int64 int5 = 14;
+    int32 int6 = 15;
+    double float2 = 16;
+    string text5 = 17;
+}

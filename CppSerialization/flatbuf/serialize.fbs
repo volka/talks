@@ -1,0 +1,74 @@
+
+file_identifier "benc";
+file_extension "fb_bench";
+namespace flatbuf_bench;
+
+enum ENUMERATION : byte { ONE = 0, TWO, THREE, FOUR }
+
+table Root {
+   ints: [Ints];
+   mixed: [Mixed];
+   complex: [Complex];
+   cvec: [ContainerVec];
+   cmap: [ContainerMap];
+}
+
+struct Ints {
+   id: long;
+   int1: long;
+   int2: long;
+   int3: int;
+   int4: int;
+}
+
+table Mixed {
+   id: int;
+   int1: int;
+   int2: long;
+   uint1: uint;
+   float1: double;
+   text1: string;
+   enum1: ENUMERATION;
+}
+
+table Complex {
+   id: int;
+   text1: string;
+   text2: string;
+   text3: string;
+   int1: int;
+   int2: int;
+   int3: int;
+   text4: string;
+   enum1: ENUMERATION;
+   float1: double;
+   int4: long;
+   uint1: uint;
+   uint2: ulong;
+   int5: long;
+   int6: int;
+   float2: double;
+   text5: string;
+}
+
+table ContainerVec {
+   id: int;
+   int1: long;
+   text1: string;
+   stringvec: [string];
+   intvec: [long];
+}
+
+table IntStringMap {
+   id: int;
+   value: string;
+}
+
+table ContainerMap {
+   id: int;
+   int1: long;
+   text1: string;
+   map1: [IntStringMap];
+}
+
+root_type Root;
