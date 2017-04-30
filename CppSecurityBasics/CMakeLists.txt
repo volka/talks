@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-
+project(CppSecurity)
 find_package(OpenSSL)
 
 add_executable(ssl_demo ssl_demo.cpp)

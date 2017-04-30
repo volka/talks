@@ -16,7 +16,7 @@ template <class T>
 gsl::span<const unsigned char> byte_view(const T& in)
 {
 	auto size = in.size() * sizeof(typename T::value_type);
-	return { reinterpret_cast<const unsigned char*>(in.data()), static_cast<int64_t>(size) };
+   return { reinterpret_cast<const unsigned char*>(in.data()), static_cast<int64_t>(size) };
 }
 
 template <class T>
@@ -43,68 +43,20 @@ std::vector<unsigned char> sha256(gsl::span<const unsigned char> input)
 	int res = 1;
 
 	SHA256_CTX sha256;
-	if (res) res = SHA256_Init(&sha256);
+   res = SHA256_Init(&sha256);
 	if (res) res = SHA256_Update(&sha256, input.data(), input.size());
-	if (res) res = SHA256_Final(output.data(), &sha256); //  <-- cleans up the SHA256_CTX !
+   if (res) res = SHA256_Final(output.data(), &sha256); //  <-- cleans up the SHA256_CTX !
 	
-	if (!res) throw std::runtime_error("SHA256 failed");
+   if (!res) {
+      SHA256_Final(nullptr, &sha256);
+      throw std::runtime_error("SHA256 failed");
+   }
 	return output;
 }
 
-/*
-int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *aad,
-	int aad_len, unsigned char *key, unsigned char *iv,
-	unsigned char *ciphertext, unsigned char *tag)
-{
-	EVP_CIPHER_CTX *ctx;
-
-	int len;
-
-	int ciphertext_len;
-
-
-	// Create and initialise the context
-	if (!(ctx = EVP_CIPHER_CTX_new())) handleErrors();
-
-	// Initialise the encryption operation.
-	if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
-		handleErrors();
-
-	// Set IV length if default 12 bytes (96 bits) is not appropriate
-	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 16, NULL))
-		handleErrors();
-
-	// Initialise key and IV 
-	if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv)) handleErrors();
-
-	// Provide any AAD data. This can be called zero or more times as required
-	if (1 != EVP_EncryptUpdate(ctx, NULL, &len, aad, aad_len))
-		handleErrors();
-
-	// Provide the message to be encrypted, and obtain the encrypted output.
-	// EVP_EncryptUpdate can be called multiple times if necessary
-	if (1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len))
-		handleErrors();
-	ciphertext_len = len;
-
-	// Finalise the encryption. Normally ciphertext bytes may be written at
-	// this stage, but this does not occur in GCM mode
-	if (1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len)) handleErrors();
-	ciphertext_len += len;
-
-	// Get the tag 
-	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, tag))
-		handleErrors();
-
-	// Clean up
-	EVP_CIPHER_CTX_free(ctx);
-
-	return ciphertext_len;
-}
-*/
 int main()
 {
-	std::array<unsigned char, 8> randomized = {0};
+   std::array<unsigned char, 8> randomized = {};
 	std::string password = "super_secure";
 	std::string secret_message = "My Bank Account PIN is 1234, please don't hack me!";
 
