@@ -16,6 +16,7 @@ The frameworks covered are:
 * Apache Thrift
 * ASN.1 (as a refrence, code not publicly available)
 
+For a short report on the presentation see http://www.wilkening-online.de/programmieren/c++-user-treffen-aachen/2017_01_12/bericht-2017-01-12.html (german)
 
 ## SQL and C++ (german)
 
@@ -51,3 +52,4 @@ For Sqlpp11:
 * PostgreSQL Connector: https://github.com/matthijs/sqlpp11-connector-postgresql
 * date.h from https://github.com/HowardHinnant/date
 
+A short report of the talk can be found here: http://www.wilkening-online.de/programmieren/c++-user-treffen-aachen/2016_03_10/bericht-2016-03-10.html
