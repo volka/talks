@@ -1,6 +1,22 @@
 # talks
 Slides and demo code for talks ...
 
+## Serialization in C++ (german)
+
+This talk introduces basic concepts of data serialization and presents several common C++ serialization frameworks. I demonstrate the use and point out differences in the interfaces, and close with some simple benchmarks comparing serialization/deserialization performance and sizes for several sample data structures.
+
+The frameworks covered are:
+* Apache AVRO
+* Microsoft Bond
+* Boost Serialization
+* Cap'n'Proto
+* Cereal
+* Google Flatbuffers
+* Google Protocol Buffers
+* Apache Thrift
+* ASN.1 (as a refrence, code not publicly available)
+
+
 ## SQL and C++ (german)
 
 An overview of different database access APIs for C++, from native C SQLite3/PostgreSQL to SQLPP11. See 
