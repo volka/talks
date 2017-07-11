@@ -1,6 +1,13 @@
 # talks
 Slides and demo code for talks ...
 
+## Security Basics for CPP Developers (short talk)
+
+The talk can be found in "CppSecurity.pdf"
+
+The CppSecurityBasics directory contains demo code for doing security-related things in a reasonable
+secure way even if you do not know a lot about security. The examples work with OpenSSL.
+
 ## SQL and C++ (german)
 
 An overview of different database access APIs for C++, from native C SQLite3/PostgreSQL to SQLPP11. See 
@@ -35,3 +42,23 @@ For Sqlpp11:
 * PostgreSQL Connector: https://github.com/matthijs/sqlpp11-connector-postgresql
 * date.h from https://github.com/HowardHinnant/date
 
+## CPP Serialization (Pack ein pack aus, german)
+
+This is an evaluation of lots of different serialization frameworks for C++, mainly comparing usage,
+performance and sizes for several sample datasets. Slides for the talk can be found in 2017\_01\_Cpp\_Serialization.pdf
+
+The evaluation covers the following toolkits:
+
+* Apache AVRO
+* Microsoft Bond
+* Boost Serialization
+* Cereal
+* Cap'n'Proto
+* Apache Thrift
+* Google Protobuf
+* Google Flatbuffers
+* ASN.1 (internal library removed for public release)
+
+Demo code can be found in the CppSerialization subdirectory. The code uses the Google Benchmark library to
+testdrive the frameworks. It needs some setup of the respective libraries, and tuning of the CMakeLists.txt
+file for the respective framework.
