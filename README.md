@@ -1,12 +1,12 @@
 # talks
 Slides and demo code for talks ...
 
-## Security Basics for CPP Developers (short talk)
+## Crypto Basics for CPP Developers (short talk)
 
-The talk can be found in "CppSecurity.pdf"
+The talk can be found in "CppCrypto.pdf"
 
-The CppSecurityBasics directory contains demo code for doing security-related things in a reasonable
-secure way even if you do not know a lot about security. The examples work with OpenSSL.
+The CppCryptoBasics directory contains demo code for doing security-related things in a reasonable
+secure way even if you do not know a lot about security. The examples work with OpenSSL and the Botan C++ Crypto library.
 
 ## SQL and C++ (german)
 
@@ -44,7 +44,7 @@ For Sqlpp11:
 
 ## CPP Serialization (Pack ein pack aus, german)
 
-This is an evaluation of lots of different serialization frameworks for C++, mainly comparing usage,
+This is an evaluation of several different serialization frameworks for C++, mainly comparing usage,
 performance and sizes for several sample datasets. Slides for the talk can be found in 2017\_01\_Cpp\_Serialization.pdf
 
 The evaluation covers the following toolkits:
@@ -62,3 +62,5 @@ The evaluation covers the following toolkits:
 Demo code can be found in the CppSerialization subdirectory. The code uses the Google Benchmark library to
 testdrive the frameworks. It needs some setup of the respective libraries, and tuning of the CMakeLists.txt
 file for the respective framework.
+
+A short report of the talk can be found here: http://www.wilkening-online.de/programmieren/c++-user-treffen-aachen/2016_03_10/bericht-2016-03-10.html
