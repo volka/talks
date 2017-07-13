@@ -8,6 +8,8 @@ The talk can be found in "CppCrypto.pdf"
 The CppCryptoBasics directory contains demo code for doing security-related things in a reasonable
 secure way even if you do not know a lot about security. The examples work with OpenSSL and the Botan C++ Crypto library.
 
+The slides and code are here for reference. If you find any issues or security problems, please let me know!
+
 ## SQL and C++ (german)
 
 An overview of different database access APIs for C++, from native C SQLite3/PostgreSQL to SQLPP11. See 

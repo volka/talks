@@ -1,7 +1,6 @@
 #include <botan/rng.h>
 #include <botan/auto_rng.h>
 #include <botan/system_rng.h>
-#include <botan/tpm.h>
 #include <iostream>
 
 #include "util.h"
