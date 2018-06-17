@@ -3,10 +3,19 @@ Slides and demo code for talks ...
 
 ## Crypto Basics for CPP Developers (short talk)
 
-The talk can be found in "CppCrypto.pdf"
+The talk can be found in ["2017_07_CppCryptoBasics.pdf"](2017_07_CppCryptoBasics.pdf)
 
-The CppCryptoBasics directory contains demo code for doing security-related things in a reasonable
+It covers the following topics:
+
+* Quick Crypto Intro (Randmoness, Hashing, Symmetric and Asymmetric Algorithms)
+* How to handle passwords
+* How to encrypt data
+* How to communicate securely
+
+The [CppCryptoBasics](CppCryptoBasics) directory contains demo code for doing security-related things in a reasonable
 secure way even if you do not know a lot about security. The examples work with OpenSSL and the Botan C++ Crypto library.
+
+The slides and code are here for reference. If you find any issues or security problems, please let me know!
 
 ## SQL and C++ (german)
 

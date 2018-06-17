@@ -3,7 +3,7 @@ project(CppSecurity)
 find_package(OpenSSL)
 find_package(Boost COMPONENTS system)
 
-set(CMAKE_CXX_COMPILER "clang++-4.0")
+#set(CMAKE_CXX_COMPILER "clang++-4.0")
 set(CMAKE_CXX_FLAGS "-std=c++1z -pthread -DSQLITE_HAS_CODEC")
 link_directories("/usr/local/lib")
 include_directories("~/code/GSL/include")
