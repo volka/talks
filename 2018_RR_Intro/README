@@ -1,0 +1,26 @@
+Demo 1: hello world
+
+Prints time
+- run a few times -> different timestamps
+- record with "rr record ./01_hello_rr"
+- replay with "rr replay" or "replay ~/.local/share/rr/01_hello_rr-<NN>"
+    - repeatedly
+
+Demo 2: run "02_replay" repeatedly through "02_replay.sh"
+    - records each run, breaks on first "strange" run
+    - replay last run: rr replay
+    - break on main
+    - awatch choice
+    - break on _exit
+
+Demo 3: 03_threading
+    - record a run, note print order
+    - rr replay -M
+    - run, note "pid, event numbers" on stdout
+    - run with -g <event no>
+
+Demo 4: 04_stack_smashing
+    - record run, note strange output for x
+    - break main, p &x
+    - awatch *<address of x>  - note: same address on each replay
+    - continue / reverse-continue to see x change
