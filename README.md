@@ -1,6 +1,10 @@
 # talks
 Slides and demo code for talks ...
 
+## Time Travel Debugging - Intro to the RR Debugger (short talk)
+
+The talk ["2018_07_Time_Travel_Debugging-Intro_RR.pdf"](2018_07_Time_Travel_Debugging-Intro_RR.pdf) is a very short overview of the RR debugger, with some simple examples of
+how to use the record and replay functions.
 ## Crypto Basics for CPP Developers (short talk)
 
 The talk can be found in ["2017_07_CppCryptoBasics.pdf"](2017_07_CppCryptoBasics.pdf)
