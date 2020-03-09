@@ -256,6 +256,12 @@ let mut v = Vec::new();
 // actually, for Vec there is a macro:
 let mut w = vec![1,2,3];
 ```
+* Destructor: `std::ops::Drop::drop`
+```rust
+impl Drop for X {
+    fn drop(&mut self) {}
+}
+```
 
 Enums
 ----
@@ -491,6 +497,76 @@ Lifetimes & Aliasing
 * Two kinds of references: `&` and `&mut` with rules
     * A reference cannot outlive its referent
     * A mutable reference cannot be aliased ("variables and pointers _alias_ if the refer to overlapping regions of memory")
-* So how do we use values belonging to other variables? Borrowing!
+* So how is this tracked? Lifetimes!
+    * Local lifetimes mostly implicit
+    * Sane defaults for functions / structs keep code readable
 
+Local Lifetimes
+----
+```rust
+let x = 1;
+let y = &x;
+let z = &y;
+```
+"desugared" (some invalid syntax)
+```rust
+'a: {
+    let x: i32 = 42;
+    'b: { // b "good enough"
+        let y: &'b i32 = &'b x;
+        'c: { // c "good enough"
+            let z: &'c &'b i32 = &'c y;
+        }
 
+    }
+}
+```
+
+Local Lifetimes - add outer lifetime
+----
+```rust
+let x = 1;
+let y = &x;
+let z = &y;
+z = y;
+```
+"desugared" (some invalid syntax)
+```rust
+'a: {
+    let x: i32 = 42;
+    'b: {
+        let z: &'b i32;
+        'c: {
+            // must use 'b here because reference is passed to that scope
+            let y: &'b i32 = &'b x;
+            z = y;
+        }
+
+    }
+}
+```
+
+Reference outliving referent
+----
+```rust
+fn as_str(data: &u32) -> &str {
+    let s = format!("{}", data);
+    &s
+}
+// desugars to
+fn as_str<'a>(data: &'a u32) -> &'a str {
+    'b: {
+        let s = format!("{}", data);
+        return &'a s;
+    }
+}
+```
+* ref to s must outlive 'a, but defined in 'b, which is inside 'a
+--> ERROR
+
+Thanks for the attention!
+----
+
+* Microsoft Slide taken from [Microsoft MSRC Security Research Github](https://github.com/microsoft/MSRC-Security-Research/blob/master/presentations/2019_02_BlueHatIL/2019_01%20-%20BlueHatIL%20-%20Trends%2C%20challenge%2C%20and%20shifts%20in%20software%20vulnerability%20mitigation.pdf)
+* Also see [MSRC Blog](https://msrc-blog.microsoft.com/2019/07/16/a-proactive-approach-to-more-secure-code/)
+* All Rust resources from [rust-lang.org](https://www.rust-lang.org)
