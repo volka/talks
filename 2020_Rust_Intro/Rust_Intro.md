@@ -83,7 +83,7 @@ Great Documentation
     * [Rustlings](https://github.com/rust-lang/rustlings)
     
 
-Variables
+Constants & Variables
 ----
 ```rust
 let x = 42; // immutable integer

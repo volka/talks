@@ -2,7 +2,7 @@
 
 INPUT_FOLDER=${INPUT_FOLDER:-`pwd`}
 OUTPUT_FOLDER=${OUTPUT_FOLDER:-$INPUT_FOLDER/dist}
-THEME=${1:-black}
+THEME=${1:-moon}
 TRANSITION=${2:-none}
 
 # run once:

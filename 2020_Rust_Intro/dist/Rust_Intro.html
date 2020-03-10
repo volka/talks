@@ -80,7 +80,7 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="template/css/theme/black.css" id="theme">
+  <link rel="stylesheet" href="template/css/theme/moon.css" id="theme">
   <!-- Printing and PDF exports -->
   <script>
     var link = document.createElement( 'link' );
@@ -188,10 +188,14 @@
 </ul></li>
 </ul>
 </section>
-<section id="variables" class="slide level2">
-<h2>Variables</h2>
+<section id="constants-variables" class="slide level2">
+<h2>Constants &amp; Variables</h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">42</span><span class="op">;</span> <span class="co">// immutable integer</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">let</span> <span class="kw">mut</span> y<span class="op">:</span> <span class="dt">i32</span> <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// mutable integer</span></span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">let</span> <span class="kw">mut</span> y<span class="op">:</span> <span class="dt">i32</span> <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> <span class="co">// mutable integer</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="kw">const</span>  THRESHOLD <span class="op">:</span> <span class="dt">i32</span> <span class="op">=</span> <span class="dv">10</span><span class="op">;</span> <span class="co">// unchangeable value, type required!</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="kw">static</span> LANG<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span> <span class="op">=</span> <span class="st">&quot;Rust&quot;</span><span class="op">;</span> <span class="co">// global with static lifetime</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>                            <span class="co">//  may be mut, access is unsafe!</span></span></code></pre></div>
 </section>
 <section id="data-types---primitive-types" class="slide level2">
 <h2>Data Types - Primitive Types</h2>
@@ -223,94 +227,96 @@
 <span id="cb6-13"><a href="#cb6-13"></a><span class="kw">let</span> v <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">0xF0</span><span class="op">,</span> <span class="dv">0x9F</span><span class="op">,</span> <span class="dv">0x98</span><span class="op">,</span> <span class="dv">0x88</span>]<span class="op">;</span></span>
 <span id="cb6-14"><a href="#cb6-14"></a><span class="kw">let</span> t <span class="op">=</span> <span class="dt">String</span><span class="pp">::</span>from_utf8(v)<span class="op">.</span>unwrap()<span class="op">;</span></span></code></pre></div>
 </section>
+<section id="functions" class="slide level2">
+<h2>Functions</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">fn</span> negate(i<span class="op">:</span> <span class="dt">i32</span>) <span class="op">-&gt;</span> <span class="dt">i32</span> <span class="op">{</span> <span class="op">-</span>i <span class="op">}</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">use</span> <span class="pp">std::</span>fmt<span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">pub</span> <span class="kw">fn</span> func_name<span class="op">&lt;</span>T<span class="op">:</span> <span class="pp">fmt::</span><span class="bu">Display</span><span class="op">&gt;</span>(arg1<span class="op">:</span> T) <span class="op">-&gt;</span> <span class="dt">String</span> <span class="op">{}</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="op">{</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>    <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> arg1)<span class="op">;</span> <span class="co">// guaranteed to work by Type bound</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>    <span class="pp">format!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> arg1)   </span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="op">}</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="co">// negate only accessible in same module</span></span></code></pre></div>
+</section>
 <section id="data-types---structs" class="slide level2">
 <h2>Data Types - Structs</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">struct</span> <span class="cn">Nil</span><span class="op">;</span> <span class="co">// empty</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">struct</span> Pair(<span class="dt">i32</span><span class="op">,</span> <span class="dt">i64</span>)<span class="op">;</span> <span class="co">// tuple struct (named tuple)</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="at">#[</span>derive<span class="at">(</span><span class="bu">Debug</span><span class="at">)]</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="kw">struct</span> Person<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span> <span class="op">{</span> <span class="co">// Struct with two fields and lifetime</span></span>
-<span id="cb7-6"><a href="#cb7-6"></a>    name<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span><span class="op">,</span></span>
-<span id="cb7-7"><a href="#cb7-7"></a>    age<span class="op">:</span> <span class="dt">u8</span></span>
-<span id="cb7-8"><a href="#cb7-8"></a><span class="op">}</span></span>
-<span id="cb7-9"><a href="#cb7-9"></a><span class="kw">impl</span> Person<span class="op">&lt;</span><span class="ot">&#39;_</span><span class="op">&gt;</span> <span class="op">{</span> <span class="co">// anonymous lifetime</span></span>
-<span id="cb7-10"><a href="#cb7-10"></a>    <span class="kw">fn</span> greet(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">String</span> <span class="op">{</span></span>
-<span id="cb7-11"><a href="#cb7-11"></a>        <span class="pp">format!</span>(<span class="st">&quot;Hello, {}&quot;</span><span class="op">,</span> <span class="kw">self</span><span class="op">.</span>name)</span>
-<span id="cb7-12"><a href="#cb7-12"></a>    <span class="op">}</span></span>
-<span id="cb7-13"><a href="#cb7-13"></a><span class="op">}</span></span>
-<span id="cb7-14"><a href="#cb7-14"></a><span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> Person<span class="op">{</span>name<span class="op">:</span> <span class="st">&quot;Isabelle&quot;</span><span class="op">,</span> age<span class="op">:</span> <span class="dv">1</span><span class="op">}.</span>greet())<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">struct</span> <span class="cn">Nil</span><span class="op">;</span> <span class="co">// empty</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">struct</span> Pair(<span class="dt">i32</span><span class="op">,</span> <span class="dt">i64</span>)<span class="op">;</span> <span class="co">// tuple struct (named tuple)</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="at">#[</span>derive<span class="at">(</span><span class="bu">Debug</span><span class="at">)]</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="kw">struct</span> Person<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span> <span class="op">{</span> <span class="co">// Struct with two fields and lifetime</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>    name<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span><span class="op">,</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a>    age<span class="op">:</span> <span class="dt">u8</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="op">}</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="kw">impl</span> Person<span class="op">&lt;</span><span class="ot">&#39;_</span><span class="op">&gt;</span> <span class="op">{</span> <span class="co">// anonymous lifetime</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a>    <span class="co">// const method</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>    <span class="kw">fn</span> greet(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">String</span> <span class="op">{</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>        <span class="pp">format!</span>(<span class="st">&quot;Hello, {}&quot;</span><span class="op">,</span> <span class="kw">self</span><span class="op">.</span>name)</span>
+<span id="cb8-14"><a href="#cb8-14"></a>    <span class="op">}</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="op">}</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> Person<span class="op">{</span>name<span class="op">:</span> <span class="st">&quot;Isabelle&quot;</span><span class="op">,</span> age<span class="op">:</span> <span class="dv">1</span><span class="op">}.</span>greet())<span class="op">;</span></span></code></pre></div>
 <p>Error without lifetime speficier on &amp;str</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a><span class="ex">error</span>[E0106]: missing lifetime specifier</span>
-<span id="cb8-2"><a href="#cb8-2"></a> <span class="ex">--</span><span class="op">&gt;</span> src/main.rs:4:11</span>
-<span id="cb8-3"><a href="#cb8-3"></a>  <span class="kw">|</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="ex">4</span> <span class="kw">|</span>     <span class="ex">name</span>: <span class="kw">&amp;</span><span class="ex">str</span>,</span>
-<span id="cb8-5"><a href="#cb8-5"></a>  <span class="kw">|</span>           ^ <span class="ex">expected</span> lifetime parameter</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1"></a><span class="ex">error</span>[E0106]: missing lifetime specifier</span>
+<span id="cb9-2"><a href="#cb9-2"></a> <span class="ex">--</span><span class="op">&gt;</span> src/main.rs:4:11</span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="kw">|</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="ex">4</span> <span class="kw">|</span>     <span class="ex">name</span>: <span class="kw">&amp;</span><span class="ex">str</span>,</span>
+<span id="cb9-5"><a href="#cb9-5"></a>  <span class="kw">|</span>           ^ <span class="ex">expected</span> lifetime parameter</span></code></pre></div>
 </section>
 <section id="data-types---enums" class="slide level2">
 <h2>Data Types - Enums</h2>
 <p>Much more powerful than in C++</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">enum</span> Message <span class="op">{</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>    Quit<span class="op">,</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a>    ChangeColor(<span class="dt">i32</span><span class="op">,</span> <span class="dt">i32</span><span class="op">,</span> <span class="dt">i32</span>)<span class="op">,</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a>    Move <span class="op">{</span>x<span class="op">:</span> <span class="dt">i32</span><span class="op">,</span> y<span class="op">:</span> <span class="dt">i32</span><span class="op">},</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a>    <span class="bu">Write</span>(<span class="dt">String</span>)</span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="op">}</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="kw">let</span> x<span class="op">:</span> Message <span class="op">=</span> <span class="pp">Message::</span>Move<span class="op">{</span> x<span class="op">:</span> <span class="dv">1</span><span class="op">,</span> y<span class="op">:</span> <span class="dv">2</span><span class="op">};</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">enum</span> Message <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>    Quit<span class="op">,</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>    ChangeColor(<span class="dt">i32</span><span class="op">,</span> <span class="dt">i32</span><span class="op">,</span> <span class="dt">i32</span>)<span class="op">,</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>    Move <span class="op">{</span>x<span class="op">:</span> <span class="dt">i32</span><span class="op">,</span> y<span class="op">:</span> <span class="dt">i32</span><span class="op">},</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a>    <span class="bu">Write</span>(<span class="dt">String</span>)</span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="op">}</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="kw">let</span> x<span class="op">:</span> Message <span class="op">=</span> <span class="pp">Message::</span>Move<span class="op">{</span> x<span class="op">:</span> <span class="dv">1</span><span class="op">,</span> y<span class="op">:</span> <span class="dv">2</span><span class="op">};</span></span></code></pre></div>
 </section>
 <section id="matching" class="slide level2">
 <h2>Matching</h2>
 <p><code>match</code> is like a powerful switch / <code>if</code> cascade</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">let</span> as_string <span class="op">=</span> <span class="kw">match</span> x <span class="op">{</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a>    <span class="dv">1</span> <span class="op">=&gt;</span> <span class="st">&quot;one&quot;</span><span class="op">,</span></span>
-<span id="cb10-4"><a href="#cb10-4"></a>    <span class="dv">2</span> <span class="op">=&gt;</span> <span class="st">&quot;two&quot;</span><span class="op">,</span></span>
-<span id="cb10-5"><a href="#cb10-5"></a>    _ <span class="op">=&gt;</span> <span class="st">&quot;sorry, can only count to two...&quot;</span></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="op">};</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="kw">let</span> as_string <span class="op">=</span> <span class="kw">match</span> x <span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>    <span class="dv">1</span> <span class="op">=&gt;</span> <span class="st">&quot;one&quot;</span><span class="op">,</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>    <span class="dv">2</span> <span class="op">=&gt;</span> <span class="st">&quot;two&quot;</span><span class="op">,</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>    _ <span class="op">=&gt;</span> <span class="st">&quot;sorry, can only count to two...&quot;</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="op">};</span></span></code></pre></div>
 <p>Match needs to be <em>exhaustive</em> (thus the <code>_</code>)</p>
 </section>
 <section id="matching-and-enums" class="slide level2">
 <h2>Matching and Enums</h2>
 <p>Bind values from variant for use in match</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">fn</span> receive(msg<span class="op">:</span> Message) <span class="op">{</span></span>
-<span id="cb11-2"><a href="#cb11-2"></a>    <span class="kw">match</span> msg <span class="op">{</span></span>
-<span id="cb11-3"><a href="#cb11-3"></a>        <span class="pp">Message::</span>Quit <span class="op">=&gt;</span> <span class="pp">panic!</span>(<span class="st">&quot;we want to leave FAST!&quot;</span>)<span class="op">,</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a>        <span class="pp">Message::</span>ChangeColor(r<span class="op">,</span>g<span class="op">,</span>b) <span class="op">=&gt;</span> change_color(r<span class="op">,</span>g<span class="op">,</span>b)<span class="op">,</span></span>
-<span id="cb11-5"><a href="#cb11-5"></a>        <span class="pp">Message::</span>Move <span class="op">{</span>x<span class="op">:</span> x<span class="op">,</span> y<span class="op">:</span> y<span class="op">}</span> <span class="op">=&gt;</span> move_cursor(x<span class="op">,</span> y)<span class="op">,</span></span>
-<span id="cb11-6"><a href="#cb11-6"></a>        <span class="pp">Message::</span><span class="bu">Write</span>(s) <span class="op">=&gt;</span> <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> s)<span class="op">,</span></span>
-<span id="cb11-7"><a href="#cb11-7"></a>    <span class="op">}</span></span>
-<span id="cb11-8"><a href="#cb11-8"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">fn</span> receive(msg<span class="op">:</span> Message) <span class="op">{</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>    <span class="kw">match</span> msg <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a>        <span class="pp">Message::</span>Quit <span class="op">=&gt;</span> <span class="pp">panic!</span>(<span class="st">&quot;we want to leave FAST!&quot;</span>)<span class="op">,</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a>        <span class="pp">Message::</span>ChangeColor(r<span class="op">,</span>g<span class="op">,</span>b) <span class="op">=&gt;</span> change_color(r<span class="op">,</span>g<span class="op">,</span>b)<span class="op">,</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>        <span class="pp">Message::</span>Move <span class="op">{</span>x<span class="op">:</span> x<span class="op">,</span> y<span class="op">:</span> y<span class="op">}</span> <span class="op">=&gt;</span> move_cursor(x<span class="op">,</span> y)<span class="op">,</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a>        <span class="pp">Message::</span><span class="bu">Write</span>(s) <span class="op">=&gt;</span> <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> s)<span class="op">,</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a>    <span class="op">}</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="op">}</span></span></code></pre></div>
 </section>
 <section id="control-flow" class="slide level2">
 <h2>Control Flow</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">if</span> x <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;x is even!&quot;</span>)<span class="op">;</span> <span class="op">}</span> </span>
-<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">else</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;x is odd!&quot;</span>)<span class="op">;</span> <span class="op">}</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a></span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="co">// infinite loop without break</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a><span class="kw">loop</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;I&#39;m alive!&quot;</span>)<span class="op">;</span> <span class="kw">break</span><span class="op">;</span> <span class="op">}</span> </span>
-<span id="cb12-6"><a href="#cb12-6"></a></span>
-<span id="cb12-7"><a href="#cb12-7"></a><span class="kw">let</span> <span class="kw">mut</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb12-8"><a href="#cb12-8"></a><span class="kw">while</span> i <span class="op">&lt;</span> <span class="dv">10</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;hello&quot;</span>)<span class="op">;</span> i <span class="op">=</span> i <span class="op">+</span> <span class="dv">1</span><span class="op">;</span> <span class="op">}</span></span>
-<span id="cb12-9"><a href="#cb12-9"></a></span>
-<span id="cb12-10"><a href="#cb12-10"></a><span class="kw">let</span> <span class="kw">mut</span> x <span class="op">=</span> <span class="pp">vec!</span>[<span class="st">&quot;C++&quot;</span><span class="op">,</span> <span class="st">&quot;Rust&quot;</span><span class="op">,</span> <span class="st">&quot;Go&quot;</span><span class="op">,</span> <span class="st">&quot;Python&quot;</span>]<span class="op">;</span></span>
-<span id="cb12-11"><a href="#cb12-11"></a><span class="kw">for</span> text <span class="kw">in</span> x <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;I like {}.&quot;</span><span class="op">,</span> text)<span class="op">;</span> <span class="op">}</span></span>
-<span id="cb12-12"><a href="#cb12-12"></a><span class="kw">for</span> (i<span class="op">,</span> text) <span class="kw">in</span> v<span class="op">.</span>iter()<span class="op">.</span>enumerate() <span class="op">{</span> <span class="co">/* ... use i, text */</span> <span class="op">}</span></span>
-<span id="cb12-13"><a href="#cb12-13"></a></span>
-<span id="cb12-14"><a href="#cb12-14"></a><span class="kw">while</span> <span class="kw">let</span> <span class="cn">Some</span>(y) <span class="op">=</span> x<span class="op">.</span>pop() <span class="op">{</span> <span class="co">/* ... use y */</span> <span class="op">}</span></span>
-<span id="cb12-15"><a href="#cb12-15"></a></span>
-<span id="cb12-16"><a href="#cb12-16"></a><span class="kw">for</span> n <span class="kw">in</span> <span class="dv">1</span><span class="op">..</span><span class="dv">11</span> <span class="op">{</span> <span class="co">/* ... use n */</span> <span class="op">}</span></span></code></pre></div>
-</section>
-<section id="functions" class="slide level2">
-<h2>Functions</h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">fn</span> negate(i<span class="op">:</span> <span class="dt">i32</span>) <span class="op">-&gt;</span> <span class="dt">i32</span> <span class="op">{</span> <span class="op">-</span>i <span class="op">}</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a></span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="kw">use</span> <span class="pp">std::</span>fmt<span class="op">;</span></span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">pub</span> <span class="kw">fn</span> func_name<span class="op">&lt;</span>T<span class="op">:</span> <span class="pp">fmt::</span><span class="bu">Display</span><span class="op">&gt;</span>(arg1<span class="op">:</span> T) <span class="op">-&gt;</span> <span class="dt">String</span> <span class="op">{}</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a><span class="op">{</span></span>
-<span id="cb13-6"><a href="#cb13-6"></a>    <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> arg1)<span class="op">;</span> <span class="co">// guaranteed to work by Type bound</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a>    <span class="pp">format!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> arg1)   </span>
-<span id="cb13-8"><a href="#cb13-8"></a><span class="op">}</span></span>
+<div class="sourceCode" id="cb13"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">if</span> x <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;x is even!&quot;</span>)<span class="op">;</span> <span class="op">}</span> </span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="kw">else</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;x is odd!&quot;</span>)<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co">// infinite loop without break</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="kw">loop</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;I&#39;m alive!&quot;</span>)<span class="op">;</span> <span class="kw">break</span><span class="op">;</span> <span class="op">}</span> </span>
+<span id="cb13-6"><a href="#cb13-6"></a></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="kw">let</span> <span class="kw">mut</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="kw">while</span> i <span class="op">&lt;</span> <span class="dv">10</span> <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;hello&quot;</span>)<span class="op">;</span> i <span class="op">=</span> i <span class="op">+</span> <span class="dv">1</span><span class="op">;</span> <span class="op">}</span></span>
 <span id="cb13-9"><a href="#cb13-9"></a></span>
-<span id="cb13-10"><a href="#cb13-10"></a><span class="co">// negate only accessible in same module</span></span></code></pre></div>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="kw">let</span> <span class="kw">mut</span> x <span class="op">=</span> <span class="pp">vec!</span>[<span class="st">&quot;C++&quot;</span><span class="op">,</span> <span class="st">&quot;Rust&quot;</span><span class="op">,</span> <span class="st">&quot;Go&quot;</span><span class="op">,</span> <span class="st">&quot;Python&quot;</span>]<span class="op">;</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="kw">for</span> text <span class="kw">in</span> x <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;I like {}.&quot;</span><span class="op">,</span> text)<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a><span class="kw">for</span> (i<span class="op">,</span> text) <span class="kw">in</span> v<span class="op">.</span>iter()<span class="op">.</span>enumerate() <span class="op">{</span> <span class="co">/* ... use i, text */</span> <span class="op">}</span></span>
+<span id="cb13-13"><a href="#cb13-13"></a></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="kw">while</span> <span class="kw">let</span> <span class="cn">Some</span>(y) <span class="op">=</span> x<span class="op">.</span>pop() <span class="op">{</span> <span class="co">/* ... use y */</span> <span class="op">}</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a></span>
+<span id="cb13-16"><a href="#cb13-16"></a><span class="kw">for</span> n <span class="kw">in</span> <span class="dv">1</span><span class="op">..</span><span class="dv">11</span> <span class="op">{</span> <span class="co">/* ... use n */</span> <span class="op">}</span></span></code></pre></div>
 </section>
 <section id="lambdas" class="slide level2">
 <h2>Lambdas</h2>
@@ -328,21 +334,20 @@
 <section id="constructors-destructors" class="slide level2">
 <h2>Constructors / Destructors</h2>
 <ul>
-<li>“Constructors” just a convention!</li>
+<li>Copy vs. Clone</li>
 </ul>
-<div class="sourceCode" id="cb15"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">impl</span><span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a>    <span class="kw">pub</span> <span class="kw">fn</span> new() <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{</span> <span class="co">/* ... */</span> <span class="op">}</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">// &quot;constructors&quot; just a convention!</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">impl</span><span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a>    <span class="kw">pub</span> <span class="kw">fn</span> new() <span class="op">-&gt;</span> <span class="dt">Vec</span><span class="op">&lt;</span>T<span class="op">&gt;</span> <span class="op">{</span> <span class="co">/* ... */</span> <span class="op">}</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="op">}</span></span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">use</span> <span class="pp">vec::</span><span class="dt">Vec</span><span class="op">;</span></span>
 <span id="cb16-2"><a href="#cb16-2"></a><span class="kw">let</span> <span class="kw">mut</span> v <span class="op">=</span> <span class="dt">Vec</span><span class="pp">::</span>new()<span class="op">;</span></span>
 <span id="cb16-3"><a href="#cb16-3"></a><span class="co">// actually, for Vec there is a macro:</span></span>
 <span id="cb16-4"><a href="#cb16-4"></a><span class="kw">let</span> <span class="kw">mut</span> w <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span><span class="dv">2</span><span class="op">,</span><span class="dv">3</span>]<span class="op">;</span></span></code></pre></div>
-<ul>
-<li>Destructor: <code>std::ops::Drop::drop</code></li>
-</ul>
-<div class="sourceCode" id="cb17"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">impl</span> <span class="bu">Drop</span> <span class="kw">for</span> X <span class="op">{</span></span>
-<span id="cb17-2"><a href="#cb17-2"></a>    <span class="kw">fn</span> drop(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span>) <span class="op">{}</span></span>
-<span id="cb17-3"><a href="#cb17-3"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb17-1"><a href="#cb17-1"></a><span class="co">// Desrtuctors implement std::ops::Drop::drop</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="kw">impl</span> <span class="bu">Drop</span> <span class="kw">for</span> X <span class="op">{</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a>    <span class="kw">fn</span> drop(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span>) <span class="op">{}</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="op">}</span></span></code></pre></div>
 </section>
 <section id="error-matching" class="slide level2">
 <h2>Error Matching</h2>
@@ -676,6 +681,7 @@
 <li><a href="https://github.com/tokio-rs/tokio">Tokio</a> / <a href="https://github.com/rayon-rs/rayon">Rayon</a> async engines, <a href="https://rocket.rs/">Rocket</a> or <a href="https://github.com/actix/actix-web">Actix</a> web frameworks</li>
 </ul></li>
 <li>“Hygienic” Macros (restricted syntax manipulationx, contexts)</li>
+<li>Generics</li>
 <li>FFI</li>
 <li>Details on Cargo</li>
 </ul>
