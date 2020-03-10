@@ -88,6 +88,7 @@ Constants & Variables
 ```rust
 let x = 42; // immutable integer
 let mut y: i32 = 1; // mutable integer
+let z =  y as u8; // explicit conversion
 
 const  THRESHOLD : i32 = 10; // unchangeable value, type required!
 static LANG: &str = "Rust"; // global with static lifetime
@@ -103,6 +104,7 @@ Data Types - Primitive Types
     ```rust
     let x = 2.0; // f64
     let y: f32 = 3.0; // f32
+    let z = 3.14f32; // f32 literal, works for int types too
     ```
 
 Data Type - Compound Types
