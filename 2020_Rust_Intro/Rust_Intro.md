@@ -175,7 +175,14 @@ impl Person<'_> { // anonymous lifetime
 }
 println!("{}", Person{name: "Isabelle", age: 1}.greet());
 ```
-
+Error without lifetime speficier on &str
+```bash
+error[E0106]: missing lifetime specifier
+ --> src/main.rs:4:11
+  |
+4 |     name: &str,
+  |           ^ expected lifetime parameter
+```
 Control Flow
 ----
 ```rust
@@ -545,6 +552,15 @@ z = y;
     }
 }
 ```
+TODO: http://arthurtw.github.io/2014/11/30/rust-borrow-lifetimes.html
+
+Lifetime Elision
+----
+https://doc.rust-lang.org/nomicon/lifetime-elision.html
+
+Lifetimes and Slices / Arrays
+----
+https://doc.rust-lang.org/nomicon/borrow-splitting.html
 
 Reference outliving referent
 ----
