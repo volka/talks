@@ -395,18 +395,17 @@
 <span id="cb22-2"><a href="#cb22-2"></a>    <span class="kw">fn</span> format(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">String</span><span class="op">;</span></span>
 <span id="cb22-3"><a href="#cb22-3"></a>    <span class="co">// default impl</span></span>
 <span id="cb22-4"><a href="#cb22-4"></a>    <span class="kw">fn</span> print(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> format(<span class="kw">self</span>))<span class="op">;</span> <span class="op">}</span></span>
-<span id="cb22-5"><a href="#cb22-5"></a><span class="op">}</span></span>
-<span id="cb22-6"><a href="#cb22-6"></a></span>
-<span id="cb22-7"><a href="#cb22-7"></a><span class="kw">impl</span> Format <span class="kw">for</span> <span class="dt">i32</span> <span class="op">{</span></span>
-<span id="cb22-8"><a href="#cb22-8"></a>    <span class="kw">fn</span> format(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">String</span> <span class="op">{</span></span>
-<span id="cb22-9"><a href="#cb22-9"></a>        <span class="pp">format!</span>(<span class="st">&quot;Int({})&quot;</span><span class="op">,</span> <span class="kw">self</span>)</span>
-<span id="cb22-10"><a href="#cb22-10"></a>    <span class="op">}</span></span>
-<span id="cb22-11"><a href="#cb22-11"></a><span class="op">}</span></span>
-<span id="cb22-12"><a href="#cb22-12"></a><span class="kw">impl</span> Format <span class="kw">for</span> <span class="dt">f64</span> <span class="op">{</span></span>
-<span id="cb22-13"><a href="#cb22-13"></a>    <span class="kw">fn</span> format(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">String</span> <span class="op">{</span> </span>
-<span id="cb22-14"><a href="#cb22-14"></a>        <span class="pp">format!</span>(<span class="st">&quot;Double({})&quot;</span><span class="op">,</span> <span class="kw">self</span>)</span>
-<span id="cb22-15"><a href="#cb22-15"></a>    <span class="op">}</span></span>
-<span id="cb22-16"><a href="#cb22-16"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">impl</span> Format <span class="kw">for</span> <span class="dt">i32</span> <span class="op">{</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a>    <span class="kw">fn</span> format(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">String</span> <span class="op">{</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a>        <span class="pp">format!</span>(<span class="st">&quot;Int({})&quot;</span><span class="op">,</span> <span class="kw">self</span>)</span>
+<span id="cb23-4"><a href="#cb23-4"></a>    <span class="op">}</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="op">}</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="kw">impl</span> Format <span class="kw">for</span> <span class="dt">f64</span> <span class="op">{</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a>    <span class="kw">fn</span> format(<span class="op">&amp;</span><span class="kw">self</span>) <span class="op">-&gt;</span> <span class="dt">String</span> <span class="op">{</span> </span>
+<span id="cb23-8"><a href="#cb23-8"></a>        <span class="pp">format!</span>(<span class="st">&quot;Double({})&quot;</span><span class="op">,</span> <span class="kw">self</span>)</span>
+<span id="cb23-9"><a href="#cb23-9"></a>    <span class="op">}</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="op">}</span></span></code></pre></div>
 <ul>
 <li>Impl only allowed in either trait module or type module!</li>
 <li>No inheritance!</li>
@@ -414,19 +413,19 @@
 </section>
 <section id="trait-objects" class="slide level2">
 <h2>Trait Objects</h2>
-<div class="sourceCode" id="cb23"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
-<span id="cb23-2"><a href="#cb23-2"></a><span class="kw">let</span> y <span class="op">=</span> <span class="dv">3.14</span><span class="op">;</span></span>
-<span id="cb23-3"><a href="#cb23-3"></a><span class="kw">let</span> v<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;&amp;</span><span class="kw">dyn</span> Format<span class="op">&gt;</span> <span class="op">=</span> <span class="pp">vec!</span>[<span class="op">&amp;</span>x<span class="op">,</span> <span class="op">&amp;</span>y]<span class="op">;</span></span>
-<span id="cb23-4"><a href="#cb23-4"></a></span>
-<span id="cb23-5"><a href="#cb23-5"></a><span class="kw">for</span> it <span class="kw">in</span> v <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;Item: {}&quot;</span><span class="op">.</span> it<span class="op">.</span>format())<span class="op">;</span> <span class="op">}</span></span>
-<span id="cb23-6"><a href="#cb23-6"></a></span>
-<span id="cb23-7"><a href="#cb23-7"></a><span class="kw">fn</span> do_static<span class="op">&lt;</span>T<span class="op">:</span> Format<span class="op">&gt;</span>(x<span class="op">:</span> T) <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x<span class="op">.</span>format())<span class="op">;</span> <span class="op">}</span></span>
-<span id="cb23-8"><a href="#cb23-8"></a><span class="kw">fn</span> do_dynRef(x<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> Format) <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x<span class="op">.</span>format())<span class="op">;</span> <span class="op">}</span></span>
-<span id="cb23-9"><a href="#cb23-9"></a><span class="kw">fn</span> do_dynPtr(x<span class="op">:</span> <span class="dt">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> Format<span class="op">&gt;</span>) <span class="op">{</span> x<span class="op">.</span>print()<span class="op">;</span> <span class="op">}</span></span>
-<span id="cb23-10"><a href="#cb23-10"></a></span>
-<span id="cb23-11"><a href="#cb23-11"></a>do_static(x)<span class="op">;</span></span>
-<span id="cb23-12"><a href="#cb23-12"></a>do_dynRef(<span class="op">&amp;</span>y)<span class="op">;</span></span>
-<span id="cb23-13"><a href="#cb23-13"></a>do_dynPtr(<span class="dt">Box</span><span class="pp">::</span>new(<span class="dv">666</span>))<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="kw">let</span> y <span class="op">=</span> <span class="dv">3.14</span><span class="op">;</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="kw">let</span> v<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;&amp;</span><span class="kw">dyn</span> Format<span class="op">&gt;</span> <span class="op">=</span> <span class="pp">vec!</span>[<span class="op">&amp;</span>x<span class="op">,</span> <span class="op">&amp;</span>y]<span class="op">;</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="kw">for</span> it <span class="kw">in</span> v <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;Item: {}&quot;</span><span class="op">.</span> it<span class="op">.</span>format())<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a></span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="kw">fn</span> do_static<span class="op">&lt;</span>T<span class="op">:</span> Format<span class="op">&gt;</span>(x<span class="op">:</span> T) <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x<span class="op">.</span>format())<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a><span class="kw">fn</span> do_dynRef(x<span class="op">:</span> <span class="op">&amp;</span><span class="kw">dyn</span> Format) <span class="op">{</span> <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x<span class="op">.</span>format())<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb24-9"><a href="#cb24-9"></a><span class="kw">fn</span> do_dynPtr(x<span class="op">:</span> <span class="dt">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> Format<span class="op">&gt;</span>) <span class="op">{</span> x<span class="op">.</span>print()<span class="op">;</span> <span class="op">}</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a></span>
+<span id="cb24-11"><a href="#cb24-11"></a>do_static(x)<span class="op">;</span></span>
+<span id="cb24-12"><a href="#cb24-12"></a>do_dynRef(<span class="op">&amp;</span>y)<span class="op">;</span></span>
+<span id="cb24-13"><a href="#cb24-13"></a>do_dynPtr(<span class="dt">Box</span><span class="pp">::</span>new(<span class="dv">666</span>))<span class="op">;</span></span></code></pre></div>
 </section>
 <section id="safety" class="slide level2">
 <h2>Safety</h2>
@@ -467,67 +466,69 @@
 </section>
 <section id="references-borrowing" class="slide level2">
 <h2>References &amp; Borrowing</h2>
-<div class="sourceCode" id="cb24"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">fn</span> change(some_string<span class="op">:</span> <span class="op">&amp;</span><span class="dt">String</span>) <span class="op">{</span></span>
-<span id="cb24-2"><a href="#cb24-2"></a>    some_string<span class="op">.</span>push_str(<span class="st">&quot;bar&quot;</span>)<span class="op">;</span></span>
-<span id="cb24-3"><a href="#cb24-3"></a><span class="op">}</span></span>
-<span id="cb24-4"><a href="#cb24-4"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
-<span id="cb24-5"><a href="#cb24-5"></a>    <span class="kw">let</span> <span class="kw">mut</span> s <span class="op">=</span> <span class="dt">String</span><span class="pp">::</span>from(<span class="st">&quot;foo&quot;</span>)<span class="op">;</span></span>
-<span id="cb24-6"><a href="#cb24-6"></a>    change(s)<span class="op">;</span></span>
-<span id="cb24-7"><a href="#cb24-7"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb25-1"><a href="#cb25-1"></a><span class="kw">fn</span> change(some_string<span class="op">:</span> <span class="op">&amp;</span><span class="dt">String</span>) <span class="op">{</span></span>
+<span id="cb25-2"><a href="#cb25-2"></a>    some_string<span class="op">.</span>push_str(<span class="st">&quot;bar&quot;</span>)<span class="op">;</span></span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="op">}</span></span>
+<span id="cb25-4"><a href="#cb25-4"></a><span class="kw">fn</span> main() <span class="op">{</span></span>
+<span id="cb25-5"><a href="#cb25-5"></a>    <span class="kw">let</span> <span class="kw">mut</span> s <span class="op">=</span> <span class="dt">String</span><span class="pp">::</span>from(<span class="st">&quot;foo&quot;</span>)<span class="op">;</span></span>
+<span id="cb25-6"><a href="#cb25-6"></a>    change(s)<span class="op">;</span></span>
+<span id="cb25-7"><a href="#cb25-7"></a><span class="op">}</span></span></code></pre></div>
 </section>
 <section id="compile-error" class="slide level2">
 <h2>Compile Error</h2>
-<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1"></a><span class="ex">error</span>[E0596]: cannot borrow <span class="kw">`</span><span class="ex">*some_string</span><span class="kw">`</span> as mutable, as it is behind a <span class="kw">`&amp;`</span> reference</span>
-<span id="cb25-2"><a href="#cb25-2"></a> <span class="ex">--</span><span class="op">&gt;</span> src/main.rs:2:5</span>
-<span id="cb25-3"><a href="#cb25-3"></a>  <span class="kw">|</span></span>
-<span id="cb25-4"><a href="#cb25-4"></a><span class="ex">1</span> <span class="kw">|</span> <span class="ex">fn</span> change(some_string: <span class="kw">&amp;</span><span class="ex">String</span>) <span class="kw">{</span></span>
-<span id="cb25-5"><a href="#cb25-5"></a>  <span class="kw">|</span>                        <span class="ex">-------</span> help: consider changing this to be a mutable reference: <span class="kw">`&amp;</span><span class="ex">mut</span> std::string::String<span class="kw">`</span></span>
-<span id="cb25-6"><a href="#cb25-6"></a><span class="ex">2</span> <span class="kw">|</span>     <span class="ex">some_string.push_str</span>(<span class="st">&quot;, world&quot;</span>);</span>
-<span id="cb25-7"><a href="#cb25-7"></a>  <span class="kw">|</span>     ^^^^^^^^^^^ <span class="kw">`</span><span class="ex">some_string</span><span class="kw">`</span> <span class="ex">is</span> a <span class="kw">`&amp;`</span> reference, so the data it refers to cannot be borrowed as mutable</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1"></a><span class="ex">error</span>[E0596]: cannot borrow <span class="kw">`</span><span class="ex">*some_string</span><span class="kw">`</span> as mutable, as it is behind a <span class="kw">`&amp;`</span> reference</span>
+<span id="cb26-2"><a href="#cb26-2"></a> <span class="ex">--</span><span class="op">&gt;</span> src/main.rs:2:5</span>
+<span id="cb26-3"><a href="#cb26-3"></a>  <span class="kw">|</span></span>
+<span id="cb26-4"><a href="#cb26-4"></a><span class="ex">1</span> <span class="kw">|</span> <span class="ex">fn</span> change(some_string: <span class="kw">&amp;</span><span class="ex">String</span>) <span class="kw">{</span></span>
+<span id="cb26-5"><a href="#cb26-5"></a>  <span class="kw">|</span>                        <span class="ex">-------</span> help: consider changing this to be a mutable </span>
+<span id="cb26-6"><a href="#cb26-6"></a>                                         <span class="ex">reference</span>: <span class="kw">`&amp;</span><span class="ex">mut</span> std::string::String<span class="kw">`</span></span>
+<span id="cb26-7"><a href="#cb26-7"></a><span class="ex">2</span> <span class="kw">|</span>     <span class="ex">some_string.push_str</span>(<span class="st">&quot;, world&quot;</span>);</span>
+<span id="cb26-8"><a href="#cb26-8"></a>  <span class="kw">|</span>     ^^^^^^^^^^^ <span class="kw">`</span><span class="ex">some_string</span><span class="kw">`</span> <span class="ex">is</span> a <span class="kw">`&amp;`</span> reference, so the data it refers to cannot </span>
+<span id="cb26-9"><a href="#cb26-9"></a>                     <span class="ex">be</span> borrowed as mutable</span></code></pre></div>
 </section>
 <section id="fix-mutable-ref" class="slide level2">
 <h2>Fix: mutable ref</h2>
-<div class="sourceCode" id="cb26"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">fn</span> change(some_string<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> <span class="dt">String</span>) <span class="op">{</span></span>
-<span id="cb26-2"><a href="#cb26-2"></a>    some_string<span class="op">.</span>push_str(<span class="st">&quot;bar&quot;</span>)<span class="op">;</span></span>
-<span id="cb26-3"><a href="#cb26-3"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">fn</span> change(some_string<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> <span class="dt">String</span>) <span class="op">{</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a>    some_string<span class="op">.</span>push_str(<span class="st">&quot;bar&quot;</span>)<span class="op">;</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="op">}</span></span></code></pre></div>
 <p>Problem:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">let</span> <span class="kw">mut</span> s <span class="op">=</span> <span class="dt">String</span><span class="pp">::</span>from(<span class="st">&quot;foo&quot;</span>)<span class="op">;</span></span>
-<span id="cb27-2"><a href="#cb27-2"></a><span class="kw">let</span> r1 <span class="op">=</span> <span class="op">&amp;</span><span class="kw">mut</span> s<span class="op">;</span></span>
-<span id="cb27-3"><a href="#cb27-3"></a><span class="kw">let</span> r2 <span class="op">=</span> <span class="op">&amp;</span><span class="kw">mut</span> s<span class="op">;</span></span>
-<span id="cb27-4"><a href="#cb27-4"></a><span class="pp">println!</span>(<span class="st">&quot;{}, {}&quot;</span><span class="op">,</span> r1<span class="op">,</span> r2)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw">let</span> <span class="kw">mut</span> s <span class="op">=</span> <span class="dt">String</span><span class="pp">::</span>from(<span class="st">&quot;foo&quot;</span>)<span class="op">;</span></span>
+<span id="cb28-2"><a href="#cb28-2"></a><span class="kw">let</span> r1 <span class="op">=</span> <span class="op">&amp;</span><span class="kw">mut</span> s<span class="op">;</span></span>
+<span id="cb28-3"><a href="#cb28-3"></a><span class="kw">let</span> r2 <span class="op">=</span> <span class="op">&amp;</span><span class="kw">mut</span> s<span class="op">;</span></span>
+<span id="cb28-4"><a href="#cb28-4"></a><span class="pp">println!</span>(<span class="st">&quot;{}, {}&quot;</span><span class="op">,</span> r1<span class="op">,</span> r2)<span class="op">;</span></span></code></pre></div>
 </section>
 <section id="complie-error" class="slide level2">
 <h2>Complie Error</h2>
-<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1"></a><span class="ex">error</span>[E0499]: cannot borrow <span class="kw">`</span><span class="ex">s</span><span class="kw">`</span> as mutable more than once at a time</span>
-<span id="cb28-2"><a href="#cb28-2"></a> <span class="ex">--</span><span class="op">&gt;</span> src/main.rs:4:14</span>
-<span id="cb28-3"><a href="#cb28-3"></a>  <span class="kw">|</span></span>
-<span id="cb28-4"><a href="#cb28-4"></a><span class="ex">3</span> <span class="kw">|</span>     <span class="bu">let</span> r1 = <span class="kw">&amp;</span><span class="ex">mut</span> s<span class="kw">;</span></span>
-<span id="cb28-5"><a href="#cb28-5"></a>  <span class="kw">|</span>              <span class="ex">------</span> first mutable borrow occurs here</span>
-<span id="cb28-6"><a href="#cb28-6"></a><span class="ex">4</span> <span class="kw">|</span>     <span class="bu">let</span> r2 = <span class="kw">&amp;</span><span class="ex">mut</span> s<span class="kw">;</span></span>
-<span id="cb28-7"><a href="#cb28-7"></a>  <span class="kw">|</span>              ^^^^^^ <span class="ex">second</span> mutable borrow occurs here</span>
-<span id="cb28-8"><a href="#cb28-8"></a><span class="ex">5</span> <span class="kw">|</span>     <span class="ex">println</span>!(<span class="st">&quot;{} {}&quot;</span>, r1, r2);</span>
-<span id="cb28-9"><a href="#cb28-9"></a>  <span class="kw">|</span>                       <span class="ex">--</span> first borrow later used here</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1"></a><span class="ex">error</span>[E0499]: cannot borrow <span class="kw">`</span><span class="ex">s</span><span class="kw">`</span> as mutable more than once at a time</span>
+<span id="cb29-2"><a href="#cb29-2"></a> <span class="ex">--</span><span class="op">&gt;</span> src/main.rs:4:14</span>
+<span id="cb29-3"><a href="#cb29-3"></a>  <span class="kw">|</span></span>
+<span id="cb29-4"><a href="#cb29-4"></a><span class="ex">3</span> <span class="kw">|</span>     <span class="bu">let</span> r1 = <span class="kw">&amp;</span><span class="ex">mut</span> s<span class="kw">;</span></span>
+<span id="cb29-5"><a href="#cb29-5"></a>  <span class="kw">|</span>              <span class="ex">------</span> first mutable borrow occurs here</span>
+<span id="cb29-6"><a href="#cb29-6"></a><span class="ex">4</span> <span class="kw">|</span>     <span class="bu">let</span> r2 = <span class="kw">&amp;</span><span class="ex">mut</span> s<span class="kw">;</span></span>
+<span id="cb29-7"><a href="#cb29-7"></a>  <span class="kw">|</span>              ^^^^^^ <span class="ex">second</span> mutable borrow occurs here</span>
+<span id="cb29-8"><a href="#cb29-8"></a><span class="ex">5</span> <span class="kw">|</span>     <span class="ex">println</span>!(<span class="st">&quot;{} {}&quot;</span>, r1, r2);</span>
+<span id="cb29-9"><a href="#cb29-9"></a>  <span class="kw">|</span>                       <span class="ex">--</span> first borrow later used here</span></code></pre></div>
 </section>
 <section id="area-covered-by-lifetimes" class="slide level2">
 <h2>Area covered by Lifetimes</h2>
-<div class="sourceCode" id="cb29"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb29-1"><a href="#cb29-1"></a></span>
-<span id="cb29-2"><a href="#cb29-2"></a><span class="kw">let</span> <span class="kw">mut</span> data <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span>]<span class="op">;</span></span>
-<span id="cb29-3"><a href="#cb29-3"></a><span class="kw">let</span> x <span class="op">=</span> <span class="op">&amp;</span>data[<span class="dv">0</span>]<span class="op">;</span></span>
-<span id="cb29-4"><a href="#cb29-4"></a><span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span>
-<span id="cb29-5"><a href="#cb29-5"></a><span class="co">// This is OK, x is no longer needed</span></span>
-<span id="cb29-6"><a href="#cb29-6"></a>data<span class="op">.</span>push(<span class="dv">4</span>)<span class="op">;</span></span></code></pre></div>
-<div class="sourceCode" id="cb30"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb30-1"><a href="#cb30-1"></a><span class="kw">let</span> <span class="kw">mut</span> data <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span>]<span class="op">;</span></span>
-<span id="cb30-2"><a href="#cb30-2"></a><span class="kw">let</span> x <span class="op">=</span> <span class="op">&amp;</span>data[<span class="dv">0</span>]<span class="op">;</span></span>
-<span id="cb30-3"><a href="#cb30-3"></a>data<span class="op">.</span>push(<span class="dv">4</span>)<span class="op">;</span></span>
-<span id="cb30-4"><a href="#cb30-4"></a><span class="co">// This fails</span></span>
-<span id="cb30-5"><a href="#cb30-5"></a><span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span></code></pre></div>
-<div class="sourceCode" id="cb31"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb31-1"><a href="#cb31-1"></a><span class="co">// ... also ok</span></span>
-<span id="cb31-2"><a href="#cb31-2"></a><span class="kw">if</span> (condition()) <span class="op">{</span></span>
-<span id="cb31-3"><a href="#cb31-3"></a>    <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span>
-<span id="cb31-4"><a href="#cb31-4"></a>    data<span class="op">.</span>push(<span class="dv">4</span>)<span class="op">;</span></span>
-<span id="cb31-5"><a href="#cb31-5"></a><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span id="cb31-6"><a href="#cb31-6"></a>    data<span class="op">.</span>push(<span class="dv">5</span>)<span class="op">;</span></span>
-<span id="cb31-7"><a href="#cb31-7"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb30-1"><a href="#cb30-1"></a></span>
+<span id="cb30-2"><a href="#cb30-2"></a><span class="kw">let</span> <span class="kw">mut</span> data <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span>]<span class="op">;</span></span>
+<span id="cb30-3"><a href="#cb30-3"></a><span class="kw">let</span> x <span class="op">=</span> <span class="op">&amp;</span>data[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb30-4"><a href="#cb30-4"></a><span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span>
+<span id="cb30-5"><a href="#cb30-5"></a><span class="co">// This is OK, x is no longer needed</span></span>
+<span id="cb30-6"><a href="#cb30-6"></a>data<span class="op">.</span>push(<span class="dv">4</span>)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">let</span> <span class="kw">mut</span> data <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span> <span class="dv">2</span><span class="op">,</span> <span class="dv">3</span>]<span class="op">;</span></span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="kw">let</span> x <span class="op">=</span> <span class="op">&amp;</span>data[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a>data<span class="op">.</span>push(<span class="dv">4</span>)<span class="op">;</span></span>
+<span id="cb31-4"><a href="#cb31-4"></a><span class="co">// This fails</span></span>
+<span id="cb31-5"><a href="#cb31-5"></a><span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb32-1"><a href="#cb32-1"></a><span class="co">// ... also ok</span></span>
+<span id="cb32-2"><a href="#cb32-2"></a><span class="kw">if</span> (condition()) <span class="op">{</span></span>
+<span id="cb32-3"><a href="#cb32-3"></a>    <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span>
+<span id="cb32-4"><a href="#cb32-4"></a>    data<span class="op">.</span>push(<span class="dv">4</span>)<span class="op">;</span></span>
+<span id="cb32-5"><a href="#cb32-5"></a><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span id="cb32-6"><a href="#cb32-6"></a>    data<span class="op">.</span>push(<span class="dv">5</span>)<span class="op">;</span></span>
+<span id="cb32-7"><a href="#cb32-7"></a><span class="op">}</span></span></code></pre></div>
 </section>
 <section id="lifetimes-aliasing" class="slide level2">
 <h2>Lifetimes &amp; Aliasing</h2>
@@ -549,54 +550,54 @@
 </section>
 <section id="local-lifetimes" class="slide level2">
 <h2>Local Lifetimes</h2>
-<div class="sourceCode" id="cb32"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb32-1"><a href="#cb32-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb32-2"><a href="#cb32-2"></a><span class="kw">let</span> y <span class="op">=</span> <span class="op">&amp;</span>x<span class="op">;</span></span>
-<span id="cb32-3"><a href="#cb32-3"></a><span class="kw">let</span> z <span class="op">=</span> <span class="op">&amp;</span>y<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb33-1"><a href="#cb33-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb33-2"><a href="#cb33-2"></a><span class="kw">let</span> y <span class="op">=</span> <span class="op">&amp;</span>x<span class="op">;</span></span>
+<span id="cb33-3"><a href="#cb33-3"></a><span class="kw">let</span> z <span class="op">=</span> <span class="op">&amp;</span>y<span class="op">;</span></span></code></pre></div>
 <p>“desugared” (some invalid syntax)</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb33-1"><a href="#cb33-1"></a><span class="ot">&#39;a</span><span class="op">:</span> <span class="op">{</span></span>
-<span id="cb33-2"><a href="#cb33-2"></a>    <span class="kw">let</span> x<span class="op">:</span> <span class="dt">i32</span> <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
-<span id="cb33-3"><a href="#cb33-3"></a>    <span class="ot">&#39;b</span><span class="op">:</span> <span class="op">{</span> <span class="co">// b &quot;good enough&quot;</span></span>
-<span id="cb33-4"><a href="#cb33-4"></a>        <span class="kw">let</span> y<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> <span class="dt">i32</span> <span class="op">=</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> x<span class="op">;</span></span>
-<span id="cb33-5"><a href="#cb33-5"></a>        <span class="ot">&#39;c</span><span class="op">:</span> <span class="op">{</span> <span class="co">// c &quot;good enough&quot;</span></span>
-<span id="cb33-6"><a href="#cb33-6"></a>            <span class="kw">let</span> z<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;c</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> <span class="dt">i32</span> <span class="op">=</span> <span class="op">&amp;</span><span class="ot">&#39;c</span> y<span class="op">;</span></span>
-<span id="cb33-7"><a href="#cb33-7"></a>        <span class="op">}</span></span>
-<span id="cb33-8"><a href="#cb33-8"></a></span>
-<span id="cb33-9"><a href="#cb33-9"></a>    <span class="op">}</span></span>
-<span id="cb33-10"><a href="#cb33-10"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb34-1"><a href="#cb34-1"></a><span class="ot">&#39;a</span><span class="op">:</span> <span class="op">{</span></span>
+<span id="cb34-2"><a href="#cb34-2"></a>    <span class="kw">let</span> x<span class="op">:</span> <span class="dt">i32</span> <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
+<span id="cb34-3"><a href="#cb34-3"></a>    <span class="ot">&#39;b</span><span class="op">:</span> <span class="op">{</span> <span class="co">// b &quot;good enough&quot;</span></span>
+<span id="cb34-4"><a href="#cb34-4"></a>        <span class="kw">let</span> y<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> <span class="dt">i32</span> <span class="op">=</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> x<span class="op">;</span></span>
+<span id="cb34-5"><a href="#cb34-5"></a>        <span class="ot">&#39;c</span><span class="op">:</span> <span class="op">{</span> <span class="co">// c &quot;good enough&quot;</span></span>
+<span id="cb34-6"><a href="#cb34-6"></a>            <span class="kw">let</span> z<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;c</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> <span class="dt">i32</span> <span class="op">=</span> <span class="op">&amp;</span><span class="ot">&#39;c</span> y<span class="op">;</span></span>
+<span id="cb34-7"><a href="#cb34-7"></a>        <span class="op">}</span></span>
+<span id="cb34-8"><a href="#cb34-8"></a></span>
+<span id="cb34-9"><a href="#cb34-9"></a>    <span class="op">}</span></span>
+<span id="cb34-10"><a href="#cb34-10"></a><span class="op">}</span></span></code></pre></div>
 </section>
 <section id="local-lifetimes---add-outer-lifetime" class="slide level2">
 <h2>Local Lifetimes - add outer lifetime</h2>
-<div class="sourceCode" id="cb34"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb34-1"><a href="#cb34-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb34-2"><a href="#cb34-2"></a><span class="kw">let</span> y <span class="op">=</span> <span class="op">&amp;</span>x<span class="op">;</span></span>
-<span id="cb34-3"><a href="#cb34-3"></a><span class="kw">let</span> z <span class="op">=</span> <span class="op">&amp;</span>y<span class="op">;</span></span>
-<span id="cb34-4"><a href="#cb34-4"></a>z <span class="op">=</span> y<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb35-1"><a href="#cb35-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb35-2"><a href="#cb35-2"></a><span class="kw">let</span> y <span class="op">=</span> <span class="op">&amp;</span>x<span class="op">;</span></span>
+<span id="cb35-3"><a href="#cb35-3"></a><span class="kw">let</span> z <span class="op">=</span> <span class="op">&amp;</span>y<span class="op">;</span></span>
+<span id="cb35-4"><a href="#cb35-4"></a>z <span class="op">=</span> y<span class="op">;</span></span></code></pre></div>
 <p>“desugared” (some invalid syntax)</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb35-1"><a href="#cb35-1"></a><span class="ot">&#39;a</span><span class="op">:</span> <span class="op">{</span></span>
-<span id="cb35-2"><a href="#cb35-2"></a>    <span class="kw">let</span> x<span class="op">:</span> <span class="dt">i32</span> <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
-<span id="cb35-3"><a href="#cb35-3"></a>    <span class="ot">&#39;b</span><span class="op">:</span> <span class="op">{</span></span>
-<span id="cb35-4"><a href="#cb35-4"></a>        <span class="kw">let</span> z<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> <span class="dt">i32</span><span class="op">;</span></span>
-<span id="cb35-5"><a href="#cb35-5"></a>        <span class="ot">&#39;c</span><span class="op">:</span> <span class="op">{</span></span>
-<span id="cb35-6"><a href="#cb35-6"></a>            <span class="co">// must use &#39;b here because reference is passed to that scope</span></span>
-<span id="cb35-7"><a href="#cb35-7"></a>            <span class="kw">let</span> y<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> <span class="dt">i32</span> <span class="op">=</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> x<span class="op">;</span></span>
-<span id="cb35-8"><a href="#cb35-8"></a>            z <span class="op">=</span> y<span class="op">;</span></span>
-<span id="cb35-9"><a href="#cb35-9"></a>        <span class="op">}</span></span>
-<span id="cb35-10"><a href="#cb35-10"></a></span>
-<span id="cb35-11"><a href="#cb35-11"></a>    <span class="op">}</span></span>
-<span id="cb35-12"><a href="#cb35-12"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb36-1"><a href="#cb36-1"></a><span class="ot">&#39;a</span><span class="op">:</span> <span class="op">{</span></span>
+<span id="cb36-2"><a href="#cb36-2"></a>    <span class="kw">let</span> x<span class="op">:</span> <span class="dt">i32</span> <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
+<span id="cb36-3"><a href="#cb36-3"></a>    <span class="ot">&#39;b</span><span class="op">:</span> <span class="op">{</span></span>
+<span id="cb36-4"><a href="#cb36-4"></a>        <span class="kw">let</span> z<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> <span class="dt">i32</span><span class="op">;</span></span>
+<span id="cb36-5"><a href="#cb36-5"></a>        <span class="ot">&#39;c</span><span class="op">:</span> <span class="op">{</span></span>
+<span id="cb36-6"><a href="#cb36-6"></a>            <span class="co">// must use &#39;b here because reference is passed to that scope</span></span>
+<span id="cb36-7"><a href="#cb36-7"></a>            <span class="kw">let</span> y<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> <span class="dt">i32</span> <span class="op">=</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> x<span class="op">;</span></span>
+<span id="cb36-8"><a href="#cb36-8"></a>            z <span class="op">=</span> y<span class="op">;</span></span>
+<span id="cb36-9"><a href="#cb36-9"></a>        <span class="op">}</span></span>
+<span id="cb36-10"><a href="#cb36-10"></a></span>
+<span id="cb36-11"><a href="#cb36-11"></a>    <span class="op">}</span></span>
+<span id="cb36-12"><a href="#cb36-12"></a><span class="op">}</span></span></code></pre></div>
 </section>
 <section id="reference-outliving-referent" class="slide level2">
 <h2>Reference outliving referent</h2>
-<div class="sourceCode" id="cb36"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb36-1"><a href="#cb36-1"></a><span class="kw">fn</span> as_str(data<span class="op">:</span> <span class="op">&amp;</span><span class="dt">u32</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span> <span class="op">{</span></span>
-<span id="cb36-2"><a href="#cb36-2"></a>    <span class="kw">let</span> s <span class="op">=</span> <span class="pp">format!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> data)<span class="op">;</span></span>
-<span id="cb36-3"><a href="#cb36-3"></a>    <span class="op">&amp;</span>s</span>
-<span id="cb36-4"><a href="#cb36-4"></a><span class="op">}</span></span>
-<span id="cb36-5"><a href="#cb36-5"></a><span class="co">// desugars to</span></span>
-<span id="cb36-6"><a href="#cb36-6"></a><span class="kw">fn</span> as_str<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(data<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">u32</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span> <span class="op">{</span></span>
-<span id="cb36-7"><a href="#cb36-7"></a>    <span class="ot">&#39;b</span><span class="op">:</span> <span class="op">{</span></span>
-<span id="cb36-8"><a href="#cb36-8"></a>        <span class="kw">let</span> s <span class="op">=</span> <span class="pp">format!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> data)<span class="op">;</span></span>
-<span id="cb36-9"><a href="#cb36-9"></a>        <span class="kw">return</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> s<span class="op">;</span></span>
-<span id="cb36-10"><a href="#cb36-10"></a>    <span class="op">}</span></span>
-<span id="cb36-11"><a href="#cb36-11"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb37-1"><a href="#cb37-1"></a><span class="kw">fn</span> as_str(data<span class="op">:</span> <span class="op">&amp;</span><span class="dt">u32</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span> <span class="op">{</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a>    <span class="kw">let</span> s <span class="op">=</span> <span class="pp">format!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> data)<span class="op">;</span></span>
+<span id="cb37-3"><a href="#cb37-3"></a>    <span class="op">&amp;</span>s</span>
+<span id="cb37-4"><a href="#cb37-4"></a><span class="op">}</span></span>
+<span id="cb37-5"><a href="#cb37-5"></a><span class="co">// desugars to</span></span>
+<span id="cb37-6"><a href="#cb37-6"></a><span class="kw">fn</span> as_str<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(data<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">u32</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span> <span class="op">{</span></span>
+<span id="cb37-7"><a href="#cb37-7"></a>    <span class="ot">&#39;b</span><span class="op">:</span> <span class="op">{</span></span>
+<span id="cb37-8"><a href="#cb37-8"></a>        <span class="kw">let</span> s <span class="op">=</span> <span class="pp">format!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> data)<span class="op">;</span></span>
+<span id="cb37-9"><a href="#cb37-9"></a>        <span class="kw">return</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> s<span class="op">;</span></span>
+<span id="cb37-10"><a href="#cb37-10"></a>    <span class="op">}</span></span>
+<span id="cb37-11"><a href="#cb37-11"></a><span class="op">}</span></span></code></pre></div>
 <ul>
 <li>ref to s must outlive ’a, but defined in ’b, which is inside ’a -&gt; ERROR</li>
 </ul>
@@ -606,22 +607,22 @@
 <ul>
 <li>Back to failing example:</li>
 </ul>
-<div class="sourceCode" id="cb37"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb37-1"><a href="#cb37-1"></a><span class="kw">let</span> <span class="kw">mut</span> data <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span><span class="dv">2</span><span class="op">,</span><span class="dv">3</span>]<span class="op">;</span></span>
-<span id="cb37-2"><a href="#cb37-2"></a><span class="kw">let</span> x <span class="op">=</span> <span class="op">&amp;</span>data[<span class="dv">0</span>]<span class="op">;</span></span>
-<span id="cb37-3"><a href="#cb37-3"></a>data<span class="op">.</span>push(<span class="dv">4</span>)<span class="op">;</span></span>
-<span id="cb37-4"><a href="#cb37-4"></a><span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span></code></pre></div>
-<div class="sourceCode" id="cb38"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb38-1"><a href="#cb38-1"></a><span class="co">// desugares to</span></span>
-<span id="cb38-2"><a href="#cb38-2"></a><span class="ot">&#39;a</span><span class="op">:</span> <span class="op">{</span></span>
-<span id="cb38-3"><a href="#cb38-3"></a>    <span class="kw">let</span> <span class="kw">mut</span> data<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">i32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span><span class="dv">2</span><span class="op">,</span><span class="dv">3</span>]<span class="op">;</span></span>
-<span id="cb38-4"><a href="#cb38-4"></a>    <span class="ot">&#39;b</span><span class="op">:</span> <span class="op">{</span> <span class="co">// needs to cover the println for x</span></span>
-<span id="cb38-5"><a href="#cb38-5"></a>        <span class="kw">let</span> x<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> <span class="dt">i32</span> <span class="op">=</span> <span class="bu">Index</span><span class="pp">::</span>index<span class="op">&lt;</span><span class="ot">&#39;b</span><span class="op">&gt;</span>(<span class="op">&amp;</span><span class="ot">&#39;b</span> data<span class="op">,</span> <span class="dv">0</span>)<span class="op">;</span></span>
-<span id="cb38-6"><a href="#cb38-6"></a>        <span class="ot">&#39;c</span><span class="op">:</span> <span class="op">{</span></span>
-<span id="cb38-7"><a href="#cb38-7"></a>            <span class="co">// temporary, cause we don&#39;t need &amp;mut data longer</span></span>
-<span id="cb38-8"><a href="#cb38-8"></a>            <span class="dt">Vec</span><span class="pp">::</span>pus(<span class="op">&amp;</span><span class="ot">&#39;c</span> <span class="kw">mut</span> data<span class="op">,</span> <span class="dv">4</span>)<span class="op">;</span></span>
-<span id="cb38-9"><a href="#cb38-9"></a>        <span class="op">}</span></span>
-<span id="cb38-10"><a href="#cb38-10"></a>        <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span>
-<span id="cb38-11"><a href="#cb38-11"></a>    <span class="op">}</span></span>
-<span id="cb38-12"><a href="#cb38-12"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb38-1"><a href="#cb38-1"></a><span class="kw">let</span> <span class="kw">mut</span> data <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span><span class="dv">2</span><span class="op">,</span><span class="dv">3</span>]<span class="op">;</span></span>
+<span id="cb38-2"><a href="#cb38-2"></a><span class="kw">let</span> x <span class="op">=</span> <span class="op">&amp;</span>data[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb38-3"><a href="#cb38-3"></a>data<span class="op">.</span>push(<span class="dv">4</span>)<span class="op">;</span></span>
+<span id="cb38-4"><a href="#cb38-4"></a><span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb39-1"><a href="#cb39-1"></a><span class="co">// desugares to</span></span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="ot">&#39;a</span><span class="op">:</span> <span class="op">{</span></span>
+<span id="cb39-3"><a href="#cb39-3"></a>    <span class="kw">let</span> <span class="kw">mut</span> data<span class="op">:</span> <span class="dt">Vec</span><span class="op">&lt;</span><span class="dt">i32</span><span class="op">&gt;</span> <span class="op">=</span> <span class="pp">vec!</span>[<span class="dv">1</span><span class="op">,</span><span class="dv">2</span><span class="op">,</span><span class="dv">3</span>]<span class="op">;</span></span>
+<span id="cb39-4"><a href="#cb39-4"></a>    <span class="ot">&#39;b</span><span class="op">:</span> <span class="op">{</span> <span class="co">// needs to cover the println for x</span></span>
+<span id="cb39-5"><a href="#cb39-5"></a>        <span class="kw">let</span> x<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> <span class="dt">i32</span> <span class="op">=</span> <span class="bu">Index</span><span class="pp">::</span>index<span class="op">&lt;</span><span class="ot">&#39;b</span><span class="op">&gt;</span>(<span class="op">&amp;</span><span class="ot">&#39;b</span> data<span class="op">,</span> <span class="dv">0</span>)<span class="op">;</span></span>
+<span id="cb39-6"><a href="#cb39-6"></a>        <span class="ot">&#39;c</span><span class="op">:</span> <span class="op">{</span></span>
+<span id="cb39-7"><a href="#cb39-7"></a>            <span class="co">// temporary, cause we don&#39;t need &amp;mut data longer</span></span>
+<span id="cb39-8"><a href="#cb39-8"></a>            <span class="dt">Vec</span><span class="pp">::</span>pus(<span class="op">&amp;</span><span class="ot">&#39;c</span> <span class="kw">mut</span> data<span class="op">,</span> <span class="dv">4</span>)<span class="op">;</span></span>
+<span id="cb39-9"><a href="#cb39-9"></a>        <span class="op">}</span></span>
+<span id="cb39-10"><a href="#cb39-10"></a>        <span class="pp">println!</span>(<span class="st">&quot;{}&quot;</span><span class="op">,</span> x)<span class="op">;</span></span>
+<span id="cb39-11"><a href="#cb39-11"></a>    <span class="op">}</span></span>
+<span id="cb39-12"><a href="#cb39-12"></a><span class="op">}</span></span></code></pre></div>
 <ul>
 <li>Intuitively: live shared ref to x, try to take mutable ref to data -&gt; ERROR</li>
 <li>But: compiler just sees index ’b ref to data and inside ’c mut ref to data -&gt; ERROR</li>
@@ -634,28 +635,28 @@
 <li>Checker understands disjount struct fields, but not slices / arrays</li>
 <li>Works most of the time, sometimes needs help</li>
 </ul>
-<div class="sourceCode" id="cb39"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb39-1"><a href="#cb39-1"></a><span class="kw">let</span> <span class="kw">mut</span> x <span class="op">=</span> [<span class="dv">1</span><span class="op">,</span><span class="dv">2</span><span class="op">,</span><span class="dv">3</span>]<span class="op">;</span></span>
-<span id="cb39-2"><a href="#cb39-2"></a><span class="kw">let</span> a <span class="op">=</span> <span class="op">&amp;</span><span class="kw">mut</span> x[<span class="dv">0</span>]<span class="op">;</span></span>
-<span id="cb39-3"><a href="#cb39-3"></a><span class="kw">let</span> b <span class="op">=</span> <span class="op">&amp;</span><span class="kw">mut</span> x[<span class="dv">1</span>]<span class="op">;</span></span></code></pre></div>
-<div class="sourceCode" id="cb40"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1"></a><span class="ex">error</span>[E0499]: cannot borrow <span class="kw">`</span><span class="ex">x</span>[..]<span class="kw">`</span> as mutable more than once at a time</span>
-<span id="cb40-2"><a href="#cb40-2"></a> <span class="ex">--</span><span class="op">&gt;</span> src/lib.rs:4:18</span>
-<span id="cb40-3"><a href="#cb40-3"></a>  <span class="kw">|</span></span>
-<span id="cb40-4"><a href="#cb40-4"></a><span class="ex">3</span> <span class="kw">|</span>     <span class="bu">let</span> a = <span class="kw">&amp;</span><span class="ex">mut</span> x[0]<span class="kw">;</span></span>
-<span id="cb40-5"><a href="#cb40-5"></a>  <span class="kw">|</span>                  <span class="ex">----</span> first mutable borrow occurs here</span>
-<span id="cb40-6"><a href="#cb40-6"></a><span class="ex">4</span> <span class="kw">|</span>     <span class="bu">let</span> b = <span class="kw">&amp;</span><span class="ex">mut</span> x[1]<span class="kw">;</span></span>
-<span id="cb40-7"><a href="#cb40-7"></a>  <span class="kw">|</span>                  ^^^^ <span class="ex">second</span> mutable borrow occurs here</span>
-<span id="cb40-8"><a href="#cb40-8"></a><span class="ex">5</span> <span class="kw">|</span>     <span class="ex">println</span>!(<span class="st">&quot;{} {}&quot;</span>, a, b);</span>
-<span id="cb40-9"><a href="#cb40-9"></a><span class="ex">6</span> <span class="kw">|</span> }</span>
-<span id="cb40-10"><a href="#cb40-10"></a>  <span class="kw">|</span> <span class="ex">-</span> first borrow ends here</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb40-1"><a href="#cb40-1"></a><span class="kw">let</span> <span class="kw">mut</span> x <span class="op">=</span> [<span class="dv">1</span><span class="op">,</span><span class="dv">2</span><span class="op">,</span><span class="dv">3</span>]<span class="op">;</span></span>
+<span id="cb40-2"><a href="#cb40-2"></a><span class="kw">let</span> a <span class="op">=</span> <span class="op">&amp;</span><span class="kw">mut</span> x[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb40-3"><a href="#cb40-3"></a><span class="kw">let</span> b <span class="op">=</span> <span class="op">&amp;</span><span class="kw">mut</span> x[<span class="dv">1</span>]<span class="op">;</span></span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1"></a><span class="ex">error</span>[E0499]: cannot borrow <span class="kw">`</span><span class="ex">x</span>[..]<span class="kw">`</span> as mutable more than once at a time</span>
+<span id="cb41-2"><a href="#cb41-2"></a> <span class="ex">--</span><span class="op">&gt;</span> src/lib.rs:4:18</span>
+<span id="cb41-3"><a href="#cb41-3"></a>  <span class="kw">|</span></span>
+<span id="cb41-4"><a href="#cb41-4"></a><span class="ex">3</span> <span class="kw">|</span>     <span class="bu">let</span> a = <span class="kw">&amp;</span><span class="ex">mut</span> x[0]<span class="kw">;</span></span>
+<span id="cb41-5"><a href="#cb41-5"></a>  <span class="kw">|</span>                  <span class="ex">----</span> first mutable borrow occurs here</span>
+<span id="cb41-6"><a href="#cb41-6"></a><span class="ex">4</span> <span class="kw">|</span>     <span class="bu">let</span> b = <span class="kw">&amp;</span><span class="ex">mut</span> x[1]<span class="kw">;</span></span>
+<span id="cb41-7"><a href="#cb41-7"></a>  <span class="kw">|</span>                  ^^^^ <span class="ex">second</span> mutable borrow occurs here</span>
+<span id="cb41-8"><a href="#cb41-8"></a><span class="ex">5</span> <span class="kw">|</span>     <span class="ex">println</span>!(<span class="st">&quot;{} {}&quot;</span>, a, b);</span>
+<span id="cb41-9"><a href="#cb41-9"></a><span class="ex">6</span> <span class="kw">|</span> }</span>
+<span id="cb41-10"><a href="#cb41-10"></a>  <span class="kw">|</span> <span class="ex">-</span> first borrow ends here</span></code></pre></div>
 </section>
 <section id="lifetimes-and-slices-arrays-1" class="slide level2">
 <h2>Lifetimes and Slices / Arrays</h2>
 <ul>
 <li>May require falling back to unsafe code</li>
 </ul>
-<div class="sourceCode" id="cb41"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb41-1"><a href="#cb41-1"></a><span class="co">// exposed by slices, consumes slice, returns two mutable slices</span></span>
-<span id="cb41-2"><a href="#cb41-2"></a><span class="kw">fn</span> split_at_mut(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> mid<span class="op">:</span> <span class="dt">usize</span>) <span class="op">-&gt;</span> (<span class="op">&amp;</span><span class="kw">mut</span> [T]<span class="op">,</span> <span class="op">&amp;</span><span class="kw">mut</span> [T])</span>
-<span id="cb41-3"><a href="#cb41-3"></a><span class="op">{</span> <span class="co">/* some unsafe code in here */</span> <span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb42-1"><a href="#cb42-1"></a><span class="co">// exposed by slices, consumes slice, returns two mutable slices</span></span>
+<span id="cb42-2"><a href="#cb42-2"></a><span class="kw">fn</span> split_at_mut(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> mid<span class="op">:</span> <span class="dt">usize</span>) <span class="op">-&gt;</span> (<span class="op">&amp;</span><span class="kw">mut</span> [T]<span class="op">,</span> <span class="op">&amp;</span><span class="kw">mut</span> [T])</span>
+<span id="cb42-3"><a href="#cb42-3"></a><span class="op">{</span> <span class="co">/* some unsafe code in here */</span> <span class="op">}</span></span></code></pre></div>
 <ul>
 <li>Iterators actually don’t need unsafe code
 <ul>
@@ -680,26 +681,26 @@
 </section>
 <section id="lifetime-elision-examples-from-nomicon" class="slide level2">
 <h2>Lifetime Elision Examples (from Nomicon)</h2>
-<div class="sourceCode" id="cb42"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb42-1"><a href="#cb42-1"></a><span class="kw">fn</span> print(s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>)<span class="op">;</span>                                      <span class="co">// elided</span></span>
-<span id="cb42-2"><a href="#cb42-2"></a><span class="kw">fn</span> print<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(s<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span>)<span class="op">;</span>                               <span class="co">// expanded</span></span>
-<span id="cb42-3"><a href="#cb42-3"></a></span>
-<span id="cb42-4"><a href="#cb42-4"></a><span class="kw">fn</span> debug(lvl<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span> s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>)<span class="op">;</span>                          <span class="co">// elided</span></span>
-<span id="cb42-5"><a href="#cb42-5"></a><span class="kw">fn</span> debug<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(lvl<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span> s<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span>)<span class="op">;</span>                   <span class="co">// expanded</span></span>
-<span id="cb42-6"><a href="#cb42-6"></a></span>
-<span id="cb42-7"><a href="#cb42-7"></a><span class="kw">fn</span> substr(s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">,</span> until<span class="op">:</span> <span class="dt">usize</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">;</span>               <span class="co">// elided</span></span>
-<span id="cb42-8"><a href="#cb42-8"></a><span class="kw">fn</span> substr<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(s<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span><span class="op">,</span> until<span class="op">:</span> <span class="dt">usize</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span><span class="op">;</span>     <span class="co">// expanded</span></span></code></pre></div>
-<div class="sourceCode" id="cb43"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb43-1"><a href="#cb43-1"></a><span class="kw">fn</span> get_str() <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">;</span>                                   <span class="co">// ILLEGAL</span></span>
-<span id="cb43-2"><a href="#cb43-2"></a></span>
-<span id="cb43-3"><a href="#cb43-3"></a><span class="kw">fn</span> frob(s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">,</span> t<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">;</span>                      <span class="co">// ILLEGAL</span></span>
-<span id="cb43-4"><a href="#cb43-4"></a></span>
-<span id="cb43-5"><a href="#cb43-5"></a><span class="kw">fn</span> get_mut(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="kw">mut</span> T<span class="op">;</span>                        <span class="co">// elided</span></span>
-<span id="cb43-6"><a href="#cb43-6"></a><span class="kw">fn</span> get_mut<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(<span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="kw">mut</span> <span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="kw">mut</span> T<span class="op">;</span>              <span class="co">// expanded</span></span>
-<span id="cb43-7"><a href="#cb43-7"></a></span>
-<span id="cb43-8"><a href="#cb43-8"></a><span class="kw">fn</span> args<span class="op">&lt;</span>T<span class="op">:</span> ToCStr<span class="op">&gt;</span>(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> args<span class="op">:</span> <span class="op">&amp;</span>[T]) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="kw">mut</span> Command                  <span class="co">// elided</span></span>
-<span id="cb43-9"><a href="#cb43-9"></a><span class="kw">fn</span> args<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">,</span> <span class="ot">&#39;b</span><span class="op">,</span> T<span class="op">:</span> ToCStr<span class="op">&gt;</span>(<span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> args<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> [T]) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="kw">mut</span> Command <span class="co">// expanded</span></span>
-<span id="cb43-10"><a href="#cb43-10"></a></span>
-<span id="cb43-11"><a href="#cb43-11"></a><span class="kw">fn</span> new(buf<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> [<span class="dt">u8</span>]) <span class="op">-&gt;</span> BufWriter<span class="op">;</span>                    <span class="co">// elided</span></span>
-<span id="cb43-12"><a href="#cb43-12"></a><span class="kw">fn</span> new<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(buf<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="kw">mut</span> [<span class="dt">u8</span>]) <span class="op">-&gt;</span> BufWriter<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>          <span class="co">// expanded</span></span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb43-1"><a href="#cb43-1"></a><span class="kw">fn</span> print(s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>)<span class="op">;</span>                                      <span class="co">// elided</span></span>
+<span id="cb43-2"><a href="#cb43-2"></a><span class="kw">fn</span> print<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(s<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span>)<span class="op">;</span>                               <span class="co">// expanded</span></span>
+<span id="cb43-3"><a href="#cb43-3"></a></span>
+<span id="cb43-4"><a href="#cb43-4"></a><span class="kw">fn</span> debug(lvl<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span> s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>)<span class="op">;</span>                          <span class="co">// elided</span></span>
+<span id="cb43-5"><a href="#cb43-5"></a><span class="kw">fn</span> debug<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(lvl<span class="op">:</span> <span class="dt">usize</span><span class="op">,</span> s<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span>)<span class="op">;</span>                   <span class="co">// expanded</span></span>
+<span id="cb43-6"><a href="#cb43-6"></a></span>
+<span id="cb43-7"><a href="#cb43-7"></a><span class="kw">fn</span> substr(s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">,</span> until<span class="op">:</span> <span class="dt">usize</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">;</span>               <span class="co">// elided</span></span>
+<span id="cb43-8"><a href="#cb43-8"></a><span class="kw">fn</span> substr<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(s<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span><span class="op">,</span> until<span class="op">:</span> <span class="dt">usize</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span><span class="op">;</span>     <span class="co">// expanded</span></span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb44-1"><a href="#cb44-1"></a><span class="kw">fn</span> get_str() <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">;</span>                                   <span class="co">// ILLEGAL</span></span>
+<span id="cb44-2"><a href="#cb44-2"></a></span>
+<span id="cb44-3"><a href="#cb44-3"></a><span class="kw">fn</span> frob(s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">,</span> t<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">;</span>                      <span class="co">// ILLEGAL</span></span>
+<span id="cb44-4"><a href="#cb44-4"></a></span>
+<span id="cb44-5"><a href="#cb44-5"></a><span class="kw">fn</span> get_mut(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="kw">mut</span> T<span class="op">;</span>                        <span class="co">// elided</span></span>
+<span id="cb44-6"><a href="#cb44-6"></a><span class="kw">fn</span> get_mut<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(<span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="kw">mut</span> <span class="kw">self</span>) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="kw">mut</span> T<span class="op">;</span>              <span class="co">// expanded</span></span>
+<span id="cb44-7"><a href="#cb44-7"></a></span>
+<span id="cb44-8"><a href="#cb44-8"></a><span class="kw">fn</span> args<span class="op">&lt;</span>T<span class="op">:</span> ToCStr<span class="op">&gt;</span>(<span class="op">&amp;</span><span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> args<span class="op">:</span> <span class="op">&amp;</span>[T]) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="kw">mut</span> Command                  <span class="co">// elided</span></span>
+<span id="cb44-9"><a href="#cb44-9"></a><span class="kw">fn</span> args<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">,</span> <span class="ot">&#39;b</span><span class="op">,</span> T<span class="op">:</span> ToCStr<span class="op">&gt;</span>(<span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="kw">mut</span> <span class="kw">self</span><span class="op">,</span> args<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;b</span> [T]) <span class="op">-&gt;</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="kw">mut</span> Command <span class="co">// expanded</span></span>
+<span id="cb44-10"><a href="#cb44-10"></a></span>
+<span id="cb44-11"><a href="#cb44-11"></a><span class="kw">fn</span> new(buf<span class="op">:</span> <span class="op">&amp;</span><span class="kw">mut</span> [<span class="dt">u8</span>]) <span class="op">-&gt;</span> BufWriter<span class="op">;</span>                    <span class="co">// elided</span></span>
+<span id="cb44-12"><a href="#cb44-12"></a><span class="kw">fn</span> new<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(buf<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="kw">mut</span> [<span class="dt">u8</span>]) <span class="op">-&gt;</span> BufWriter<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>          <span class="co">// expanded</span></span></code></pre></div>
 </section>
 <section id="not-covered-but-interesting" class="slide level2">
 <h2>Not covered but interesting</h2>

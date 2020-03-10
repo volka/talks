@@ -325,7 +325,8 @@ trait Format {
     // default impl
     fn print(&self) { println!("{}", format(self)); }
 }
-
+```
+```rust
 impl Format for i32 {
     fn format(&self) -> String {
         format!("Int({})", self)
@@ -406,9 +407,11 @@ error[E0596]: cannot borrow `*some_string` as mutable, as it is behind a `&` ref
  --> src/main.rs:2:5
   |
 1 | fn change(some_string: &String) {
-  |                        ------- help: consider changing this to be a mutable reference: `&mut std::string::String`
+  |                        ------- help: consider changing this to be a mutable 
+                                         reference: `&mut std::string::String`
 2 |     some_string.push_str(", world");
-  |     ^^^^^^^^^^^ `some_string` is a `&` reference, so the data it refers to cannot be borrowed as mutable
+  |     ^^^^^^^^^^^ `some_string` is a `&` reference, so the data it refers to cannot 
+                     be borrowed as mutable
 ```
 
 Fix: mutable ref
