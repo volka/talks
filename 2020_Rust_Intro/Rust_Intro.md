@@ -15,34 +15,7 @@ fn main()
 }
 ```
 
-Hello World, with Lifetimes!
---------
-```rust
-fn hello_world() -> &'static str
-{
-    "Hello, World!"
-}
-
-fn main() {
-    println!("{}", hello_world());
-}
-```
-
-Hello World, with Parameters!
---------
-
-```rust
-fn hello(name: &str) -> String
-{
-    format!("Hello, {}!", name)
-}
-
-fn main() {
-    println!("{}", hello("C++ User Group"));
-}
-```
-
-Hello World, with real Strings!
+Hello World, a little more sophisticated
 --------
 ```rust
 fn hello(name: &str) -> String
