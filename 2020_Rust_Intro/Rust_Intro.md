@@ -153,7 +153,6 @@ struct Person<'a> { // Struct with two fields and lifetime
     name: &'a str,
     age: u8
 }
-
 impl Person<'_> { // anonymous lifetime
     // const method
     fn greet(&self) -> String {
@@ -162,7 +161,10 @@ impl Person<'_> { // anonymous lifetime
 }
 println!("{}", Person{name: "Isabelle", age: 1}.greet());
 ```
-Error without lifetime speficier on &str
+
+Data Types - Struct Error
+----
+* Person def without lifetime on &str would be error
 ```bash
 error[E0106]: missing lifetime specifier
  --> src/main.rs:4:11
@@ -170,6 +172,7 @@ error[E0106]: missing lifetime specifier
 4 |     name: &str,
   |           ^ expected lifetime parameter
 ```
+* Anonynous lifetime optional, marks that lifetime is inferred
 
 Data Types - Enums
 ----
@@ -250,7 +253,7 @@ let y = |in: &str| -> String { ... }
 println!("{}", x(a));
 ```
 
-Constructors / Destructors
+Constructors
 ----
 * Copy vs. Clone
 ```rust
@@ -265,6 +268,9 @@ let mut v = Vec::new();
 // actually, for Vec there is a macro:
 let mut w = vec![1,2,3];
 ```
+
+Destructors
+----
 ```rust
 // Desrtuctors implement std::ops::Drop::drop
 impl Drop for X {
