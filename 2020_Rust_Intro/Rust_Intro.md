@@ -88,6 +88,10 @@ Variables
 ```rust
 let x = 42; // immutable integer
 let mut y: i32 = 1; // mutable integer
+
+const  THRESHOLD : i32 = 10; // unchangeable value, type required!
+static LANG: &str = "Rust"; // global with static lifetime
+                            //  may be mut, access is unsafe!
 ```
 
 Data Types - Primitive Types
