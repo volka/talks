@@ -120,6 +120,13 @@ Great Documentation
     * [Rustlings](https://github.com/rust-lang/rustlings)
     
 
+Variables
+----
+```rust
+let x = 42; // immutable integer
+let mut y = 1; // mutable integer
+```
+
 Data Types - Primitive Types
 ----
 * `bool`, `char` (4 byte char)
@@ -130,13 +137,6 @@ Data Types - Primitive Types
     let x = 2.0; // f64
     let y: f32 = 3.0; // f32
     ```
-
-Variables
-----
-```rust
-let x = 42; // immutable integer
-let mut y = 1; // mutable integer
-```
 
 Data Type - Compound Types
 ----
@@ -183,7 +183,72 @@ error[E0106]: missing lifetime specifier
 4 |     name: &str,
   |           ^ expected lifetime parameter
 ```
-Control Flow
+
+Data Types - Constructors
+----
+* "Constructors" just a convention!
+```rust
+impl<T> Vec<T> {
+    pub fn new() -> Vec<T> { /* ... */ }
+}
+```
+```rust
+use vec::Vec;
+let mut v = Vec::new();
+// actually, for Vec there is a macro:
+let mut w = vec![1,2,3];
+```
+* Destructor: `std::ops::Drop::drop`
+```rust
+impl Drop for X {
+    fn drop(&mut self) {}
+}
+```
+
+Data Types - Enums
+----
+Much more powerful than in C++
+
+```rust
+enum Message {
+    Quit,
+    ChangeColor(i32, i32, i32),
+    Move {x: i32, y: i32},
+    Write(String)
+}
+let x: Message = Message::Move{ x: 1, y: 2};
+```
+
+Matching
+----
+`match` is like a powerful switch / `if` cascade
+
+```rust
+let x = 2;
+let as_string = match x {
+    1 => "one",
+    2 => "two",
+    _ => "sorry, can only count to two..."
+};
+```
+Match needs to be *exhaustive* (thus the `_`)
+
+Matching and Enums
+----
+Bind values from variant for use in match
+
+```rust
+fn receive(msg: Message) {
+    match msg {
+        Message::Quit => panic!("we want to leave FAST!"),
+        Message::ChangeColor(r,g,b) => change_color(r,g,b),
+        Message::Move {x: x, y: y} => move_cursor(x, y),
+        Message::Write(s) => println!("{}", s),
+    }
+}
+```
+
+Control Flow - branch and loop
 ----
 ```rust
 if x % 2 == 0 { println!("x is even!"); } 
@@ -249,70 +314,6 @@ let y = |in: &str| -> String { ... }
 println!("{}", x(a));
 ```
 
-Data Types - Constructors
-----
-* "Constructors" just a convention!
-```rust
-impl<T> Vec<T> {
-    pub fn new() -> Vec<T> { /* ... */ }
-}
-```
-```rust
-use vec::Vec;
-let mut v = Vec::new();
-// actually, for Vec there is a macro:
-let mut w = vec![1,2,3];
-```
-* Destructor: `std::ops::Drop::drop`
-```rust
-impl Drop for X {
-    fn drop(&mut self) {}
-}
-```
-
-Enums
-----
-Much more powerful than in C++
-
-```rust
-enum Message {
-    Quit,
-    ChangeColor(i32, i32, i32),
-    Move {x: i32, y: i32},
-    Write(String)
-}
-let x: Message = Message::Move{ x: 1, y: 2};
-```
-
-Matching
-----
-`match` is like a powerful switch / `if` cascade
-
-```rust
-let x = 2;
-let as_string = match x {
-    1 => "one",
-    2 => "two",
-    _ => "sorry, can only count to two..."
-};
-```
-Match needs to be *exhaustive* (thus the `_`)
-
-Matching and Enums
-----
-Bind values from variant for use in match
-
-```rust
-fn receive(msg: Message) {
-    match msg {
-        Message::Quit => panic!("we want to leave FAST!"),
-        Message::ChangeColor(r,g,b) => change_color(r,g,b),
-        Message::Move {x: x, y: y} => move_cursor(x, y),
-        Message::Write(s) => println!("{}", s),
-    }
-}
-```
-
 Error Matching
 ----
 * Rust uses std::result for Error Handling (no exceptions)
@@ -365,7 +366,8 @@ impl Print for f64 {
     fn print(&self) -> String { ... }
 }
 ```
-Impl only allowed in either trait module or type module!
+* Impl only allowed in either trait module or type module!
+* No inheritance!
 
 Trait Objects
 ----
@@ -675,6 +677,18 @@ fn split_at_mut(&mut self, mid: usize) -> (&mut [T], &mut [T])`
     * Reference only one &mut ref at a time!
 
 * Basically: fail on the "safe side", don't allow errors, but disallow some valid code!
+
+Not covered but interesting ...
+----
+* [std](https://doc.rust-lang.org/std/) library
+* Standardized Serialization with [Serde](https://serde.rs/)
+* Standardized SQL / ORM with [Diesel](http://diesel.rs/)
+* Async / Await - see [Async Book](https://rust-lang.github.io/async-book/)
+    * [Tokio](https://github.com/tokio-rs/tokio) / [Rayon](https://github.com/rayon-rs/rayon) async engines, [Rocket](https://rocket.rs/) or [Actix](https://github.com/actix/actix-web) web frameworks
+* Macros
+* FFI
+* Details on Cargo
+
 
 Thanks for the attention!
 ----
