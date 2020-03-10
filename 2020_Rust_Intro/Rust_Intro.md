@@ -200,7 +200,7 @@ fn receive(msg: Message) {
 }
 ```
 
-Control Flow - branch and loop
+Control Flow
 ----
 ```rust
 if x % 2 == 0 { println!("x is even!"); } 
@@ -213,19 +213,12 @@ let mut i = 0;
 while i < 10 { println!("hello"); i = i + 1; }
 
 let mut x = vec!["C++", "Rust", "Go", "Python"];
-for text in x {
-    println!("I like {}.", text);
-}
-for (i, text) in v.iter().enumerate() { /* ... */ }
+for text in x { println!("I like {}.", text); }
+for (i, text) in v.iter().enumerate() { /* ... use i, text */ }
 
-while let Some(y) = x.pop() {
-    println!("x = {}", y);
-}
+while let Some(y) = x.pop() { /* ... use y */ }
 
-let mut sum = 0;
-for n in 1..11 {
-    sum += n;
-}
+for n in 1..11 { /* ... use n */ }
 ```
 
 Functions
