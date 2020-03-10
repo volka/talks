@@ -244,8 +244,9 @@ println!("{}", x(a));
 
 Constructors / Destructors
 ----
-* "Constructors" just a convention!
+* Copy vs. Clone
 ```rust
+// "constructors" just a convention!
 impl<T> Vec<T> {
     pub fn new() -> Vec<T> { /* ... */ }
 }
@@ -256,8 +257,8 @@ let mut v = Vec::new();
 // actually, for Vec there is a macro:
 let mut w = vec![1,2,3];
 ```
-* Destructor: `std::ops::Drop::drop`
 ```rust
+// Desrtuctors implement std::ops::Drop::drop
 impl Drop for X {
     fn drop(&mut self) {}
 }
