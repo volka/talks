@@ -120,6 +120,22 @@ let v = vec![0xF0, 0x9F, 0x98, 0x88];
 let t = String::from_utf8(v).unwrap();
 ```
 
+Functions
+----
+
+```rust
+fn negate(i: i32) -> i32 { -i }
+
+use std::fmt;
+pub fn func_name<T: fmt::Display>(arg1: T) -> String {}
+{
+    println!("{}", arg1); // guaranteed to work by Type bound
+    format!("{}", arg1)   
+}
+
+// negate only accessible in same module
+```
+
 Data Types - Structs
 ----
 ```rust
@@ -131,7 +147,9 @@ struct Person<'a> { // Struct with two fields and lifetime
     name: &'a str,
     age: u8
 }
+
 impl Person<'_> { // anonymous lifetime
+    // const method
     fn greet(&self) -> String {
         format!("Hello, {}", self.name)
     }
@@ -209,22 +227,6 @@ for (i, text) in v.iter().enumerate() { /* ... use i, text */ }
 while let Some(y) = x.pop() { /* ... use y */ }
 
 for n in 1..11 { /* ... use n */ }
-```
-
-Functions
-----
-
-```rust
-fn negate(i: i32) -> i32 { -i }
-
-use std::fmt;
-pub fn func_name<T: fmt::Display>(arg1: T) -> String {}
-{
-    println!("{}", arg1); // guaranteed to work by Type bound
-    format!("{}", arg1)   
-}
-
-// negate only accessible in same module
 ```
 
 Lambdas
@@ -605,6 +607,7 @@ Not covered but interesting ...
 * Async / Await - see [Async Book](https://rust-lang.github.io/async-book/)
     * [Tokio](https://github.com/tokio-rs/tokio) / [Rayon](https://github.com/rayon-rs/rayon) async engines, [Rocket](https://rocket.rs/) or [Actix](https://github.com/actix/actix-web) web frameworks
 * "Hygienic" Macros (restricted syntax manipulationx, contexts)
+* Generics
 * FFI
 * Details on Cargo
 
