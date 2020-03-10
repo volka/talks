@@ -554,14 +554,6 @@ z = y;
 ```
 TODO: http://arthurtw.github.io/2014/11/30/rust-borrow-lifetimes.html
 
-Lifetime Elision
-----
-https://doc.rust-lang.org/nomicon/lifetime-elision.html
-
-Lifetimes and Slices / Arrays
-----
-https://doc.rust-lang.org/nomicon/borrow-splitting.html
-
 Reference outliving referent
 ----
 ```rust
@@ -579,6 +571,81 @@ fn as_str<'a>(data: &'a u32) -> &'a str {
 ```
 * ref to s must outlive 'a, but defined in 'b, which is inside 'a
 --> ERROR
+
+Lifetime Elision
+----
+* Rust allows eliding lifetimes to use defaults
+    * Produces succinct code
+* Lifetime positions: input (fn arguments), output (fn result types)
+* Elision rules
+    * Each elided lifetime in input position -> distinct lifetime parameter
+    * If exactly one input lifetime position, assign that to _all_ elided output lifetimes
+    * If multiple input lifetime positions, but one is `&self` or `&mut self`, lifetime of `self` assgned to _all_ elided output lifetimes
+    * Otherwise -> error to elide output lifetime
+
+[Nomicon Lifetime Ellision](https://doc.rust-lang.org/nomicon/lifetime-elision.html)
+
+Lifetime Elision Examples (from Nomicon)
+----
+```rust
+fn print(s: &str);                                      // elided
+fn print<'a>(s: &'a str);                               // expanded
+
+fn debug(lvl: usize, s: &str);                          // elided
+fn debug<'a>(lvl: usize, s: &'a str);                   // expanded
+
+fn substr(s: &str, until: usize) -> &str;               // elided
+fn substr<'a>(s: &'a str, until: usize) -> &'a str;     // expanded
+
+fn get_str() -> &str;                                   // ILLEGAL
+
+fn frob(s: &str, t: &str) -> &str;                      // ILLEGAL
+
+fn get_mut(&mut self) -> &mut T;                        // elided
+fn get_mut<'a>(&'a mut self) -> &'a mut T;              // expanded
+
+fn args<T: ToCStr>(&mut self, args: &[T]) -> &mut Command                  // elided
+fn args<'a, 'b, T: ToCStr>(&'a mut self, args: &'b [T]) -> &'a mut Command // expanded
+
+fn new(buf: &mut [u8]) -> BufWriter;                    // elided
+fn new<'a>(buf: &'a mut [u8]) -> BufWriter<'a>          // expanded
+```
+
+Lifetimes and Slices / Arrays
+----
+* Lifetimes are *dumb*, just markers
+* Checker understands disjount struct fields, but not slices / arrays
+* Works most of the time, sometimes needs help
+```rust
+let mut x = [1,2,3];
+let a = &mut x[0];
+let b = &mut x[1];
+```
+```bash
+error[E0499]: cannot borrow `x[..]` as mutable more than once at a time
+ --> src/lib.rs:4:18
+  |
+3 |     let a = &mut x[0];
+  |                  ---- first mutable borrow occurs here
+4 |     let b = &mut x[1];
+  |                  ^^^^ second mutable borrow occurs here
+5 |     println!("{} {}", a, b);
+6 | }
+  | - first borrow ends here
+```
+
+Lifetimes and Slices / Arrays
+----
+* May require falling back to unsafe code
+```rust
+// exposed by slices, consumes slice, returns two mutable slices
+fn split_at_mut(&mut self, mid: usize) -> (&mut [T], &mut [T])`
+{ /* some unsafe code in here */ }
+```
+* Iterators actually don't need unsafe code
+    * Reference only one &mut ref at a time!
+
+* Basically: fail on the "safe side", don't allow errors, but disallow some valid code!
 
 Thanks for the attention!
 ----
