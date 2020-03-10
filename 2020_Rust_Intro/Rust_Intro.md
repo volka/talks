@@ -15,7 +15,7 @@ fn main()
 }
 ```
 
-Hello World, a little more sophisticated
+Hello X!
 --------
 ```rust
 fn hello(name: &str) -> String
