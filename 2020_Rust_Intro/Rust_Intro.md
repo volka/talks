@@ -360,40 +360,6 @@ do_dynRef(&y);
 do_dynPtr(Box::new(666));
 ```
 
-Wraper (Pointer) Types
-----
-* `Box<T>` - single ownership pointer (unique_ptr)
-* `Rc<T>` - reference counted pointer
-* `Arc<T>` - reference counted thread safe pointer (shared_ptr)
-* `Cell<T>` / `RefCell<T>` - provide "interior mutability" for the wrapped type
-
-```rust
-let x = RefCell::new(vec![1,2,3]);
-{
-    println!("{:?}", *x.borrow())
-}
-{
-    let my_ref = x.borrow_mut();
-    my_ref.push(1);
-}
-```
-
-
-Modules
-----
-* Powerful hierarchical module system
-    * Should map to filesystem
-* Base for visibility
-```rust
-mod my_module {
-    pub fn foo() {}
-    fn bar() {}
-}
-use my_module;
-use my_module::foo as fump;
-use deeply::nested::{a_func, ATrait};
-```
-
 Safety
 ----
 * Two languages: SAFE Rust and UNSAFE Rust
@@ -654,6 +620,8 @@ fn split_at_mut(&mut self, mid: usize) -> (&mut [T], &mut [T])`
 Not covered but interesting ...
 ----
 * [std](https://doc.rust-lang.org/std/) library
+* [Modules and Packages](https://doc.rust-lang.org/book/ch07-00-managing-growing-projects-with-packages-crates-and-modules.html)
+* Pointers / Wrappers - `Box<T>`, `Rc<T>`, `Arc<T>`, `Cell<T>`, `RefCell<T>`
 * Standardized Serialization with [Serde](https://serde.rs/)
 * Standardized SQL / ORM with [Diesel](http://diesel.rs/)
 * Async / Await - see [Async Book](https://rust-lang.github.io/async-book/)
