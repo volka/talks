@@ -605,8 +605,6 @@ fn as_str<'a>(data: &'a u32) -> &'a str {
 
 Lifetime Elision
 ----
-* Rust allows eliding lifetimes to use defaults
-    * Produces succinct code
 * Lifetime positions: input (fn arguments), output (fn result types)
 * Elision rules
     * Each elided lifetime in input position -> distinct lifetime parameter
