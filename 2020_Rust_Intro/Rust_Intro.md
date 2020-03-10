@@ -157,27 +157,6 @@ error[E0106]: missing lifetime specifier
   |           ^ expected lifetime parameter
 ```
 
-Data Types - Constructors
-----
-* "Constructors" just a convention!
-```rust
-impl<T> Vec<T> {
-    pub fn new() -> Vec<T> { /* ... */ }
-}
-```
-```rust
-use vec::Vec;
-let mut v = Vec::new();
-// actually, for Vec there is a macro:
-let mut w = vec![1,2,3];
-```
-* Destructor: `std::ops::Drop::drop`
-```rust
-impl Drop for X {
-    fn drop(&mut self) {}
-}
-```
-
 Data Types - Enums
 ----
 Much more powerful than in C++
@@ -233,21 +212,14 @@ loop { println!("I'm alive!"); break; }
 let mut i = 0;
 while i < 10 { println!("hello"); i = i + 1; }
 
-let mut x = vec![1,2,3];
-while let Some(y) = x.pop() {
-    println!("y = {}", y);
-}
-```
-
-Control Flow - iterator loops
-----
-```rust
-let v = &["C++", "Rust", "Go", "Python"];
-for text in v {
+let mut x = vec!["C++", "Rust", "Go", "Python"];
+for text in x {
     println!("I like {}.", text);
 }
-for (i, text) in v.iter().enumerate() {
-    println!("{}: {}", i, text); 
+for (i, text) in v.iter().enumerate() { /* ... */ }
+
+while let Some(y) = x.pop() {
+    println!("x = {}", y);
 }
 
 let mut sum = 0;
@@ -286,6 +258,28 @@ let y = |in: &str| -> String { ... }
 
 println!("{}", x(a));
 ```
+
+Constructors / Destructors
+----
+* "Constructors" just a convention!
+```rust
+impl<T> Vec<T> {
+    pub fn new() -> Vec<T> { /* ... */ }
+}
+```
+```rust
+use vec::Vec;
+let mut v = Vec::new();
+// actually, for Vec there is a macro:
+let mut w = vec![1,2,3];
+```
+* Destructor: `std::ops::Drop::drop`
+```rust
+impl Drop for X {
+    fn drop(&mut self) {}
+}
+```
+
 
 Error Matching
 ----
