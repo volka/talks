@@ -54,16 +54,6 @@ Rust Use Cases
 * Writing Linux Kernel Modules, Operating Systems (->[Redox](https://www.redox-os.org))
 * ... [awesome-rust](https://github.com/rust-unofficial/awesome-rust)
 
-
-Language Features
-----
-* Syntax: similar to C/C++, ML, Haskell
-* Ownership / lifetime checking for memory safety
-* Strong static type system
-* Generics
-* "Hygienic" Macros (restricted syntax manipulationx, contexts)
-* New approach to OO: no inheritance, traits!
-
 Tooling
 ---
 * Compiler - rustc, based on LLVM
@@ -97,7 +87,7 @@ Variables
 ----
 ```rust
 let x = 42; // immutable integer
-let mut y = 1; // mutable integer
+let mut y: i32 = 1; // mutable integer
 ```
 
 Data Types - Primitive Types
@@ -613,7 +603,7 @@ Not covered but interesting ...
 * Standardized SQL / ORM with [Diesel](http://diesel.rs/)
 * Async / Await - see [Async Book](https://rust-lang.github.io/async-book/)
     * [Tokio](https://github.com/tokio-rs/tokio) / [Rayon](https://github.com/rayon-rs/rayon) async engines, [Rocket](https://rocket.rs/) or [Actix](https://github.com/actix/actix-web) web frameworks
-* Macros
+* "Hygienic" Macros (restricted syntax manipulationx, contexts)
 * FFI
 * Details on Cargo
 
