@@ -532,9 +532,12 @@ Lifetimes & Aliasing
 * Two kinds of references: `&` and `&mut` with rules
     * A reference cannot outlive its referent
     * A mutable reference cannot be aliased ("variables and pointers _alias_ if the refer to overlapping regions of memory")
-* So how is this tracked? Lifetimes!
-    * Local lifetimes mostly implicit
-    * Sane defaults for functions / structs keep code readable
+    * Some intelligence in borrow checker, e.g. distinct fields in struct (but not slices/arrays)
+* So how is this tracked?
+    * Basically markers defining regions where things are "alive"
+    * Local lifetimes mostly implicit (syntactic sugar / defaults)
+    * Sane defaults keep code readable
+* Lifetime annotations for explicitly "helping" the borrow checker
 
 Local Lifetimes
 ----
