@@ -499,6 +499,34 @@ error[E0499]: cannot borrow `s` as mutable more than once at a time
   |                       -- first borrow later used here
 ```
 
+Area covered by Lifetimes
+----
+```rust
+
+let mut data = vec![1, 2, 3];
+let x = &data[0];
+println!("{}", x);
+// This is OK, x is no longer needed
+data.push(4);
+```
+```rust
+
+let mut data = vec![1, 2, 3];
+let x = &data[0];
+data.push(4);
+// This fails
+println!("{}", x);
+```
+```rust
+// ... also ok
+if (condition()) {
+    println!("{}", x);
+    data.push(4);
+} else {
+    data.push(5);
+}
+```
+
 Lifetimes & Aliasing
 ----
 * Two kinds of references: `&` and `&mut` with rules
