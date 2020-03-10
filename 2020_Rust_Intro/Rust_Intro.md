@@ -51,7 +51,7 @@ Rust Use Cases
 * System / GUI Programming (Gtk, SDL)
 * Embdeded: Cortex M*, ESP32 ... [rust-embedded book](https://rust-embedded.github.io/book)
 * Compile to Webassembly
-* (Writing Linux Kernel Modules)
+* Writing Linux Kernel Modules, Operating Systems (->[Redox](https://www.redox-os.org))
 * ... [awesome-rust](https://github.com/rust-unofficial/awesome-rust)
 
 
