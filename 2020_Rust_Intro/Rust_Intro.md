@@ -358,6 +358,9 @@ Ownership
 * All rules enforced at compile time - no runtime overhead!
     * But learning overhead: "fighting the borrow checker"
 
+* References use lifetimes - may never outlive referent!
+    * Lifetime annotations to help borrow checker
+
 References & Borrowing
 ----
 
@@ -440,19 +443,7 @@ if (condition()) {
 }
 ```
 
-Lifetimes & Aliasing
-----
-* Two kinds of references: `&` and `&mut` with rules
-    * A reference cannot outlive its referent
-    * A mutable reference cannot be aliased ("variables and pointers _alias_ if the refer to overlapping regions of memory")
-    * Some intelligence in borrow checker, e.g. distinct fields in struct (but not slices/arrays)
-* So how is this tracked?
-    * Basically markers defining regions where things are "alive"
-    * Local lifetimes mostly implicit (syntactic sugar / defaults)
-    * Sane defaults keep code readable
-* Lifetime annotations for explicitly "helping" the borrow checker
-
-Local Lifetimes
+Local Lifetimes - Annotations
 ----
 ```rust
 let x = 1;
@@ -575,7 +566,7 @@ fn split_at_mut(&mut self, mid: usize) -> (&mut [T], &mut [T])
 * Iterators actually don't need unsafe code
     * Reference only one &mut ref at a time!
 
-* Basically: fail on the "safe side", don't allow errors, but disallow some valid code!
+* Fail on the "safe side", don't allow errors, but disallow some valid code!
 
 Lifetime Elision
 ----
