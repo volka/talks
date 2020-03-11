@@ -568,18 +568,7 @@ fn split_at_mut(&mut self, mid: usize) -> (&mut [T], &mut [T])
 
 * Fail on the "safe side", don't allow errors, but disallow some valid code!
 
-Lifetime Elision
-----
-* Lifetime positions: input (fn arguments), output (fn result types)
-* Elision rules
-    * Each elided lifetime in input position -> distinct lifetime parameter
-    * If exactly one input lifetime position, assign that to _all_ elided output lifetimes
-    * If multiple input lifetime positions, but one is `&self` or `&mut self`, lifetime of `self` assgned to _all_ elided output lifetimes
-    * Otherwise -> error to elide output lifetime
-
-[Nomicon Lifetime Ellision](https://doc.rust-lang.org/nomicon/lifetime-elision.html)
-
-Lifetime Elision Examples (from Nomicon)
+Lifetime Elision Examples (from [Nomicon]((https://doc.rust-lang.org/nomicon/lifetime-elision.html))
 ----
 ```rust
 fn print(s: &str);                                      // elided

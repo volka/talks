@@ -623,22 +623,8 @@
 <li>Fail on the “safe side”, don’t allow errors, but disallow some valid code!</li>
 </ul>
 </section>
-<section id="lifetime-elision" class="slide level2">
-<h2>Lifetime Elision</h2>
-<ul>
-<li>Lifetime positions: input (fn arguments), output (fn result types)</li>
-<li>Elision rules
-<ul>
-<li>Each elided lifetime in input position -&gt; distinct lifetime parameter</li>
-<li>If exactly one input lifetime position, assign that to <em>all</em> elided output lifetimes</li>
-<li>If multiple input lifetime positions, but one is <code>&amp;self</code> or <code>&amp;mut self</code>, lifetime of <code>self</code> assgned to <em>all</em> elided output lifetimes</li>
-<li>Otherwise -&gt; error to elide output lifetime</li>
-</ul></li>
-</ul>
-<p><a href="https://doc.rust-lang.org/nomicon/lifetime-elision.html">Nomicon Lifetime Ellision</a></p>
-</section>
 <section id="lifetime-elision-examples-from-nomicon" class="slide level2">
-<h2>Lifetime Elision Examples (from Nomicon)</h2>
+<h2>Lifetime Elision Examples (from <a href="(https://doc.rust-lang.org/nomicon/lifetime-elision.html)">Nomicon</a></h2>
 <div class="sourceCode" id="cb41"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb41-1"><a href="#cb41-1"></a><span class="kw">fn</span> print(s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>)<span class="op">;</span>                                      <span class="co">// elided</span></span>
 <span id="cb41-2"><a href="#cb41-2"></a><span class="kw">fn</span> print<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(s<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span>)<span class="op">;</span>                               <span class="co">// expanded</span></span>
 <span id="cb41-3"><a href="#cb41-3"></a></span>
