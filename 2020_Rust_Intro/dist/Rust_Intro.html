@@ -624,7 +624,7 @@
 </ul>
 </section>
 <section id="lifetime-elision-examples-from-nomicon" class="slide level2">
-<h2>Lifetime Elision Examples (from <a href="(https://doc.rust-lang.org/nomicon/lifetime-elision.html)">Nomicon</a></h2>
+<h2>Lifetime Elision Examples (from <a href="https://doc.rust-lang.org/nomicon/lifetime-elision.html">Nomicon</a> )</h2>
 <div class="sourceCode" id="cb41"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb41-1"><a href="#cb41-1"></a><span class="kw">fn</span> print(s<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>)<span class="op">;</span>                                      <span class="co">// elided</span></span>
 <span id="cb41-2"><a href="#cb41-2"></a><span class="kw">fn</span> print<span class="op">&lt;</span><span class="ot">&#39;a</span><span class="op">&gt;</span>(s<span class="op">:</span> <span class="op">&amp;</span><span class="ot">&#39;a</span> <span class="dt">str</span>)<span class="op">;</span>                               <span class="co">// expanded</span></span>
 <span id="cb41-3"><a href="#cb41-3"></a></span>

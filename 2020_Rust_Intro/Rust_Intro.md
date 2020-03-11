@@ -568,7 +568,7 @@ fn split_at_mut(&mut self, mid: usize) -> (&mut [T], &mut [T])
 
 * Fail on the "safe side", don't allow errors, but disallow some valid code!
 
-Lifetime Elision Examples (from [Nomicon]((https://doc.rust-lang.org/nomicon/lifetime-elision.html))
+Lifetime Elision Examples (from [Nomicon](https://doc.rust-lang.org/nomicon/lifetime-elision.html) )
 ----
 ```rust
 fn print(s: &str);                                      // elided
