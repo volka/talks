@@ -436,6 +436,10 @@
 <ul>
 <li>But learning overhead: “fighting the borrow checker”</li>
 </ul></li>
+<li>References use lifetimes - may never outlive referent!
+<ul>
+<li>Lifetime annotations to help borrow checker</li>
+</ul></li>
 </ul>
 </section>
 <section id="references-borrowing" class="slide level2">
@@ -502,26 +506,8 @@
 <span id="cb30-6"><a href="#cb30-6"></a>    data<span class="op">.</span>push(<span class="dv">5</span>)<span class="op">;</span></span>
 <span id="cb30-7"><a href="#cb30-7"></a><span class="op">}</span></span></code></pre></div>
 </section>
-<section id="lifetimes-aliasing" class="slide level2">
-<h2>Lifetimes &amp; Aliasing</h2>
-<ul>
-<li>Two kinds of references: <code>&amp;</code> and <code>&amp;mut</code> with rules
-<ul>
-<li>A reference cannot outlive its referent</li>
-<li>A mutable reference cannot be aliased (“variables and pointers <em>alias</em> if the refer to overlapping regions of memory”)</li>
-<li>Some intelligence in borrow checker, e.g. distinct fields in struct (but not slices/arrays)</li>
-</ul></li>
-<li>So how is this tracked?
-<ul>
-<li>Basically markers defining regions where things are “alive”</li>
-<li>Local lifetimes mostly implicit (syntactic sugar / defaults)</li>
-<li>Sane defaults keep code readable</li>
-</ul></li>
-<li>Lifetime annotations for explicitly “helping” the borrow checker</li>
-</ul>
-</section>
-<section id="local-lifetimes" class="slide level2">
-<h2>Local Lifetimes</h2>
+<section id="local-lifetimes---annotations" class="slide level2">
+<h2>Local Lifetimes - Annotations</h2>
 <div class="sourceCode" id="cb31"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">let</span> x <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
 <span id="cb31-2"><a href="#cb31-2"></a><span class="kw">let</span> y <span class="op">=</span> <span class="op">&amp;</span>x<span class="op">;</span></span>
 <span id="cb31-3"><a href="#cb31-3"></a><span class="kw">let</span> z <span class="op">=</span> <span class="op">&amp;</span>y<span class="op">;</span></span></code></pre></div>
@@ -634,7 +620,7 @@
 <ul>
 <li>Reference only one &amp;mut ref at a time!</li>
 </ul></li>
-<li>Basically: fail on the “safe side”, don’t allow errors, but disallow some valid code!</li>
+<li>Fail on the “safe side”, don’t allow errors, but disallow some valid code!</li>
 </ul>
 </section>
 <section id="lifetime-elision" class="slide level2">
