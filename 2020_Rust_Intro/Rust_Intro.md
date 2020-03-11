@@ -39,22 +39,10 @@ What is Rust?
     * Safety (memory, threading ...)
     * Speed (same league as C/C++)
     * Good compiler errors
-* Very new language (1.0: 2015)
-    * Rapid development, e.g. new futures/async
+* Very new language (1.0: 2015), rapid development, e.g. new futures/async
     * "[Editions](https://doc.rust-lang.org/edition-guide/editions/index.html)" to stabilize language
     * Currently Edition 2015 and 2018
-
-
-Rust Use Cases
-----
-
-* Firefox - Servo, CSS, Media/Video Engines
-* Web Dev / APIs: Actix / Rocket, Tokio project
-* System / GUI Programming (Gtk, SDL)
-* Embdeded: Cortex M*, ESP32 ... [rust-embedded book](https://rust-embedded.github.io/book)
-* Compile to Webassembly
-* Writing Linux Kernel Modules, Operating Systems (->[Redox](https://www.redox-os.org))
-* ... [awesome-rust](https://github.com/rust-unofficial/awesome-rust)
+* [Used in](https://github.com/rust-unofficial/awesome-rust): Firefox, System/[Embedded](https://rust-embedded.github.io/book) Programming, [OS](https://www.redox-os.org)/Kernel, Web(assembly)
 
 Tooling
 ---
@@ -281,39 +269,23 @@ impl Drop for X {
 ```
 
 
-Error Matching
+Error Handling
 ----
-* Rust uses std::result for Error Handling (no exceptions)
-
+Rust uses Result<T,E> type for Error Handling (no exceptions)
 ```rust
 #[must_use]
-enum Result<T, E> {
-    Ok(T),
-    Err(E)
-}
-let x = "4711".parse::<u8>(); // from trait std::str::FromStr
-// let y = x.unwrap(); -- will panic if error, often found in examples
-match x {
-    Ok(i) => println!("The number is {}", i),
-    Err(e) => println!("{:?}", e), // remember #[derive(Debug)] ?
-}
-// Output: ParseIntError { kind: Overflow }
-```
+enum Result<T, E> { Ok(T), Err(E) }
 
-Error Handling Shortcut
-----
-```rust
-use std::num::ParseIntError;
-fn may_fail(in: i32) -> Result<i32, ParseIntError> {
+fn may_fail(in: &str) -> Result<i32, ParseIntError> {
+    let x = in.parse::<u8>(); // from trait std::str::FromStr
+    // let y = x.unwrap(); -- will panic if error, often found in examples
+    match x {
+        Ok(i) => println!("The number is {}", i),
+        Err(e) => { println!("{:?}", e); return e; } // #[derive(Debug)]
+    }
+    // Shortcuts:
     return in.parse<i32>()?;
-    // or
-    return try!(in.parse<i32>())
-    // same as
-    let num = match in.parse() {
-        Ok(number) => number,
-        Err(e) => return Err(e)
-    };
-    return num;
+    return try!(in.parse<i32>());
 }
 ```
 
