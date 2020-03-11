@@ -39,22 +39,10 @@ What is Rust?
     * Safety (memory, threading ...)
     * Speed (same league as C/C++)
     * Good compiler errors
-* Very new language (1.0: 2015)
-    * Rapid development, e.g. new futures/async
+* Very new language (1.0: 2015), rapid development, e.g. new futures/async
     * "[Editions](https://doc.rust-lang.org/edition-guide/editions/index.html)" to stabilize language
     * Currently Edition 2015 and 2018
-
-
-Rust Use Cases
-----
-
-* Firefox - Servo, CSS, Media/Video Engines
-* Web Dev / APIs: Actix / Rocket, Tokio project
-* System / GUI Programming (Gtk, SDL)
-* Embdeded: Cortex M*, ESP32 ... [rust-embedded book](https://rust-embedded.github.io/book)
-* Compile to Webassembly
-* Writing Linux Kernel Modules, Operating Systems (->[Redox](https://www.redox-os.org))
-* ... [awesome-rust](https://github.com/rust-unofficial/awesome-rust)
+* [Used in](https://github.com/rust-unofficial/awesome-rust): Firefox, System/[Embedded](https://rust-embedded.github.io/book) Programming, [OS](https://www.redox-os.org)/Kernel, Web(assembly)
 
 Tooling
 ---
@@ -281,39 +269,23 @@ impl Drop for X {
 ```
 
 
-Error Matching
+Error Handling
 ----
-* Rust uses std::result for Error Handling (no exceptions)
-
+Rust uses Result<T,E> type for Error Handling (no exceptions)
 ```rust
 #[must_use]
-enum Result<T, E> {
-    Ok(T),
-    Err(E)
-}
-let x = "4711".parse::<u8>(); // from trait std::str::FromStr
-// let y = x.unwrap(); -- will panic if error, often found in examples
-match x {
-    Ok(i) => println!("The number is {}", i),
-    Err(e) => println!("{:?}", e), // remember #[derive(Debug)] ?
-}
-// Output: ParseIntError { kind: Overflow }
-```
+enum Result<T, E> { Ok(T), Err(E) }
 
-Error Handling Shortcut
-----
-```rust
-use std::num::ParseIntError;
-fn may_fail(in: i32) -> Result<i32, ParseIntError> {
+fn may_fail(in: &str) -> Result<i32, ParseIntError> {
+    let x = in.parse::<u8>(); // from trait std::str::FromStr
+    // let y = x.unwrap(); -- will panic if error, often found in examples
+    match x {
+        Ok(i) => println!("The number is {}", i),
+        Err(e) => { println!("{:?}", e); return e; } // #[derive(Debug)]
+    }
+    // Shortcuts:
     return in.parse<i32>()?;
-    // or
-    return try!(in.parse<i32>())
-    // same as
-    let num = match in.parse() {
-        Ok(number) => number,
-        Err(e) => return Err(e)
-    };
-    return num;
+    return try!(in.parse<i32>());
 }
 ```
 
@@ -386,6 +358,9 @@ Ownership
 
 * All rules enforced at compile time - no runtime overhead!
     * But learning overhead: "fighting the borrow checker"
+
+* References use lifetimes - may never outlive referent!
+    * Lifetime annotations to help borrow checker
 
 References & Borrowing
 ----
@@ -471,19 +446,7 @@ if (condition()) {
 }
 ```
 
-Lifetimes & Aliasing
-----
-* Two kinds of references: `&` and `&mut` with rules
-    * A reference cannot outlive its referent
-    * A mutable reference cannot be aliased ("variables and pointers _alias_ if the refer to overlapping regions of memory")
-    * Some intelligence in borrow checker, e.g. distinct fields in struct (but not slices/arrays)
-* So how is this tracked?
-    * Basically markers defining regions where things are "alive"
-    * Local lifetimes mostly implicit (syntactic sugar / defaults)
-    * Sane defaults keep code readable
-* Lifetime annotations for explicitly "helping" the borrow checker
-
-Local Lifetimes
+Local Lifetimes - Annotations
 ----
 ```rust
 let x = 1;
@@ -606,20 +569,9 @@ fn split_at_mut(&mut self, mid: usize) -> (&mut [T], &mut [T])
 * Iterators actually don't need unsafe code
     * Reference only one &mut ref at a time!
 
-* Basically: fail on the "safe side", don't allow errors, but disallow some valid code!
+* Fail on the "safe side", don't allow errors, but disallow some valid code!
 
-Lifetime Elision
-----
-* Lifetime positions: input (fn arguments), output (fn result types)
-* Elision rules
-    * Each elided lifetime in input position -> distinct lifetime parameter
-    * If exactly one input lifetime position, assign that to _all_ elided output lifetimes
-    * If multiple input lifetime positions, but one is `&self` or `&mut self`, lifetime of `self` assgned to _all_ elided output lifetimes
-    * Otherwise -> error to elide output lifetime
-
-[Nomicon Lifetime Ellision](https://doc.rust-lang.org/nomicon/lifetime-elision.html)
-
-Lifetime Elision Examples (from Nomicon)
+Lifetime Elision Examples (from [Nomicon](https://doc.rust-lang.org/nomicon/lifetime-elision.html) )
 ----
 ```rust
 fn print(s: &str);                                      // elided
