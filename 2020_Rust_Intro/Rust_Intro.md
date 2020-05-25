@@ -348,6 +348,11 @@ Memory Safety: Microsoft
 ----
 ![](Microsoft_Memory_Safety_CVEs.png)
 
+Memory Safety: Chromium (see Chromium.org Security -> Memory Safety)
+----
+"Around 70% of our high severity security bugs are memory unsafety problems (that is, mistakes with C/C++ pointers). Half of those are use-after-free bugs."
+![](Chromium_Memory_Safety.png)
+
 Ownership
 ----
 * Three ownership rules:

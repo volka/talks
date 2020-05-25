@@ -2,3 +2,4 @@ This talk uses pandoc / reveal.js to build slides.
 
 Licenses / TM: Rust Logo taken from https://www.rust-lang.org
 Microsoft Slides see https://msrc-blog.microsoft.com/2019/07/16/a-proactive-approach-to-more-secure-code/
+Chromium Memory Safety Slide see https://www.chromium.org/Home/chromium-security/memory-safety
