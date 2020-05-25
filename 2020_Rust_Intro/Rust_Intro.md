@@ -297,7 +297,8 @@ trait Format {
     // default impl
     fn print(&self) { println!("{}", format(self)); }
 }
-
+```
+```rust
 impl Format for i32 {
     fn format(&self) -> String {
         format!("Int({})", self)
@@ -368,38 +369,38 @@ Ownership
 
 References & Borrowing
 ----
-
 ```rust
-fn change(some_string: &String) {
+let s = String::from("fump");
+let s2 = s;
+println!("{}", s); // ERROR, s moved, String does not implement Copy!
+```
+```rust
+fn change(some_string: &String) { // needs mutable ref!
     some_string.push_str("bar");
 }
 fn main() {
     let mut s = String::from("foo");
-    change(s);
+    change(&s); // needs mutable ref!
 }
 ```
 
-Compile Error
+Compiler Error
 ----
 ```bash
 error[E0596]: cannot borrow `*some_string` as mutable, as it is behind a `&` reference
  --> src/main.rs:2:5
   |
 1 | fn change(some_string: &String) {
-  |                        ------- help: consider changing this to be a mutable reference: `&mut std::string::String`
+  |                        ------- help: consider changing this to be a mutable 
+                                         reference: `&mut std::string::String`
 2 |     some_string.push_str(", world");
-  |     ^^^^^^^^^^^ `some_string` is a `&` reference, so the data it refers to cannot be borrowed as mutable
+  |     ^^^^^^^^^^^ `some_string` is a `&` reference, so the data it refers to cannot 
+                     be borrowed as mutable
 ```
 
-Fix: mutable ref
+Mutable Borrow
 ----
 
-```rust
-fn change(some_string: &mut String) {
-    some_string.push_str("bar");
-}
-```
-Problem:
 ```rust
 let mut s = String::from("foo");
 let r1 = &mut s;
@@ -407,8 +408,7 @@ let r2 = &mut s;
 println!("{}, {}", r1, r2);
 ```
 
-Complie Error
-----
+* Compiler Error
 ```bash
 error[E0499]: cannot borrow `s` as mutable more than once at a time
  --> src/main.rs:4:14
@@ -419,33 +419,6 @@ error[E0499]: cannot borrow `s` as mutable more than once at a time
   |              ^^^^^^ second mutable borrow occurs here
 5 |     println!("{} {}", r1, r2);
   |                       -- first borrow later used here
-```
-
-Area covered by Lifetimes
-----
-```rust
-
-let mut data = vec![1, 2, 3];
-let x = &data[0];
-println!("{}", x);
-// This is OK, x is no longer needed
-data.push(4);
-```
-```rust
-let mut data = vec![1, 2, 3];
-let x = &data[0];
-data.push(4);
-// This fails
-println!("{}", x);
-```
-```rust
-// ... also ok
-if (condition()) {
-    println!("{}", x);
-    data.push(4);
-} else {
-    data.push(5);
-}
 ```
 
 Local Lifetimes - Annotations
@@ -510,9 +483,35 @@ fn as_str<'a>(data: &'a u32) -> &'a str {
 ```
 * ref to s must outlive 'a, but defined in 'b, which is inside 'a -> ERROR
 
+Area covered by Lifetimes
+----
+```rust
+
+let mut data = vec![1, 2, 3];
+let x = &data[0];
+println!("{}", x);
+// This is OK, x is no longer needed
+data.push(4);
+```
+```rust
+let mut data = vec![1, 2, 3];
+let x = &data[0];
+data.push(4);
+// This fails
+println!("{}", x);
+```
+```rust
+// ... also ok
+if (condition()) {
+    println!("{}", x);
+    data.push(4);
+} else {
+    data.push(5);
+}
+```
+
 Aliasing mutable references
 ----
-* Back to failing example:
 ```rust
 let mut data = vec![1,2,3];
 let x = &data[0];
@@ -538,14 +537,17 @@ println!("{}", x);
 
 Lifetimes and Slices / Arrays
 ----
-* Lifetimes are *dumb*, just markers
+* Lifetimes are *dumb*, just markers, but fail on the "safe side"
+    * Disallow some valid code, but don't allow errors!
 * Checker understands disjount struct fields, but not slices / arrays
-* Works most of the time, sometimes needs help
+* Works most of the time, sometimes needs help, sometimes requires `unsafe`
 
 ```rust
 let mut x = [1,2,3];
 let a = &mut x[0];
 let b = &mut x[1];
+// unsafe fix:
+fn split_at_mut(&mut self, mid: usize) -> (&mut [T], &mut [T]);
 ```
 ```bash
 error[E0499]: cannot borrow `x[..]` as mutable more than once at a time
@@ -559,19 +561,6 @@ error[E0499]: cannot borrow `x[..]` as mutable more than once at a time
 6 | }
   | - first borrow ends here
 ```
-
-Lifetimes and Slices / Arrays
-----
-* May require falling back to unsafe code
-```rust
-// exposed by slices, consumes slice, returns two mutable slices
-fn split_at_mut(&mut self, mid: usize) -> (&mut [T], &mut [T])
-{ /* some unsafe code in here */ }
-```
-* Iterators actually don't need unsafe code
-    * Reference only one &mut ref at a time!
-
-* Fail on the "safe side", don't allow errors, but disallow some valid code!
 
 Lifetime Elision Examples (from [Nomicon](https://doc.rust-lang.org/nomicon/lifetime-elision.html) )
 ----
