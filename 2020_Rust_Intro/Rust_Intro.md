@@ -36,7 +36,7 @@ What is Rust?
 
 * System language like C++, started at Mozilla
 * Main focus
-    * Safety (memory, threading ...)
+    * Safety (memory without GC, threading without runtime, no null! ...)
     * Speed (same league as C/C++)
     * Good compiler errors
 * Very new language (1.0: 2015), rapid development, e.g. new futures/async
@@ -55,7 +55,7 @@ Tooling
 * IDEs: Vim, VS Code ("Racer" plugin), CLion ...
 ```bash     
 cargo new --bin MyProject
-cargo build
+// edit Cargo.toml / src/main.rs
 cargo run
 ```
 
@@ -77,7 +77,7 @@ Constants & Variables
 ----
 ```rust
 let x = 42; // immutable integer
-let mut y: i32 = 1; // mutable integer
+let mut y: i32 = 1; // mutable integer, lint againt useless mut!
 let z =  y as u8; // explicit conversion
 
 const  THRESHOLD : i32 = 10; // unchangeable value, type required!
@@ -87,7 +87,7 @@ static LANG: &str = "Rust"; // global with static lifetime
 
 Data Types - Primitive Types
 ----
-* `bool`, `char` (4 byte char)
+* `()`: Unit/Void, `bool`, `char` (4 byte char)
 * Scalars
     * Integer: `i8`, `i16`, `i32`, `i64`, `u8`, `u16`, `u32`, `u64`, `isize`, `usize` (default `i32`)
     * Floats:  `f32`, `f64` (default `f64`)
@@ -271,7 +271,7 @@ impl Drop for X {
 
 Error Handling
 ----
-Rust uses Result<T,E> type for Error Handling (no exceptions)
+Rust uses `Result<T,E>` type for Error Handling (no exceptions)
 ```rust
 #[must_use]
 enum Result<T, E> { Ok(T), Err(E) }
@@ -311,7 +311,7 @@ impl Format for f64 {
 }
 ```
 * Impl only allowed in either trait module or type module!
-* No inheritance!
+* No inheritance! Trait -> Interface, Inheritance: Trait Bounds?
 
 Trait Objects
 ----
@@ -331,6 +331,26 @@ do_dynRef(&y);
 do_dynPtr(Box::new(666));
 ```
 
+Dynamic Trait Objects
+----
+```rust
+// Representation of dyn traits in memory
+pub struct TraitObject {
+    pub data: *mut (),
+    pub vtable: *mut (),
+}
+
+   &dyn Shape      ╭──────> Rectangle     ╭─> vtable of Shape for Rectangle
+ ┏━━━━━━━━━━━━━┓   │       ┏━━━━━━━━━┓    │        ┏━━━━━━━━━┓
+ ┃ data        ┠───╯       ┃ w       ┃    │        ┃ area()  ┃
+ ┣━━━━━━━━━━━━━┫           ┣━━━━━━━━━┫    │        ┣━━━━━━━━━┫
+ ┃ vtable ptr  ┠─────╮     ┃ h       ┃    │        ┃ drop()  ┃
+ ┗━━━━━━━━━━━━━┛     │     ┗━━━━━━━━━┛    │        ┣━━━━━━━━━┫
+                     ╰────────────────────╯        ┃ size    ┃
+                                                   ╏         ╏
+```
+    * [Rust Book - Trait Objects](https://doc.rust-lang.org/1.2.0/book/trait-objects.html)
+    * [Alternative: e.g. vptr library](https://docs.rs/vptr/0.1.0/vptr/)
 Safety
 ----
 Two languages: SAFE Rust and UNSAFE Rust
@@ -361,6 +381,8 @@ Ownership
 
 * References use lifetimes - may never outlive referent!
     * Lifetime annotations to help borrow checker
+
+Memory safety handles "use after free" / "double free", leaking is ok!
 
 References & Borrowing
 ----
